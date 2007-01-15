@@ -1,0 +1,77 @@
+<dialog title="Shuriken Property Maker" buttons="accept,cancel">
+ 
+ 	<grid>
+        <columns>
+            <column/>
+            <column/>
+        </columns>
+        <rows>
+		
+            <row align="center">
+                <label value="Use Case Name:"/>
+				<textbox id="useCaseName" value="" size="40" />
+            </row>
+			
+            <row align="center">
+               	<label value="Default Value:" />
+				<textbox id="defaultValue" value="" size="40" />
+            </row> 
+			
+			<row align="center">
+               	<label value="Datatype:"/>
+				<listbox 
+					id="dataType"  
+					rows="6">
+					
+					<listitem label="String" />
+					<listitem label="Number" />
+					<listitem label="Boolean" />
+					<listitem label="Array" />
+					<listitem label="Date" />
+					<listitem label="Object" />
+					
+				</listbox>
+            </row> 
+			
+			<row align="center">
+               	<checkbox id="anotherOne" checked="false" label="Create another property after this one?" />
+            </row> 
+			
+			<row align="center">
+               	<checkbox id="genVarDef" checked="true" label="Generate Variable Definition" />
+				<checkbox id="genGetterSetter" checked="true" label="Generate Getter / Setter" />
+				
+            </row>
+			
+			<row align="center">
+               	<checkbox id="genInspectable" 
+					checked="true" 
+					label="Generate Inspectable Tab" />
+            </row>
+			
+			<row align="center">
+               <label value="Inspectable Type:" />
+				<listbox 
+					id="inspectableType"  
+					rows="6">
+					
+					<listitem label="Array" />
+					<listitem label="Boolean" />
+					<listitem label="Color" />
+					<listitem label="Font Name" />
+					<listitem label="List" />
+					<listitem label="Number" />
+					<listitem label="Object" />
+					<listitem label="String" />
+							
+				</listbox>
+            </row>
+			
+			<row align="center">
+               <checkbox id="genCommitProp" checked="true" label="Generate Commit Properties Stub Code" />
+            </row>
+			
+        </rows> 
+    </grid>
+	
+</dialog>

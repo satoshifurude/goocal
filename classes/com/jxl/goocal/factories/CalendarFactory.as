@@ -1,4 +1,4 @@
-﻿import com.jxl.factories.JXLFactory;
+﻿import com.jxl.shuriken.factories.FactoryTemplate;
 import com.jxl.shuriken.utils.DateUtils;
 
 import com.jxl.goocal.vo.CalendarVO;
@@ -10,7 +10,7 @@ import com.jxl.shuriken.utils.LoopUtils;
 import GoogleCalendar;
 
 
-class com.jxl.goocal.factories.CalendarFactory extends JXLFactory
+class com.jxl.goocal.factories.CalendarFactory extends FactoryTemplate
 {
 	
 	private static var __callbackScope:Object;

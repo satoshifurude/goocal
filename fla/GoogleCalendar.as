@@ -193,8 +193,8 @@ class GoogleCalendar extends UIComponent
 	
 	private function showTodayView(p_boolOrMsg:Object):Void
 	{
-		//DebugWindow.debugHeader();
-		//DebugWindow.debug("GoogleCalendar::showTodayView, p_bool: " + p_bool);
+		DebugWindow.debugHeader();
+		DebugWindow.debug("GoogleCalendar::showTodayView, p_boolOrMsg: " + p_boolOrMsg);
 		
 		if(p_boolOrMsg == true)
 		{
@@ -219,14 +219,15 @@ class GoogleCalendar extends UIComponent
 				while(i--)
 				{
 					var entryVO:EntryVO = events[i];
-					//DebugWindow.debug(entryVO.toVerboseString());
+					DebugWindow.debug(entryVO.toVerboseString());
 					var whenVO:WhenVO = entryVO.whenVO;
 					var aMatch:Boolean = DateUtils.isEqualByDate(today,
 																 whenVO.startTime);
 					//if(aMatch == true) currentEvents.addItem(entryVO);
 					currentEvents.addItem(entryVO);
 				}
-				
+				DebugWindow.debug("currentEvents: " + currentEvents);
+				DebugWindow.debug("currentEvents.getLength(): " + currentEvents.getLength());
 				if(currentEvents.getLength() > 0) __dayView.events = currentEvents;
 			}
 		}
@@ -239,7 +240,21 @@ class GoogleCalendar extends UIComponent
 	
 	private function onDayEventClicked(p_event:ShurikenEvent):Void
 	{
+		// TODO: get the full entry, and show it in the EntryView
 		var entryVO:EntryVO = EntryVO(p_event.item);
+		
+		var event:GetCalendarEventsEvent = new GetCalendarEventsEvent(GetCalendarEventsEvent.GET_EVENTS,
+																	  this,
+																	  showTodayView);
+		event.calendarName = ModelLocator.getInstance().selectedCalendar;
+		var today:Date = new Date();
+		event.startDate = today;
+		event.endDate = today;
+		CommandRegistry.getInstance().dispatchEvent(event);
+	}
+	
+	private function showEntryView():Void
+	{
 		
 	}
 	

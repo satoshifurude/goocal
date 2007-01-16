@@ -51,6 +51,12 @@ class com.jxl.goocal.views.EventList extends ScrollableList
 		__mcScrollNext.addEventListener(ShurikenEvent.RELEASE, Delegate.create(this, onScrollNext));		
 	}
 	
+	public function onSetupChild(p_event:ShurikenEvent):Void
+	{
+		super.onSetupChild(p_event);
+		EventItem(p_event.child).addEventListener(ShurikenEvent.RELEASE, Delegate.create(this, onEventItemClicked));
+	}
+	
 	public function setSize(p_width:Number, p_height:Number):Void
 	{
 		__columnWidth = p_width;
@@ -76,6 +82,16 @@ class com.jxl.goocal.views.EventList extends ScrollableList
 		var vo:EntryVO = EntryVO(p_item);
 		EventItem(p_child).eventTime = vo.toHourString();
 		EventItem(p_child).eventName = vo.title;
+	}
+	
+	private function onEventItemClicked(p_event:ShurikenEvent):Void
+	{
+		var event:ShurikenEvent = new ShurikenEvent(ShurikenEvent.ITEM_CLICKED, this);
+		event.lastSelected = null; // TODO: fix this
+		event.selected = IUIComponent(p_event.target);
+		var childIndex:Number = __mcList.getChildIndex(IUIComponent(p_event.target));
+		event.item = __dataProvider.getItemAt(childIndex);
+		dispatchEvent(event);
 	}
 	
 }

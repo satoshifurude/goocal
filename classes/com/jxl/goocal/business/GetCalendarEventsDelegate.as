@@ -116,7 +116,7 @@ class com.jxl.goocal.business.GetCalendarEventsDelegate
 	{
 		onProgress("Done!");
 		//DebugWindow.debugHeader();
-		//DebugWindow.debug("GetCalendarEventsDelegate::onDoneParsingJSON");
+		//DebugWindow.debug("GetCalendarEventsDelegate::onDoneParsing, p_array.length: " + p_array.length);
 		responder.onResult(new ResultEvent(p_array));
 	}
 	

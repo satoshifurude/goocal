@@ -288,6 +288,7 @@ class com.jxl.shuriken.containers.ScrollableList extends Container implements IC
 		__mcList = ButtonBar(attachMovie(ButtonBar.SYMBOL_NAME, "__mcList", getNextHighestDepth()));
 
 		__mcList.addEventListener(ShurikenEvent.SETUP_CHILD, Delegate.create(this, onSetupChild));
+		//__mcList.setupChild = Delegate.create(this, onSetupChild);
 		__mcList.addEventListener(ShurikenEvent.COLUMN_WIDTH_CHANGED, Delegate.create(this, onColumnWidthChanged));
 		__mcList.addEventListener(ShurikenEvent.ROW_HEIGHT_CHANGED, Delegate.create(this, onRowHeightChanged));		
 
@@ -317,6 +318,8 @@ class com.jxl.shuriken.containers.ScrollableList extends Container implements IC
 	
 	private function onItemClicked(p_event:ShurikenEvent):Void
 	{
+		DebugWindow.debugHeader();
+		DebugWindow.debug("ScrollableList::onItemClicked");
 		var event:ShurikenEvent = new ShurikenEvent(ShurikenEvent.ITEM_CLICKED, this);
 		event.child = p_event.child;
 		event.item = p_event.item;

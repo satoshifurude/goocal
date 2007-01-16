@@ -1,6 +1,9 @@
-﻿import com.jxl.shuriken.core.UIComponent;
+﻿import mx.utils.Delegate;
+
+import com.jxl.shuriken.core.UIComponent;
 import com.jxl.goocal.views.GCTimeHeading;
 import com.jxl.goocal.views.GCLinkButton;
+import com.jxl.shuriken.events.ShurikenEvent;
 
 class com.jxl.goocal.views.EventItem extends UIComponent
 {
@@ -46,6 +49,7 @@ class com.jxl.goocal.views.EventItem extends UIComponent
 		{
 			__name_link = GCLinkButton(createComponent(GCLinkButton, "__name_link"));
 			__name_link.textSize = 14;
+			__name_link.addEventListener(ShurikenEvent.RELEASE, Delegate.create(this, onEventItemClicked));
 		}
 	}
 	
@@ -75,6 +79,11 @@ class com.jxl.goocal.views.EventItem extends UIComponent
 		__time_lbl.setSize(__width, 20);
 		__name_link.move(0, __time_lbl.y + __time_lbl.height);
 		__name_link.setSize(__width, 20);
+	}
+	
+	private function onEventItemClicked(p_event:ShurikenEvent):Void
+	{
+		dispatchEvent(new ShurikenEvent(ShurikenEvent.RELEASE, this));
 	}
 	
 }

@@ -23,9 +23,6 @@
 		
 		public function runCommand($p_cmd, $params)
 		{
-			//JXLDebug::debugHeader();
-			//JXLDebug::debug("FrontController::runCommand");
-			//JXLDebug::debug("p_cmd: " . $p_cmd);
 			switch($p_cmd)
 			{
 				case self::COMMAND_GET_AUTH:
@@ -95,23 +92,13 @@
 			$startDate 		= $this->getStartMinDateParameter($p_startYear, $p_startMonth, $p_startDay);
 			$endDate		= $this->getStartMaxDateParameter($p_endYear, $p_endMonth, $p_endDay);
 			
-			//JXLDebug::debugHeader();
-			//JXLDebug::debug("startDate: $startDate");
-			//JXLDebug::debug("endDate: $endDate");
-			
 			$calendarURL  	.= "?" . $startDate . "&" . $endDate;
-			
-			//JXLDebug::debug("calendarURL: $calendarURL");
 			
 			// get the feed from Google
 			$feed = $this->gcalutils->curlToHost($calendarURL, 
 												 'GET',
 												 $headers);
-			
-			//JXLDebug::debugHeader();
-			//JXLDebug::debug("FrontController::getCalendarEntries");
-			//JXLDebug::debug("calendarURL: " . $calendarURL);
-			//JXLDebug::debug("feed: " . $feed);
+												 
 			$result = GDataFactory::getEntries($feed);
 			return $result;
 		}

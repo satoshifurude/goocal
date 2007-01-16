@@ -234,6 +234,7 @@ class GoogleCalendar extends UIComponent
 		{
 			__loggingIn_lbl.text = String(p_boolOrMsg);
 		}
+		
 	}
 	
 	private function onDayEventClicked(p_event:ShurikenEvent):Void

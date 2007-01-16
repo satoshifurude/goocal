@@ -67,6 +67,9 @@ function createShurikenFramework()
 																									"com.jxl.shuriken.controls.LinkButton"], FOLDER_SHURIKEN_CONTROLS);
 	createShurikenComponent("RadioButton", "com.jxl.shuriken.controls.RadioButton", "com.jxl.shuriken.controls.Button", ["com.jxl.shuriken.controls.Label"], FOLDER_SHURIKEN_CONTROLS);
 	createShurikenComponent("CheckBox", "com.jxl.shuriken.controls.CheckBox", "com.jxl.shuriken.controls.Button", ["com.jxl.shuriken.controls.Label"], FOLDER_SHURIKEN_CONTROLS);
+	// TODO: need to create scrollbar components
+	createShurikenComponent("TextArea", "com.jxl.shuriken.controls.TextArea", "com.jxl.shuriken.core.UIComponent", ["com.jxl.shuriken.core.UITextField"], FOLDER_SHURIKEN_CONTROLS);
+	
 	
 	// containers
 	createShurikenComponent("List", "com.jxl.shuriken.containers.List", "com.jxl.shuriken.core.DataSelectorTemplate", ["com.jxl.shuriken.core.UIComponent",

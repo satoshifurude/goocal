@@ -18,11 +18,11 @@
 		return theXML;
 	}
 	
-	public static function parseBooleanFromString(pString:String):Boolean
+	public static function parseBoolean(p_str:String):Boolean
 	{
-		pString = pString.toLowerCase();
+		p_str = p_str.toLowerCase();
 		
-		switch(pString)
+		switch(p_str)
 		{
 			case "true":
 				return true;

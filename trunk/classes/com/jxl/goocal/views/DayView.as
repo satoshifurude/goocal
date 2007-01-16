@@ -1,41 +1,50 @@
 ﻿
+import mx.utils.Delegate;
+
 import com.jxl.shuriken.core.UIComponent;
-import com.jxl.shuriken.core.UITextField;
-import com.jxl.shuriken.utils.DrawUtils;
 
 import com.jxl.goocal.views.GCHeading;
-import com.jxl.goocal.views.GCTimeHeading;
-import com.jxl.goocal.views.GCLinkButton;
-import com.jxl.goocal.vo.EntryVO;
-import com.jxl.goocal.vo.WhenVO;
+import com.jxl.goocal.views.EventList;
+import com.jxl.shuriken.core.ICollection;
+import com.jxl.shuriken.events.ShurikenEvent;
+import com.jxl.shuriken.utils.DrawUtils;
+import com.jxl.shuriken.utils.DateUtils;
+import com.jxl.shuriken.events.Event;
 
+import com.jxl.goocal.views.GCLinkButton;
 
 class com.jxl.goocal.views.DayView extends UIComponent
 {
 	public static var SYMBOL_NAME:String = "com.jxl.goocal.views.DayView";
 	
 	public static var EVENT_BACK_TO_MONTH:String = "backToMonth";
-	public static var EVENT_EDIT_DETAILS:String = "editDetails";
+	public static var EVENT_CREATE_NEW:String = "createNew";
+	
+	private var __events:ICollection;
+	private var __eventsDirty:Boolean 			= false;
+	private var __currentDate:Date;
+	private var __currentDateDirty:Boolean		= false;
 	
 	private var __title_lbl:GCHeading;
-	private var __time_lbl:GCTimeHeading;
-	private var __description_txt:UITextField;
-	private var __editDetails_link:GCLinkButton;
-	private var __or_txt:UITextField;
-	private var __view_txt:UITextField;
-	private var __month_link:GCLinkButton;
+	private var __event_list:EventList;
+	private var __createNewEvent_link:GCLinkButton;
+	private var __backToMonthView_link:GCLinkButton;
 	
-	private var __entry:EntryVO;
-	private var __entryDirty:Boolean = false;
-	
-	public function get entry():EntryVO { return __entry; }
-	public function set entry(p_val:EntryVO):Void
+	public function get events():ICollection { return __events; }
+	public function set events(p_val:ICollection):Void
 	{
-		__entry = p_val;
-		__entryDirty = true;
+		__events = p_val;
+		__eventsDirty = true;
 		invalidateProperties();
 	}
 	
+	public function get currentDate():Date { return __currentDate; }
+	public function set currentDate(p_val:Date):Void
+	{
+		__currentDate = p_val;
+		__currentDateDirty = true;
+		invalidateProperties();
+	}
 	
 	public function DayView()
 	{
@@ -49,66 +58,40 @@ class com.jxl.goocal.views.DayView extends UIComponent
 		if(__title_lbl == null)
 		{
 			__title_lbl = GCHeading(createComponent(GCHeading, "__title_lbl"));
+			__title_lbl.textSize = 14;
+			__title_lbl.bold = true;
 		}
 		
-		if(__time_lbl == null)
+		if(__event_list == null)
 		{
-			__time_lbl = GCTimeHeading(createComponent(GCTimeHeading, "__time_lbl"));
+			__event_list = EventList(createComponent(EventList, "__event_list"));
+			__event_list.addEventListener(ShurikenEvent.ITEM_CLICKED, Delegate.create(this, onEventItemClicked));
 		}
 		
-		if(__description_txt == null)
+		if(__createNewEvent_link == null)
 		{
-			__description_txt = UITextField(createComponent(UITextField, "__description_txt"));
-			__description_txt.html = true;
-			__description_txt.multiline = true;
-			__description_txt.wordWrap = true;
+			__createNewEvent_link = GCLinkButton(createComponent(GCLinkButton, "__createNewEvent_link"));
+			__createNewEvent_link.label = "Create New Event...";
+			__createNewEvent_link.addEventListener(ShurikenEvent.RELEASE, Delegate.create(this, onCreateNew));
 		}
 		
-		if(__editDetails_link == null)
+		if(__backToMonthView_link == null)
 		{
-			__editDetails_link = GCLinkButton(createComponent(GCLinkButton, "__editDetails_link"));
-			__editDetails_link.label = "Edit Details";
+			__backToMonthView_link = GCLinkButton(createComponent(GCLinkButton, "__backToMonthView_link"));
+			__backToMonthView_link.label = "Back to Month view...";
+			__backToMonthView_link.addEventListener(ShurikenEvent.RELEASE, Delegate.create(this, onBackToMonthView));
 		}
 		
-		if(__or_txt == null)
-		{
-			__or_txt = UITextField(createComponent(UITextField, "__or_txt"));
-			__or_txt.multiline = false;
-			__or_txt.wordWrap = false;
-			__or_txt.text = "or";
-		}
-		
-		if(__month_link == null)
-		{
-			__month_link = GCLinkButton(createComponent(GCLinkButton, "__month_link"));
-			__month_link.label = "month";
-		}
-		
-		if(__view_txt == null)
-		{
-			__view_txt = UITextField(createComponent(UITextField, "__view_txt"));
-			__view_txt.multiline = false;
-			__view_txt.wordWrap = false;
-			__view_txt.text = "view";
-		}
 	}
 	
 	private function commitProperties():Void
 	{
-		super.init();
+		super.commitProperties();
 		
-		if(__entryDirty == true)
+		if(__currentDateDirty == true)
 		{
-			__entryDirty = false;
-			__title_lbl.text = entryVO.title;
-			__time_lbl.text = entryVO.toHourRangeString();
-			
-			var descStr:String = "";
-			descStr += "<b>Where</b><br />";
-			descStr += entryVO.where + "<br /><br />";
-			descStr += "<b>Description</b><br />";
-			descStr += entryVO.description + "<br />";
-			__description_txt.htmlText = descStr;
+			__currentDateDirty = false;
+			__title_lbl.text = DateUtils.format(__currentDate, DateUtils.FORMAT_TIME_MONTH_DAY_FULLYEAR);
 		}
 	}
 	
@@ -116,32 +99,49 @@ class com.jxl.goocal.views.DayView extends UIComponent
 	{
 		super.size();
 		
-		__title_lbl.move(0, 0);
-		__title_lbl.setSize(__width, __title_lbl.height);
+		var leftSide:Number = 0;
 		
-		__editDetails_link.move(0, __height - __editDetails_link.height);
-		__editDetails_link.setSize(40, __editDetails_link.height);
-		__or_txt.move(__editDetails_link.x + __editDetails_link.width + 2, __editDetails_link.y);
-		__or_txt.setSize(14, __or_txt.height);
-		__month_link.move(__or_txt.x + __or_txt.width, __or_txt.y);
-		__month_link.setSize(30, __month_link.height);
-		__view_txt.move(__month_link.x + __month_link.width, __month_link.y);
-		__view_txt.setSize(30, __view_txt.height);
+		__title_lbl.move(leftSide, 0);
+		__title_lbl.setSize(__width - __title_lbl.x, 20);
+		
+		__backToMonthView_link.setSize(__width - leftSide, 20);
+		__backToMonthView_link.move(__title_lbl.x, __height - __backToMonthView_link.height);
+		
+		__createNewEvent_link.setSize(__width - leftSide, 20);
+		__createNewEvent_link.move(__backToMonthView_link.x, __backToMonthView_link.y - __createNewEvent_link.height);
+		
+		__event_list.move(__title_lbl.x, __title_lbl.y + __title_lbl.height);
+		__event_list.setSize(__width - leftSide, __height - __event_list.y - (__height - __createNewEvent_link.y));
+		
 		
 		beginFill(0xD2D2D2);
-		DrawUtils.drawBox(this, 0, __title_lbl.y + __title_lbl.height, __width, 1);
-		DrawUtils.drawBox(this, 0, __height - __editDetails_link.height - 1, __width, 1);
+		var lineSize:Number = 2;
+		DrawUtils.drawBox(this, 0, __event_list.y - lineSize, __width, lineSize);
+		DrawUtils.drawBox(this, 0, __event_list.y, __width, lineSize);
 		beginFill(0xF0F0F0);
-		DrawUtils.drawBox(this, 0, __title_lbl.y + __title_lbl.height + 1, __width, __height - __editDetails_link.height - 1);
+		DrawUtils.drawBox(this, 
+						  0, __event_list.y, 
+						  __width, __event_list.height);
 		endFill();
-		
-		__time_lbl.move(4, __title_lbl.y + __title_lbl.height + 3);
-		__time_lbl.setSize(__width - __time_lbl.x, __time_lbl.height);
-		
-		__description_txt.move(__time_lbl.x, __time_lbl.y + __time_lbl.height);
-		__description_txt.setSize(__width - __description_txt.x, __height - __description_txt.y - __editDetails_link.height);
 	}
 	
+	private function onEventItemClicked(p_event:ShurikenEvent):Void
+	{
+		var event:ShurikenEvent = new ShurikenEvent(ShurikenEvent.ITEM_CLICKED, this);
+		event.child = p_event.child;
+		event.item = p_event.item;
+		event.index = p_event.index;
+		dispatchEvent(event);
+	}
 	
+	private function onCreateNew(p_event:ShurikenEvent):Void
+	{
+		dispatchEvent(new Event(EVENT_CREATE_NEW, this));
+	}
+	
+	private function onBackToMonthView(p_event:ShurikenEvent):Void
+	{
+		dispatchEvent(new Event(EVENT_BACK_TO_MONTH, this));
+	}
 	
 }

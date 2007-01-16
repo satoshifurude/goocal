@@ -93,6 +93,12 @@ class com.jxl.goocal.views.DayView extends UIComponent
 			__currentDateDirty = false;
 			__title_lbl.text = DateUtils.format(__currentDate, DateUtils.FORMAT_TIME_MONTH_DAY_FULLYEAR);
 		}
+		
+		if(__eventsDirty == true)
+		{
+			__eventsDirty = false;
+			__event_list.dataProvider = __events;
+		}
 	}
 	
 	private function size():Void
@@ -127,10 +133,11 @@ class com.jxl.goocal.views.DayView extends UIComponent
 	
 	private function onEventItemClicked(p_event:ShurikenEvent):Void
 	{
+		DebugWindow.debugHeader();
+		DebugWindow.debug("DayView::onEventItemClicked");
 		var event:ShurikenEvent = new ShurikenEvent(ShurikenEvent.ITEM_CLICKED, this);
-		event.child = p_event.child;
+		event.selected = p_event.selected;
 		event.item = p_event.item;
-		event.index = p_event.index;
 		dispatchEvent(event);
 	}
 	

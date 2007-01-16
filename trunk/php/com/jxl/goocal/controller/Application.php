@@ -3,7 +3,6 @@
 	set_include_path("/home/9936/domains/jessewarden.com/html/goocal/php/");
 	
 	require_once("com/jxl/goocal/controller/FrontController.php");
-	//require_once("JXLDebug.php");
 	
 	if(isset($HTTP_POST_VARS['cmd']))
 	{

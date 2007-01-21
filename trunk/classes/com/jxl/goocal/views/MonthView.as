@@ -1,5 +1,9 @@
-﻿import com.jxl.shuriken.core.UIComponent;
+﻿import mx.utils.Delegate;
+
+import com.jxl.shuriken.core.UIComponent;
 import com.jxl.shuriken.controls.calendarclasses.CalendarBase;
+import com.jxl.shuriken.events.ShurikenEvent;
+import com.jxl.shuriken.events.Event;
 
 import com.jxl.goocal.views.GCLinkButton;
 
@@ -7,11 +11,17 @@ class com.jxl.goocal.views.MonthView extends UIComponent
 {
 	public static var SYMBOL_NAME:String = "com.jxl.goocal.views.MonthView";
 	
+	public static var EVENT_DATE_SELECTED:String = "dateSelected";
+	
+	private var __selectedDate:Date;
+	
 	private var __cal:CalendarBase;
 	private var __createNew_link:GCLinkButton;
 	private var __viewWeek_link:GCLinkButton;
 	private var __or_txt:TextField;
 	private var __changeSettings_link:GCLinkButton;
+	
+	public function get selectedDate():Date { return __selectedDate; }
 	
 	public function MonthView()
 	{
@@ -24,8 +34,9 @@ class com.jxl.goocal.views.MonthView extends UIComponent
 		if(__cal == null)
 		{
 			__cal = CalendarBase(createComponent(CalendarBase, "__cal"));
+			__cal.addEventListener(ShurikenEvent.ITEM_CLICKED, Delegate.create(this, onDayClicked));
 		}
-		
+		/*
 		if(__createNew_link == null)
 		{
 			__createNew_link = GCLinkButton(createComponent(GCLinkButton, "__createNew_link"));
@@ -51,6 +62,7 @@ class com.jxl.goocal.views.MonthView extends UIComponent
 			__changeSettings_link = GCLinkButton(createComponent(GCLinkButton, "__changeSettings_link"));
 			__changeSettings_link.label = "Change Settings";
 		}
+		*/
 	}
 	
 	private function size():Void
@@ -63,6 +75,17 @@ class com.jxl.goocal.views.MonthView extends UIComponent
 		__or_txt._x = __viewWeek_link.x + __viewWeek_link.width;
 		__or_txt._y = __viewWeek_link.y;
 		__changeSettings_link.move(__or_txt._x + __or_txt._width, __or_txt._y);
+	}
+	
+	private function onDayClicked(p_event:ShurikenEvent):Void
+	{
+		//DebugWindow.debugHeader();
+		//DebugWindow.debug("MonthView::onDayClicked");
+		//DebugWindow.debug("p_event.item: " + p_event.item);
+		// HACK: compiler hack, cannot cast to Date in AS2
+		var o = p_event.item;
+		__selectedDate = o;
+		dispatchEvent(new Event(EVENT_DATE_SELECTED, this));
 	}
 
 }

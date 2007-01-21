@@ -13,6 +13,9 @@ import com.jxl.goocal.commands.SelectCalendarCommand;
 import com.jxl.goocal.events.GetCalendarEventsEvent;
 import com.jxl.goocal.commands.GetCalendarEventsCommand;
 
+import com.jxl.goocal.events.SetCurrentDateEvent;
+import com.jxl.goocal.commands.SetCurrentDateCommand;
+
 class com.jxl.goocal.controller.CommandRegistry extends CommandRegistryTemplate
 {
 	private static var inst:CommandRegistry; 	// instance of self
@@ -29,5 +32,6 @@ class com.jxl.goocal.controller.CommandRegistry extends CommandRegistryTemplate
 		addCommand(GetCalendarsEvent.GET_CALENDARS, 		GetCalendarsCommand);
 		addCommand(SelectCalendarEvent.SELECT, 				SelectCalendarCommand);
 		addCommand(GetCalendarEventsEvent.GET_EVENTS,		GetCalendarEventsCommand);
+		addCommand(SetCurrentDateEvent.SET_CURRENT_DATE,	SetCurrentDateCommand);
 	}
 }

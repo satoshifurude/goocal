@@ -1,8 +1,5 @@
-﻿import com.jxl.shuriken.events.IEventDispatcher;
-
-interface com.jxl.shuriken.core.IUIComponent extends IEventDispatcher
+﻿interface com.jxl.shuriken.core.IUIComponent
 {
-	
 	public function getX():Number
 	public function getY():Number
 	

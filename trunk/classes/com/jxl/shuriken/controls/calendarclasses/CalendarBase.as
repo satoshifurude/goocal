@@ -75,8 +75,8 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 	{
 		super();
 		
-		__childSetValueFunction 	= refreshSetValue;
-		__childSetValueScope		= this;
+		__childSetValueFunction 			= refreshSetValue;
+		__childSetValueScope				= this; 
 	}
 	
 	private function setEnabled(p_enabled:Boolean):Void
@@ -93,14 +93,15 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 		//if(__childClass == null) 		__childClass = CalendarDay;
 		__autoSizeToChildren 			= true;
 		__daySelectionChanged			= Delegate.create(this, onDaySelectionChanged);
+		//__dayClickedDelegate			= Delegate.create(this, onListItemClicked);
 	}
 	
 	private function commitProperties():Void
 	{
-		//trace("------------------");
-		//trace("CalendarBase::commitProperties");
-		//trace("__currentDateDirty: " + __currentDateDirty);
-		//trace("__selectedDateDirty: " + __selectedDateDirty);
+		//DebugWindow("------------------");
+		//DebugWindow("CalendarBase::commitProperties");
+		//DebugWindow("__currentDateDirty: " + __currentDateDirty);
+		//DebugWindow("__selectedDateDirty: " + __selectedDateDirty);
 		
 		super.commitProperties();
 		
@@ -162,8 +163,8 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 			{
 				__dateBuilder_lu = new LoopUtils(getLoopMC());
 			}
-			//trace("----------------------");
-			//trace("Date Builder loop...");
+			//DebugWindow("----------------------");
+			//DebugWindow("Date Builder loop...");
 			showStatus();
 			__dateBuilder_lu.gridLoop(0,
 										1,
@@ -216,8 +217,8 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 		var r:Number = p_currentRow;
 		var c:Number = p_currentCol;
 		
-		//trace("----------------------");
-		//trace("onDateBuilderLoop r: " + r + ", c: " + c);
+		//DebugWindow("----------------------");
+		//DebugWindow("onDateBuilderLoop r: " + r + ", c: " + c);
 		
 		if(r == 0)
 		{
@@ -330,8 +331,8 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 	
 	private function onDateBuilderLoopDone():Void
 	{
-		trace("----------------------");
-		trace("Date Builder done.");
+		//DebugWindow("----------------------");
+		//DebugWindow("Date Builder done.");
 		
 		__dateBuilder_lu.destroy();
 		delete __dateBuilder_lu;
@@ -392,8 +393,8 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 		{
 			__draw_lu = new LoopUtils(getLoopMC());
 		}
-		DebugWindow.debug("----------------------");
-		DebugWindow.debug("Draw loop...");
+		//DebugWindow.debug("----------------------");
+		//DebugWindow.debug("Draw loop...");
 		__draw_lu.gridLoop(0,
 							1,
 							0,
@@ -419,8 +420,8 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 	
 	private function finishedDrawing():Void
 	{
-		DebugWindow.debug("----------------------");
-		DebugWindow.debug("Draw done.");
+		//DebugWindow.debug("----------------------");
+		//DebugWindow.debug("Draw done.");
 		
 		__draw_lu.destroy();
 		delete __draw_lu;
@@ -444,8 +445,8 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 		{
 			__size_lu = new LoopUtils(getLoopMC());
 		}
-		DebugWindow.debug("----------------------");
-		DebugWindow.debug("Size loop...");
+		//DebugWindow.debug("----------------------");
+		//DebugWindow.debug("Size loop...");
 		__size_lu.gridLoop(0,
 							1,
 							0,
@@ -471,8 +472,8 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 	
 	private function finishedSizing():Void
 	{
-		DebugWindow.debug("----------------------");
-		DebugWindow.debug("Size done.");
+		//DebugWindow.debug("----------------------");
+		//DebugWindow.debug("Size done.");
 		__size_lu.destroy();
 		delete __size_lu;
 		__status_mc.gotoAndStop("done");
@@ -510,8 +511,8 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 		{
 			__refresh_lu = new LoopUtils(getLoopMC());
 		}
-		DebugWindow.debug("----------------------");
-		DebugWindow.debug("Refresh loop...");
+		//DebugWindow.debug("----------------------");
+		//DebugWindow.debug("Refresh loop...");
 		
 		__refresh_lu.gridLoop(0,
 								1,
@@ -536,8 +537,8 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 	
 	private function finishedRefreshing():Void
 	{
-		DebugWindow.debug("----------------------");
-		DebugWindow.debug("Refresh done.");
+		//DebugWindow.debug("----------------------");
+		//DebugWindow.debug("Refresh done.");
 		__refresh_lu.destroy();
 		delete __refresh_lu;
 		//callLater(this, refreshColors);
@@ -566,15 +567,15 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 		}
 		
 		var isSelectedDate:Boolean = DateUtils.isEqualByDate(__selectedDate, theDate);
-		DebugWindow.debug("----------------------");
-		DebugWindow.debug("__selectedDate: " + __selectedDate + ", theDate: " + theDate);
-		DebugWindow.debug("isSelectedDate: " + isSelectedDate);
+		//DebugWindow.debug("----------------------");
+		//DebugWindow.debug("__selectedDate: " + __selectedDate + ", theDate: " + theDate);
+		//DebugWindow.debug("isSelectedDate: " + isSelectedDate);
 		//__selectedDate: Thu Dec 21 16:54:38 GMT-0500 2006, theDate: Mon Dec 4 16:54:23 GMT-0500 2006
 		//isSelectedDate: false
 		//You selected Mon Dec 4 16:54:23 GMT-0500 2006
 		if(isSelectedDate == true)
 		{
-			DebugWindow.debug("A match!");
+			//DebugWindow.debug("A match!");
 			setCalendarDaySelected(CalendarDay(p_child));
 		}
 		else
@@ -607,8 +608,8 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 		{
 			__colors_lu = new LoopUtils(getLoopMC());
 		}
-		trace("----------------------");
-		trace("Colors loop...");
+		DebugWindow("----------------------");
+		DebugWindow("Colors loop...");
 		__colors_lu.gridLoop(0,
 								1,
 								0,
@@ -635,8 +636,8 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 	
 	private function finishedColoring():Void
 	{
-		trace("----------------------");
-		trace("Colors done.");
+		DebugWindow("----------------------");
+		DebugWindow("Colors done.");
 		__colors_lu.destroy();
 		delete __colors_lu;
 		if(__finishedDrawing == true)
@@ -732,9 +733,9 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 	
 	private function findSelDate():Void
 	{
-		//trace("------------------");
-		//trace("CalendarBase::findSelDate");
-		//trace("__currentSelRow: " + __currentSelRow + ", __currentSelCol: " + __currentSelCol);
+		//DebugWindow("------------------");
+		//DebugWindow("CalendarBase::findSelDate");
+		//DebugWindow("__currentSelRow: " + __currentSelRow + ", __currentSelCol: " + __currentSelCol);
 		if(__currentSelRow + 1 <= __date_mdarray.rows)
 		{
 			if(__currentSelCol + 1 <= __date_mdarray.cols)
@@ -744,7 +745,7 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 				//if(__selectedDate == theDate)
 				if(DateUtils.isEqualByDate(__selectedDate, theDate) == true)
 				{
-					//trace("Found a match!");
+					//DebugWindow("Found a match!");
 					var child:CalendarDay = CalendarDay(__child_mdarray.getCell(__currentSelRow, __currentSelCol));
 					setCalendarDaySelected(child);
 					return;
@@ -763,7 +764,7 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 					//if(__selectedDate == theDate)
 					if(DateUtils.isEqualByDate(__selectedDate, theDate) == true)
 					{
-						//trace("Found a match!");
+						//DebugWindow("Found a match!");
 						var child:CalendarDay = CalendarDay(__child_mdarray.getCell(__currentSelRow, __currentSelCol));
 						setCalendarDaySelected(child);
 						return;
@@ -790,9 +791,9 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 	{
 		if(__status_mc == null)
 		{
-			trace("__width: " + __width);
-			trace("__height: " + __height);
-			trace("__status_mc._width: " + __status_mc._width);
+			//DebugWindow("__width: " + __width);
+			//DebugWindow("__height: " + __height);
+			//DebugWindow("__status_mc._width: " + __status_mc._width);
 			__status_mc = attachMovie("CalendarLoading", "__status_mc", getNextNonChildDepth());
 			// KLUDGE: hardcoded values
 			__status_mc._x = Math.round((175 / 2) - (__status_mc._width / 2));
@@ -807,6 +808,36 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 			__status_mc.removeMovieClip();
 			delete __status_mc;
 		}
+	}
+	
+	// override
+	public function setupChild(p_child:IUIComponent):Void
+	{
+		//CalendarDay(p_child).addEventListener(ShurikenEvent.RELEASE, __dayClickedDelegate);
+		//CalendarDay(p_child).buttonRelease = __dayClickedDelegate;
+		//CalendarDay(p_child).setReleaseCallback(this, onListItemClicked);
+	}
+	
+	// override; ButtonList is using base dataProvider; we aren't
+	private function onListItemClicked(p_event:ShurikenEvent):Void
+	{
+		//DebugWindow.debugHeader();
+		//DebugWindow.debug("ButtonList::onListItemClicked");
+		var index:Number = getChildIndex(IUIComponent(p_event.target));
+		//var item:Object = __dataProvider.getItemAt(index);
+		var o:Object = IUIComponent(p_event.target).getData();
+		var item:Object = __date_mdarray.getCell(o.r, o.c);
+		
+		var event:ShurikenEvent = new ShurikenEvent(ShurikenEvent.ITEM_CLICKED, this);
+		event.child = IUIComponent(p_event.target);
+		event.item = item;
+		event.index = index;
+		
+		//DebugWindow.debug("child: " + event.child);
+		//DebugWindow.debug("item: " + event.item);
+		//DebugWindow.debug("index: " + event.index);
+		
+		dispatchEvent(event);
 	}
 	
 	

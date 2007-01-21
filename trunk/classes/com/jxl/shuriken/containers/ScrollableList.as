@@ -7,7 +7,7 @@ import com.jxl.shuriken.core.ICollection;
 import com.jxl.shuriken.core.IList;
 import com.jxl.shuriken.core.Container;
 import com.jxl.shuriken.containers.List;
-import com.jxl.shuriken.containers.ButtonBar;
+import com.jxl.shuriken.containers.ButtonList;
 import com.jxl.shuriken.controls.SimpleButton;
 import com.jxl.shuriken.managers.TweenManager;
 import com.jxl.shuriken.utils.DrawUtils;
@@ -228,7 +228,7 @@ class com.jxl.shuriken.containers.ScrollableList extends Container implements IC
 	private var __selectedIndex:Number 						= -1
 	private var __selectedIndexDirty 						= false;
 	
-	private var __mcList:ButtonBar;
+	private var __mcList:ButtonList;
 	private var __mcScrollPrevious:SimpleButton;
 	private var __mcScrollNext:SimpleButton;
 	private var __mcListMask:MovieClip;
@@ -285,7 +285,7 @@ class com.jxl.shuriken.containers.ScrollableList extends Container implements IC
 	// Exposed for a child class
 	private function setupList():Void
 	{
-		__mcList = ButtonBar(attachMovie(ButtonBar.SYMBOL_NAME, "__mcList", getNextHighestDepth()));
+		__mcList = ButtonList(attachMovie(ButtonList.SYMBOL_NAME, "__mcList", getNextHighestDepth()));
 
 		__mcList.addEventListener(ShurikenEvent.SETUP_CHILD, Delegate.create(this, onSetupChild));
 		//__mcList.setupChild = Delegate.create(this, onSetupChild);
@@ -318,8 +318,8 @@ class com.jxl.shuriken.containers.ScrollableList extends Container implements IC
 	
 	private function onItemClicked(p_event:ShurikenEvent):Void
 	{
-		DebugWindow.debugHeader();
-		DebugWindow.debug("ScrollableList::onItemClicked");
+		//DebugWindow.debugHeader();
+		//DebugWindow.debug("ScrollableList::onItemClicked");
 		var event:ShurikenEvent = new ShurikenEvent(ShurikenEvent.ITEM_CLICKED, this);
 		event.child = p_event.child;
 		event.item = p_event.item;

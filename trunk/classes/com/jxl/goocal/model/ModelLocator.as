@@ -22,4 +22,5 @@ class com.jxl.goocal.model.ModelLocator
 	public var username:String;
 	public var entries_array:Array;
 	public var currentEntry:EntryVO;
+	public var currentDate:Date;
 }

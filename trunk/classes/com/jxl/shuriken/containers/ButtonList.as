@@ -7,9 +7,9 @@ import com.jxl.shuriken.core.UIComponent;
 import com.jxl.shuriken.events.ShurikenEvent;
 import com.jxl.shuriken.core.IUIComponent;
 
-class com.jxl.shuriken.containers.ButtonBar extends List
+class com.jxl.shuriken.containers.ButtonList extends List
 {
-	public static var SYMBOL_NAME:String = "com.jxl.shuriken.containers.ButtonBar";
+	public static var SYMBOL_NAME:String = "com.jxl.shuriken.containers.ButtonList";
 	
 	public function get toggle():Boolean { return __toggle; }
 	
@@ -102,9 +102,11 @@ class com.jxl.shuriken.containers.ButtonBar extends List
 	// Called by draw
 	private function setupChild(p_child:IUIComponent):Void
 	{
+		//DebugWindow.debugHeader();
+		//DebugWindow.debug("ButtonList::setupChild");
 		var simpleButton:SimpleButton = SimpleButton(p_child);
 		simpleButton.addEventListener(ShurikenEvent.RELEASE, Delegate.create(this, onListItemClicked));
-		simpleButton.addEventListener(ShurikenEvent.ROLL_OVER, Delegate.create(this, onListItemRollOver));
+		//simpleButton.addEventListener(ShurikenEvent.ROLL_OVER, Delegate.create(this, onListItemRollOver));
 		if(p_child instanceof Button == true)
 		{
 			var button:Button = Button(p_child);
@@ -134,6 +136,8 @@ class com.jxl.shuriken.containers.ButtonBar extends List
 	
 	private function setSelectedIndex(p_index:Number, noEvent:Boolean):Void
 	{
+		//DebugWindow.debugHeader();
+		//DebugWindow.debug("ButtonList::setSelectedIndex");
 		__selectedIndex = p_index;
 		
 		var lastSelectedChild:Button = __lastSelected;
@@ -164,6 +168,8 @@ class com.jxl.shuriken.containers.ButtonBar extends List
 	
 	private function setSelectedItem(p_item:Object):Void
 	{
+		//DebugWindow.debugHeader();
+		//DebugWindow.debug("ButtonList::setSelectedItem");
 		var i:Number = __dataProvider.getLength();
 		while(i--)
 		{
@@ -178,6 +184,8 @@ class com.jxl.shuriken.containers.ButtonBar extends List
 	
 	private function setSelectedChild(p_child:Button):Void
 	{
+		//DebugWindow.debugHeader();
+		//DebugWindow.debug("ButtonList::setSelectedChild");
 		var index:Number = getChildIndex(p_child);
 		if(index != null && isNaN(index) == false) setSelectedIndex(index);
 	}
@@ -185,6 +193,8 @@ class com.jxl.shuriken.containers.ButtonBar extends List
 	// Event listeners
 	private function onListItemClicked(p_event:ShurikenEvent):Void
 	{
+		//DebugWindow.debugHeader();
+		//DebugWindow.debug("ButtonList::onListItemClicked");
 		var index:Number = getChildIndex(IUIComponent(p_event.target));
 		var item:Object = __dataProvider.getItemAt(index);
 		setSelectedIndex(index);	
@@ -198,6 +208,8 @@ class com.jxl.shuriken.containers.ButtonBar extends List
 	
 	private function onListItemRollOver(p_event:ShurikenEvent):Void
 	{
+		//DebugWindow.debugHeader();
+		//DebugWindow.debug("ButtonList::onListItemRollOver");
 		var index:Number = getChildIndex(IUIComponent(p_event.target));
 		var item:Object = __dataProvider.getItemAt(index);
 		
@@ -210,6 +222,8 @@ class com.jxl.shuriken.containers.ButtonBar extends List
 	
 	private function onListItemSelectionChanged(p_event:ShurikenEvent):Void
 	{
+		//DebugWindow.debugHeader();
+		//DebugWindow.debug("ButtonList::onListItemSelectionChanged");
 		setSelectedIndex(getChildIndex(IUIComponent(p_event.target)), true);
 	}
 	

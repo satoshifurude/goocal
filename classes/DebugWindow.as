@@ -21,4 +21,14 @@
 	{
 		debug("----------------");
 	}
+	
+	public static function debugProps(o):Void
+	{
+		var s:String = "";
+		for(var p:String in o)
+		{
+			s += p + ": " + o[p] + "\n";
+		}
+		debug(s);
+	}
 }

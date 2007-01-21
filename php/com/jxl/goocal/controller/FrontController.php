@@ -166,7 +166,7 @@
 													   'GET',
 													   $headers);
 													   
-			$result = GDataFactory::getFullEntry($feed);
+			$result = GDataFactory::getFullEntry($entryFeed);
 			return $result;
 		}
 	}

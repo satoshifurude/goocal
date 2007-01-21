@@ -105,25 +105,13 @@
 			$entry .= "&title=" . $xml->title;
 			$entry .= "&description=" . $xml->content;
 			
-			foreach($xml->children('http://schemas.google.com/g/2005') as $when)
+			foreach($xml->children('http://schemas.google.com/g/2005') as $where)
 			{
-				foreach($when->attributes() as $a => $b)
+				foreach($where->attributes() as $a => $b)
 				{
-					if($a == "startTime")
+					if($a == "valueString")
 					{
-						$entry .= "&startTime=" . $b;
-					}
-					else if($a == "endTime")
-					{
-						$entry .= "&endTime=" . $b;
-					}
-				}
-				
-				foreach($when->children('http://schemas.google.com/g/2005') as $reminder)
-				{
-					foreach($reminder->attributes() as $a => $b)
-					{
-						$entry .= "&minutes=" . $b;
+						$entry .= "&where=" . $b;
 					}
 				}
 			}

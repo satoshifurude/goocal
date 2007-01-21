@@ -133,8 +133,8 @@ class com.jxl.goocal.views.DayView extends UIComponent
 	
 	private function onEventItemClicked(p_event:ShurikenEvent):Void
 	{
-		DebugWindow.debugHeader();
-		DebugWindow.debug("DayView::onEventItemClicked");
+		//DebugWindow.debugHeader();
+		//DebugWindow.debug("DayView::onEventItemClicked");
 		var event:ShurikenEvent = new ShurikenEvent(ShurikenEvent.ITEM_CLICKED, this);
 		event.selected = p_event.selected;
 		event.item = p_event.item;

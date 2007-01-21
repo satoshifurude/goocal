@@ -7,32 +7,42 @@ import mx.rpc.Responder;
 
 import com.jxl.shuriken.utils.DateUtils;
 
-class class com.jxl.goocal.delegates.GetEntryDelegate
+import com.jxl.goocal.vo.EntryVO;
+import com.jxl.goocal.vo.WhenVO;
+import com.jxl.goocal.factories.CalendarFactory;
+
+class com.jxl.goocal.business.GetEntryDelegate
 {
 	private var responder:Responder;
 	private var lv:LoadVars;
+	private var entryVO:EntryVO;
 	
 	public function GetEntryDelegate(p_responder:Responder)
 	{
 		responder = p_responder;
 	}
 	
-	public function getEntry(p_auth:String, p_entryID:String):Void
+	public function getEntry(p_auth:String, p_entryVO:EntryVO):Void
 	{
+		entryVO = p_entryVO;
+		
 		lv = new LoadVars();
 		lv.onLoad = Delegate.create(this, onGetEntry);
 		lv.cmd = "get_entry";
 		lv.auth = p_auth;
-		lv.entryURL = p_entryID;
+		lv.entryURL = entryVO.id;
 		var theURL:String = "http://www.jessewarden.com/goocal/php/com/jxl/goocal/controller/Application.php";
 		lv.sendAndLoad(theURL, lv, "POST");
 	}
 	
 	private function onGetEntry(p_success:Boolean):Void
 	{
-		if(p_loaded == true)
+		//DebugWindow.debugHeader();
+		//DebugWindow.debug("GetEntryDelegate::onGetEntry, p_success: " + p_success);
+		
+		if(p_success == true)
 		{
-			var entryVO:EntryVO = new EntryVO();
+			var newEntryVO:EntryVO = new EntryVO();
 			/*
 			id
 			title
@@ -42,18 +52,23 @@ class class com.jxl.goocal.delegates.GetEntryDelegate
 			minutes
 			*/
 			
-			entryVO.id = lv.id;
-			entryVO.title = lv.title;
-			entryVO.description = lv.description;
-			entryVO.whenVO = new WhenVO();
-			entryVO.whenVO.startTime = CalendarFactory.parseDateTime(lv.startTime);
-			entryVO.whenVO.endTime = CalendarFactory.parseDateTime(lv.endTime);
-			var reminderMins:Number = parseInt(lv.minutes);
-			var theEntryReminder:Date = DateUtils.clone(entryVO.whenVO.endTime);
-			theEntryReminder.setMinutes(entryVO.whenVO.endTime.getMinutes() - reminderMins);
-			entryVO.whenVO.reminder = theEntryReminder;
+			//DebugWindow.debugProps(lv);
 			
-			responder.onResult(new ResultEvent(entryVO));
+			newEntryVO.id = lv.id;
+			newEntryVO.title = lv.title;
+			newEntryVO.description = lv.description;
+			newEntryVO.where = lv.where;
+			newEntryVO.whenVO = new WhenVO();
+			//newEntryVO.whenVO.startTime = CalendarFactory.parseDateTime(lv.startTime);
+			//newEntryVO.whenVO.endTime = CalendarFactory.parseDateTime(lv.endTime);
+			newEntryVO.whenVO.startTime = entryVO.whenVO.startTime;
+			newEntryVO.whenVO.endTime = entryVO.whenVO.endTime;
+			var reminderMins:Number = parseInt(lv.minutes);
+			var theEntryReminder:Date = DateUtils.clone(newEntryVO.whenVO.endTime);
+			theEntryReminder.setMinutes(newEntryVO.whenVO.endTime.getMinutes() - reminderMins);
+			newEntryVO.whenVO.reminder = theEntryReminder;
+			
+			responder.onResult(new ResultEvent(newEntryVO));
 		}
 		else
 		{

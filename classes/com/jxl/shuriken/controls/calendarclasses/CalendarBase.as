@@ -30,6 +30,7 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 	private var __daySelectionChanged:Function;
 	private var __lastDaySelected:CalendarDay;
 	private var __enabledDirty:Boolean				= false;
+	private var __dayClickedDelegate:Function;
 	
 	private var __loop_mc:MovieClip;
 	private var __status_mc:MovieClip;
@@ -90,10 +91,13 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 		super.init();
 		
 		if(__currentDate == null) 		__currentDate = new Date();
-		//if(__childClass == null) 		__childClass = CalendarDay;
 		__autoSizeToChildren 			= true;
 		__daySelectionChanged			= Delegate.create(this, onDaySelectionChanged);
 		//__dayClickedDelegate			= Delegate.create(this, onListItemClicked);
+		__dayClickedDelegate			= function():Void
+											{
+												this._parent.onListItemClicked(new ShurikenEvent(ShurikenEvent.SELECTION_CHANGED, this));;
+											}
 	}
 	
 	private function commitProperties():Void
@@ -580,9 +584,10 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 		}
 		else
 		{
-			CalendarDay(p_child).removeEventListener(ShurikenEvent.SELECTION_CHANGED, __daySelectionChanged);
-			CalendarDay(p_child).selected = false;
-			CalendarDay(p_child).addEventListener(ShurikenEvent.SELECTION_CHANGED, __daySelectionChanged);
+			//CalendarDay(p_child).removeEventListener(ShurikenEvent.SELECTION_CHANGED, __daySelectionChanged);
+			//CalendarDay(p_child).selected = false;
+			//CalendarDay(p_child).addEventListener(ShurikenEvent.SELECTION_CHANGED, __daySelectionChanged);
+			CalendarDay(p_child).setSelectedNoEvent(false);
 		}
 		
 		var obj:Object = p_child.getData();
@@ -689,9 +694,10 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 		
 		if(p_tar.selected == false)
 		{
-			p_tar.removeEventListener(ShurikenEvent.SELECTION_CHANGED, __daySelectionChanged);
-			p_tar.selected = true;
-			p_tar.addEventListener(ShurikenEvent.SELECTION_CHANGED, __daySelectionChanged);
+			//p_tar.removeEventListener(ShurikenEvent.SELECTION_CHANGED, __daySelectionChanged);
+			//p_tar.selected = true;
+			//p_tar.addEventListener(ShurikenEvent.SELECTION_CHANGED, __daySelectionChanged);
+			p_tar.setSelectedNoEvent(true);
 		}
 	}
 	
@@ -699,9 +705,10 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 	{
 		if(__lastDaySelected != undefined)
 		{
-			__lastDaySelected.removeEventListener(ShurikenEvent.SELECTION_CHANGED, __daySelectionChanged);
-			__lastDaySelected.selected = false;
-			__lastDaySelected.addEventListener(ShurikenEvent.SELECTION_CHANGED, __daySelectionChanged);
+			//__lastDaySelected.removeEventListener(ShurikenEvent.SELECTION_CHANGED, __daySelectionChanged);
+			//__lastDaySelected.selected = false;
+			//__lastDaySelected.addEventListener(ShurikenEvent.SELECTION_CHANGED, __daySelectionChanged);
+			__lastDaySelected.setSelectedNoEvent(false);
 			var bgColor = __color_mdarray.getCell(__lastDaySelected.data.r, __lastDaySelected.data.c);
 			__lastDaySelected.background = true;
 			__lastDaySelected.backgroundColor = bgColor;
@@ -815,7 +822,7 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 	{
 		//CalendarDay(p_child).addEventListener(ShurikenEvent.RELEASE, __dayClickedDelegate);
 		//CalendarDay(p_child).buttonRelease = __dayClickedDelegate;
-		//CalendarDay(p_child).setReleaseCallback(this, onListItemClicked);
+		CalendarDay(p_child).onRelease = __dayClickedDelegate;
 	}
 	
 	// override; ButtonList is using base dataProvider; we aren't

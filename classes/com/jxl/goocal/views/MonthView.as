@@ -23,6 +23,20 @@ class com.jxl.goocal.views.MonthView extends UIComponent
 	
 	public function get selectedDate():Date { return __selectedDate; }
 	
+	// override
+	public function set visible(p_val:Boolean):Void
+	{
+		_visible = p_val;
+		if(p_val == true)
+		{
+			onNonIdle();
+		}
+		else
+		{
+			onIdle();
+		}
+	}
+	
 	public function MonthView()
 	{
 	}
@@ -36,7 +50,7 @@ class com.jxl.goocal.views.MonthView extends UIComponent
 			__cal = CalendarBase(createComponent(CalendarBase, "__cal"));
 			__cal.addEventListener(ShurikenEvent.ITEM_CLICKED, Delegate.create(this, onDayClicked));
 		}
-		/*
+		
 		if(__createNew_link == null)
 		{
 			__createNew_link = GCLinkButton(createComponent(GCLinkButton, "__createNew_link"));
@@ -62,7 +76,7 @@ class com.jxl.goocal.views.MonthView extends UIComponent
 			__changeSettings_link = GCLinkButton(createComponent(GCLinkButton, "__changeSettings_link"));
 			__changeSettings_link.label = "Change Settings";
 		}
-		*/
+		
 	}
 	
 	private function size():Void
@@ -70,10 +84,13 @@ class com.jxl.goocal.views.MonthView extends UIComponent
 		super.size();
 		
 		__cal.move(0, 0);
-		__createNew_link.move(4, __cal.y + __cal.height + 2);
+		__createNew_link.move(2, __cal.y + __cal.height + 2);
 		__viewWeek_link.move(__createNew_link.x, __createNew_link.y + __createNew_link.height + 2);
+		__viewWeek_link.setSize(62, __viewWeek_link.height);
 		__or_txt._x = __viewWeek_link.x + __viewWeek_link.width;
 		__or_txt._y = __viewWeek_link.y;
+		__or_txt._width = 16;
+		
 		__changeSettings_link.move(__or_txt._x + __or_txt._width, __or_txt._y);
 	}
 	
@@ -86,6 +103,27 @@ class com.jxl.goocal.views.MonthView extends UIComponent
 		var o = p_event.item;
 		__selectedDate = o;
 		dispatchEvent(new Event(EVENT_DATE_SELECTED, this));
+	}
+	
+	private function onIdle():Void
+	{
+		__createNew_link.removeMovieClip();
+		delete __createNew_link;
+		
+		__viewWeek_link.removeMovieClip();
+		delete __viewWeek_link;
+		
+		__or_txt.removeTextField();
+		delete __or_txt;
+		
+		__changeSettings_link.removeMovieClip();
+		delete __changeSettings_link;
+	}
+	
+	private function onNonIdle():Void
+	{
+		createChildren();
+		invalidateSize();
 	}
 
 }

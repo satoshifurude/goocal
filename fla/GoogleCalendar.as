@@ -80,7 +80,7 @@ class GoogleCalendar extends UIComponent
 		{
 			__login_mc = LoginForm(attachMovie(LoginForm.SYMBOL_NAME, "__login_mc", getNextHighestDepth()));
 			__login_mc.addEventListener(LoginForm.EVENT_SUBMIT, Delegate.create(this, onLogin));
-			__login_mc.move(0, 40);
+			__login_mc.move(0, 56);
 		}
 	}
 	

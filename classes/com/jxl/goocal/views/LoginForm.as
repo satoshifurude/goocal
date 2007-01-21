@@ -75,12 +75,15 @@ class com.jxl.goocal.views.LoginForm extends UIComponent
 		__username_lbl.text = "Username";
 		__password_lbl.text = "Password";
 		__password_ti.password = true;
+		
 		if(__rememberList == null) __rememberList = Delegate.create(this, onRemember);
 		__remember_ch.addEventListener(ShurikenEvent.RELEASE, __rememberList);
+		__remember_ch.label = "Remember Me";
+		__remember_ch.setSize(120, __remember_ch.height);
+		
 		if(__submitList == null) __submitList = Delegate.create(this, onSubmit);
 		__submit_pb.addEventListener(ShurikenEvent.RELEASE, __submitList);
 		__submit_pb.label = "Login";
-		/*
 		if(System.capabilities.isDebugger == false)
 		{
 			if(__initialSOList == null)
@@ -95,7 +98,6 @@ class com.jxl.goocal.views.LoginForm extends UIComponent
 			var readSO:SharedObject = SharedObject.getLocal(soName);
 			onInitialSOReady(readSO);
 		}
-		*/
 		
 		//username = "";
 		//password = "";

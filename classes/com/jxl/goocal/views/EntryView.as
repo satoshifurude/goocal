@@ -133,11 +133,11 @@ class com.jxl.goocal.views.EntryView extends UIComponent
 		__title_lbl.setSize(__width, 20);
 		
 		__editDetails_link.move(0, __height - __editDetails_link.height);
-		__editDetails_link.setSize(55, __editDetails_link.height);
+		__editDetails_link.setSize(57, __editDetails_link.height);
 		__or_txt.move(__editDetails_link.x + __editDetails_link.width + 2, __editDetails_link.y);
 		__or_txt.setSize(14, __or_txt.height);
 		__month_link.move(__or_txt.x + __or_txt.width, __or_txt.y);
-		__month_link.setSize(32, __month_link.height);
+		__month_link.setSize(34, __month_link.height);
 		__view_txt.move(__month_link.x + __month_link.width, __month_link.y);
 		__view_txt.setSize(30, __view_txt.height);
 		

@@ -13,6 +13,7 @@ import com.jxl.goocal.views.LoginForm;
 import com.jxl.goocal.views.CalendarList;
 import com.jxl.goocal.views.DayView;
 import com.jxl.goocal.views.MonthView;
+import com.jxl.goocal.views.EntryView;
 
 import com.jxl.goocal.controller.CommandRegistry;
 import com.jxl.goocal.events.LoginEvent;
@@ -22,6 +23,7 @@ import com.jxl.goocal.callbacks.LoginCallback;
 import com.jxl.goocal.events.GetCalendarsEvent;
 import com.jxl.goocal.events.SelectCalendarEvent;
 import com.jxl.goocal.events.GetCalendarEventsEvent;
+import com.jxl.goocal.events.GetEntryEvent;
 
 import com.jxl.goocal.callbacks.SetCurrentDateCallback;
 import com.jxl.goocal.events.SetCurrentDateEvent;
@@ -49,6 +51,7 @@ class GoogleCalendar extends UIComponent
 	private var __calendarList:CalendarList;
 	private var __dayView:DayView;
 	private var __monthView:MonthView;
+	private var __entryView:EntryView;
 	
 	public function GoogleCalendar()
 	{
@@ -245,28 +248,47 @@ class GoogleCalendar extends UIComponent
 	
 	private function onDayEventClicked(p_event:ShurikenEvent):Void
 	{
+		//DebugWindow.debugHeader();
+		//DebugWindow.debug("GoogleCalendar::onDayEventClicked");
+		showActivity("Getting Event Details...");
+		
+		if(__dayView != null)
+		{
+			__dayView.removeMovieClip();
+			delete __dayView;
+		}
+		
 		// TODO: get the full entry, and show it in the EntryView
 		var entryVO:EntryVO = EntryVO(p_event.item);
+		//DebugWindow.debug("entryVO.id: " + entryVO.id);
 		
-		var event:GetCalendarEventsEvent = new GetCalendarEventsEvent(GetCalendarEventsEvent.GET_EVENTS,
+		var event:GetEntryEvent = new GetEntryEvent(GetEntryEvent.GET_ENTRY,
 																	  this,
-																	  showTodayView);
-		event.calendarName = ModelLocator.getInstance().selectedCalendar;
-		var today:Date = new Date();
-		event.startDate = today;
-		event.endDate = today;
+																	  showEntryView);
+		event.entryVO = entryVO;
 		CommandRegistry.getInstance().dispatchEvent(event);
 	}
 	
 	private function showEntryView():Void
 	{
-		if(__loggingIn_lbl != null)
+		hideActivity(true);
+		
+		//if(__monthView != null) __monthView.visible = false;
+		if(__monthView != null)
 		{
-		   __loggingIn_lbl.removeMovieClip();
-			delete __loggingIn_lbl;
+			__monthView.removeMovieClip();
+			delete __monthView;
 		}
 		
-		if(__monthView != null) __monthView.visible = false;
+		if(__entryView == null)
+		{
+			__entryView = EntryView(createComponent(EntryView, "__entryView"));
+			__entryView.move(0, 40);
+			__entryView.setSize(__width, __height - 40);
+			__entryView.addEventListener(EntryView.EVENT_BACK_TO_MONTH, Delegate.create(this, showMonthView));
+		}
+		
+		__entryView.entry = ModelLocator.getInstance().currentEntry;
 	}
 	
 	private function showMonthView():Void
@@ -283,16 +305,22 @@ class GoogleCalendar extends UIComponent
 			delete __dayView;
 		}
 		
+		if(__entryView != null)
+		{
+			__entryView.removeMovieClip();
+			delete __entryView;
+		}
+		
 		if(__monthView == null)
 		{
 			__monthView = MonthView(createComponent(MonthView, "__monthView"));
 			__monthView.addEventListener(MonthView.EVENT_DATE_SELECTED, Delegate.create(this, onDateClicked));
 			__monthView.move(0, 40);
 		}
-		else
-		{
-			__monthView.visible = true;
-		}
+		//else
+		//{
+			//__monthView.visible = true;
+		//}
 	}
 	
 	private function showActivity(p_msg:String):Void
@@ -345,7 +373,12 @@ class GoogleCalendar extends UIComponent
 																onSetCurrentDate);
 		event.currentDate = __monthView.selectedDate;
 		
-		if(__monthView != null) __monthView.visible = false;
+		//if(__monthView != null) __monthView.visible = false;
+		if(__monthView != null)
+		{
+			__monthView.removeMovieClip();
+			delete __monthView;
+		}
 		
 		CommandRegistry.getInstance().dispatchEvent(event);
 	}

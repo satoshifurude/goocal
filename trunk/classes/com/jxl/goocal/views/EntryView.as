@@ -1,8 +1,11 @@
-﻿
+﻿import mx.utils.Delegate;
+
 import com.jxl.shuriken.core.UIComponent;
 import com.jxl.shuriken.core.UITextField;
 import com.jxl.shuriken.controls.TextArea;
 import com.jxl.shuriken.utils.DrawUtils;
+import com.jxl.shuriken.events.Event;
+import com.jxl.shuriken.events.ShurikenEvent;
 
 import com.jxl.goocal.views.GCHeading;
 import com.jxl.goocal.views.GCTimeHeading;
@@ -83,6 +86,7 @@ class com.jxl.goocal.views.EntryView extends UIComponent
 		{
 			__month_link = GCLinkButton(createComponent(GCLinkButton, "__month_link"));
 			__month_link.label = "month";
+			__month_link.addEventListener(ShurikenEvent.RELEASE, Delegate.create(this, onMonthClick));
 		}
 		
 		if(__view_txt == null)
@@ -105,10 +109,18 @@ class com.jxl.goocal.views.EntryView extends UIComponent
 			__time_lbl.text = __entry.toHourRangeString();
 			
 			var descStr:String = "<font size='11' face='Verdana, Arial, Helvetica, sans-serif'>";
-			descStr += "<b>Where</b><br />";
-			descStr += __entry.where + "<br /><br />";
-			descStr += "<b>Description</b><br />";
-			descStr += __entry.description + "<br /></font>";
+			if(__entry.where != null && __entry.where != "")
+			{
+				descStr += "<b>Where</b><br />";
+				descStr += __entry.where + "<br /><br />";
+			}
+			if(__entry.description != null && __entry.description != "")
+			{
+				descStr += "<b>Description</b><br />";
+				descStr += __entry.description + "<br />";
+			}
+			
+			descStr += "</font>";
 			__description_ta.htmlText = descStr;
 		}
 	}
@@ -147,6 +159,9 @@ class com.jxl.goocal.views.EntryView extends UIComponent
 		endFill();
 	}
 	
-	
+	private function onMonthClick(p_event:ShurikenEvent):Void
+	{
+		dispatchEvent(new Event(EVENT_BACK_TO_MONTH, this));
+	}
 	
 }

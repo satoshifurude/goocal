@@ -43,7 +43,7 @@
 				$params->auth				= $HTTP_POST_VARS['auth'];
 				$params->entryURL			= $HTTP_POST_VARS['entryURL'];
 				$entry = $fc->runCommand(FrontController::COMMAND_GET_ENTRY, $params);
-				echo(entry);
+				echo($entry);
 				return;
 			
 			default:

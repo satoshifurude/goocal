@@ -61,23 +61,23 @@ class com.jxl.shuriken.controls.TextArea extends UITextField
 	{
 		super.size();
 		
-		var biggerW:Number = Math.max(__thumb_mc._width, __track_mc._width);
-		
-		__track_mc._x = __width - __track_mc._width;
-		__track_mc._y = 0;
-		__track_mc._height = __height;
-		
-		__upArrow_pb.move(0, 0);
-		__upArrow_pb.setSize(__width - biggerW - 1, 4);
-		
-		__downArrow_pb.move(0, __height - 4);
-		__downArrow_pb.setSize(__upArrow_pb.width, 4);
-		
-		__txtLabel.move(0, __upArrow_pb.y + __upArrow_pb.height);
-		__txtLabel.setSize(__width - biggerW, __height - __upArrow_pb.height - __downArrow_pb.height);
-		
 		if(__txtLabel.maxscroll > 1)
 		{
+			__track_mc._x = __width - __track_mc._width;
+			__track_mc._y = 0;
+			__track_mc._height = __height;
+		
+			var biggerW:Number = Math.max(__thumb_mc._width, __track_mc._width);
+			
+			__upArrow_pb.move(0, 0);
+			__upArrow_pb.setSize(__width - biggerW - 1, 4);
+			
+			__downArrow_pb.move(0, __height - 4);
+			__downArrow_pb.setSize(__upArrow_pb.width, 4);
+			
+			__txtLabel.move(0, __upArrow_pb.y + __upArrow_pb.height);
+			__txtLabel.setSize(__width - biggerW, __height - __upArrow_pb.height - __downArrow_pb.height);
+			
 			var thumbHPer:Number = __txtLabel.scroll / __txtLabel.maxscroll;
 			// TODO: it'd be nice if this scaled so the scrollbar would have more variation in height
 			// currently it's a cut and dry division.  If there was some sort of exponent
@@ -89,26 +89,37 @@ class com.jxl.shuriken.controls.TextArea extends UITextField
 			if(__txtLabel.scroll == 1)
 			{
 				locV = 0;
+				__upArrow_pb._visible = false;
+				__downArrow_pb._visible = true;
 			}
 			else if(__txtLabel.scroll == __txtLabel.maxscroll)
 			{
 				locV = __height - thumbH;
+				__upArrow_pb._visible = true;
+				__downArrow_pb._visible = false;
 			}
 			else
 			{
 				// KLUDGE: My name is Jesse Warden, and I cannot write scroll algorithms to save my life....
 				// Please fix if you can.
 				locV = Math.max(2, (__height * thumbHPer) - thumbH);
+				__upArrow_pb._visible = true;
+				__downArrow_pb._visible = true;
 			}
 			
 			__thumb_mc._x = __width - __thumb_mc._width;
 			__thumb_mc._y = locV;
 			__thumb_mc._height = thumbH;
 			__thumb_mc._visible = true;
+			__track_mc._visible = true;
 		}
 		else
 		{
+			__track_mc._visible = false;
 			__thumb_mc._visible = false;
+			__upArrow_pb._visible = false;
+			__downArrow_pb._visible = false;
+			
 		}
 		
 		drawButtons();

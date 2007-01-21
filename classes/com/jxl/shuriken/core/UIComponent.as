@@ -2,26 +2,18 @@
 import com.jxl.shuriken.events.Event;
 import com.jxl.shuriken.events.ShurikenEvent;
 import com.jxl.shuriken.core.IUIComponent;
-//import com.jxl.shuriken.managers.MovieClipBuilder;
-//import com.jxl.shuriken.vo.MovieClipBuilderTicketVO;
+import com.jxl.shuriken.events.Callback;
 
 class com.jxl.shuriken.core.UIComponent extends MovieClip implements IUIComponent
 {
 	
 	public static var SYMBOL_NAME:String = "com.jxl.shuriken.core.UIComponent";
-	public static var SYMBOL_OWNER:Object = com.jxl.shuriken.core.UIComponent;
-	
-	public static var EVENT_SIZE:String = "com.jxl.shuriken.core.UIComponent.size";
 	
 	// Abstract variable; set it to whatever you want.
 	public var data:Object;
 	
-	// overwritten by mixin (EventDispatcher)
-	public function addEventListener(p_type:String, p_list:Object):Void{}
-	public function dispatchEvent(p_event:Event):Void{}
-	public function removeEventListener(p_type:String, p_list:Object):Void{}
-	
 	private var __calledOnLoad:Boolean;
+	private var __sizeCallback:Callback;
 	
 	public function get width():Number
 	{
@@ -110,22 +102,6 @@ class com.jxl.shuriken.core.UIComponent extends MovieClip implements IUIComponen
 	{
 		invalidate();
 	}
-	
-	/*
-	public function contains(pX:Number, pY:Number):Boolean{
-		var bReturn:Boolean = false
-		
-		pX = Math.round(pX)
-		pY = Math.round(pY)
-		
-		if (((pX >= x) && (pX  <=  x + width)) && ( (pY >= y) && (pY <= y + height))){
-			bReturn = true
-		}
-			
-		return bReturn		
-	}
-	*/
-	
 	
 	public function invalidateProperties():Void
 	{
@@ -221,7 +197,7 @@ class com.jxl.shuriken.core.UIComponent extends MovieClip implements IUIComponen
 	
 	// Abstract
 	// check your dirty flags, and call redraw / resize methods
-	public function commitProperties():Void
+	private function commitProperties():Void
 	{
 	}
 	
@@ -247,7 +223,13 @@ class com.jxl.shuriken.core.UIComponent extends MovieClip implements IUIComponen
 		*/
 		//trace("-----------------");
 		//trace("UIComponent::size");
-		dispatchEvent(new ShurikenEvent(ShurikenEvent.SIZE, this));
+		//dispatchEvent();
+		__sizeCallback.dispatch(new ShurikenEvent(ShurikenEvent.SIZE, this));
+	}
+	
+	public function setSizeCallback(p_scope:Object, p_callback:Function):Void
+	{
+		__sizeCallback = new Callback(p_scope, p_callback);
 	}
 	
 	// Abstract
@@ -314,24 +296,7 @@ class com.jxl.shuriken.core.UIComponent extends MovieClip implements IUIComponen
 	public function getData():Object { return data; }
 	public function setData(p_val:Object):Void { data = p_val; }
 	
-	// defferred instantantiationasdfljakljksjdfkjalkjsdf
-	
-	//public function attachMovieDeferred(p_parent:MovieClip, p_linkage:String, p_name:String, p_depth:Number, p_initObj:Object):MovieClipBuilderTicketVO
-	//{
-		//var mcb:MovieClipBuilder = MovieClipBuilder.getInstance();
-		//var mcbtVO:MovieClipBuilderTicketVO = mcb.attachMovieDeferred(p_parent, p_linkage, p_name, p_depth, p_initObj);
-		//return mcbtVO;
-	//}
-	
-	//private static function frameworkInit():Void
-	//{
-		//var d:Number = _root.getNextHighestDepth();
-		///var ref:MovieClip = _root.createEmptyMovieClip("Shuriken_Framework_do_not_remove", d);
-		//MovieClipBuilder.getInstance().init(ref);
-	//}
-	
-	
-	private static var __makeEventDispatcher = EventDispatcher.initialize(com.jxl.shuriken.core.UIComponent.prototype);
+	//private static var __makeEventDispatcher = EventDispatcher.initialize(com.jxl.shuriken.core.UIComponent.prototype);
 	//private static var __frameworkInit = frameworkInit();
 	
 	private var __isConstructing:Boolean;

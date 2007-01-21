@@ -478,23 +478,29 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 	private var __mcLabel:UITextField;
 	private var __mcIcon:Loader;
 	
+	//private var __callbackScope:Object;
+	//private var __releaseCallback:Function;
+	
 	//MOUSE EVENT HANDLERS/----------------------------------
 	
-	private function buttonRelease():Void {
+	public function buttonRelease():Void {
 		super.buttonRelease();
 		if (__toggle == true)
 		{
 			selected = !selected;
 		}
+		
+		//var e:ShurikenEvent = new ShurikenEvent(ShurikenEvent.RELEASE, this);
+		//__releaseCallback.call(__callbackScope, e);
 	}
 	
-	private function buttonRollOver():Void {
+	public function buttonRollOver():Void {
 		super.buttonRollOver();
 		setState(OVER_STATE);
 		invalidateDraw();
 	}
 	
-	private function buttonRollOut():Void {
+	public function buttonRollOut():Void {
 		super.buttonRollOut();
 		if (__selected) {
 			setState(SELECTED_STATE);
@@ -820,6 +826,14 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 		__lastState = __currentState;
 		__currentState = pState;
 	}
+	
+	/*
+	public function setReleaseCallback(p_scope:Object, p_callback:Function):Void
+	{
+		__callbackScope 		= p_scope;
+		__releaseCallback 		= p_callback;
+	}
+	*/
 	
 	public function toString():String
 	{

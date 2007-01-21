@@ -96,11 +96,11 @@ class com.jxl.shuriken.controls.SimpleButton extends UIComponent
 	
 	//These functions are used by subclasses to process mouse events
 	
-	private function buttonPress():Void{}
-	private function buttonRelease():Void{}
-	private function buttonReleaseOutside():Void{}
-	private function buttonRollOver():Void {}
-	private function buttonRollOut():Void {}
+	public function buttonPress():Void{}
+	public function buttonRelease():Void{}
+	public function buttonReleaseOutside():Void{}
+	public function buttonRollOver():Void {}
+	public function buttonRollOut():Void {}
 	
 	
 }

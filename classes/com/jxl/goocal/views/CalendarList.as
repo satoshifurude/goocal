@@ -4,7 +4,7 @@ import com.jxl.shuriken.core.IUIComponent;
 import com.jxl.shuriken.core.UIComponent;
 import com.jxl.shuriken.events.ShurikenEvent;
 import com.jxl.shuriken.containers.List;
-import com.jxl.shuriken.containers.ButtonBar;
+import com.jxl.shuriken.containers.ButtonList;
 import com.jxl.shuriken.controls.Label;
 import com.jxl.shuriken.core.ICollection;
 import com.jxl.goocal.views.GCLinkButton;
@@ -16,7 +16,7 @@ class com.jxl.goocal.views.CalendarList extends UIComponent
 	public static var SYMBOL_NAME:String = "com.jxl.goocal.views.CalendarList";
 	
 	private var __title_lbl:Label;
-	private var __calendars_list:ButtonBar;
+	private var __calendars_list:ButtonList;
 	private var __createNew_link:GCLinkButton;
 	
 	private var __calendars_collection:ICollection;
@@ -48,9 +48,11 @@ class com.jxl.goocal.views.CalendarList extends UIComponent
 			__title_lbl.bold = true;
 		}
 		
+		//DebugWindow.debug("__title_lbl: " + __title_lbl);
+		
 		if(__calendars_list == null)
 		{
-			__calendars_list = ButtonBar(createComponent(ButtonBar, "__calendars_list"));
+			__calendars_list = ButtonList(createComponent(ButtonList, "__calendars_list"));
 			__calendars_list.childClass				= GCLinkButton;
 			__calendars_list.childSetValueFunction 	= refreshCalendarItem;
 			__calendars_list.childSetValueScope		= this;
@@ -62,12 +64,16 @@ class com.jxl.goocal.views.CalendarList extends UIComponent
 			//__calendars_list.setupChild				= Delegate.create(this, onCalendarListChildSetup);
 		}
 		
+		//DebugWindow.debug("__calendars_list: " + __calendars_list);
+		
 		if(__createNew_link == null)
 		{
 			__createNew_link = GCLinkButton(createComponent(GCLinkButton, "__createNew_link"));
 			__createNew_link.label = "Create New...";
 			__createNew_link.bold = true;
 		}
+		
+		//DebugWindow.debug("__createNew_link: " + __createNew_link);
 	}
 	
 	private function commitProperties():Void

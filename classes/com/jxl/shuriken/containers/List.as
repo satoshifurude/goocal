@@ -141,8 +141,8 @@ class com.jxl.shuriken.containers.List extends Container implements ICollection,
 	
 	public function set dataProvider(p_val:ICollection):Void
 	{
-		DebugWindow.debugHeader();
-		DebugWindow.debug("List::dataProvider::setter, p_val: " + p_val);
+		//DebugWindow.debugHeader();
+		//DebugWindow.debug("List::dataProvider::setter, p_val: " + p_val);
 		__isBuilding = true;
 		if(__dataProvider != null)
 		{
@@ -339,15 +339,15 @@ class com.jxl.shuriken.containers.List extends Container implements ICollection,
 	
 	private function draw():Void
 	{
-		DebugWindow.debugHeader();
-		DebugWindow.debug("List::draw");
+		//DebugWindow.debugHeader();
+		//DebugWindow.debug("List::draw");
 		
 		removeAllChildren();
 		var len:Number = __dataProvider.getLength();
 		
-		DebugWindow.debug("__dataProvider: " + __dataProvider);
-		DebugWindow.debug("__dataProvider.getLength: " + __dataProvider.getLength);
-		DebugWindow.debug("len: " + len);
+		//DebugWindow.debug("__dataProvider: " + __dataProvider);
+		//DebugWindow.debug("__dataProvider.getLength: " + __dataProvider.getLength);
+		//DebugWindow.debug("len: " + len);
 		
 		if (len < 1 || len == undefined) return
 

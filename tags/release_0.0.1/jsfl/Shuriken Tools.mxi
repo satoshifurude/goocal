@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<macromedia-extension name="Shuriken Tools" version="1.0.0" type="suite" requires-restart="true">
+
+	<!-- Describe the author -->
+
+	<author name="Jesse R. Warden" />
+
+	<!-- List the required/compatible products -->
+
+	<products>
+		<product name="Flash" version="7" primary="true" />
+	</products>
+
+	<!-- Describe the extension -->
+
+	<description>
+		<![CDATA[Installs a series of commands to work with the Shuriken Component Framework.]]>
+	</description>
+
+	<!-- Describe where the extension shows in the UI of the product -->
+
+	<ui-access>
+		<![CDATA[------------------------------------<br><br>
+		
+				 Create all Shuriken Component MovieClips in your library:
+				 	Commands > Shuriken - Create Framework Library<br><br>
+					
+				 Create a Shuriken Component based MovieClip in your library:
+				 	Commands > Shuriken - Create Component<br><br>
+					
+				 Generate stub code for Shuriken Component properties:
+				 	Commands > Shuriken - Create Property Stub Code.jsfl<br><br>
+					]]>
+	</ui-access>
+
+	<!-- Describe the files that comprise the extension -->
+
+	<file-tokens>
+		<token name="jxl" definition="$flash/JXL/" />
+	</file-tokens>
+	
+
+	<files>
+		
+		<file name="Shuriken - Create Framework Library.jsfl" destination="$flash/Commands/" />
+		<file name="Shuriken - Create Component.jsfl" destination="$flash/Commands/" />
+		<file name="Shuriken - Create Property Stub Code.jsfl" destination="$flash/Commands/" />
+
+		<file name="shuriken_component_maker/createShurikenComponent.jsfl" destination="$jxl/shuriken_component_maker/" />
+		<file name="shuriken_component_maker/ShurikenComponentMaker.xml" destination="$jxl/shuriken_component_maker/" />
+		
+		<file name="shuriken_property_maker/ShurikenPropertyMaker.xml" destination="$jxl/shuriken_property_maker/" />
+		
+	</files>
+
+</macromedia-extension>

@@ -355,12 +355,9 @@ class com.jxl.shuriken.core.UITextField extends UIComponent
 	
 	public function set type(p_val:String):Void
 	{
-		if(p_val != __type)
-		{
-			__type = p_val;
-			__typeDirty = true;
-			invalidateProperties();
-		}
+		__type = p_val;
+		__typeDirty = true;
+		invalidateProperties();
 	}
 	
 	public function get underline():Boolean { return __underline; }

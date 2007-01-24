@@ -281,6 +281,12 @@ class com.jxl.shuriken.core.UIComponent extends MovieClip implements IUIComponen
 		return ref;
 	}
 	
+	public function createLabel(p_name:String):TextField
+	{
+		createTextField(p_name, getNextHighestDepth(), 0, 0, Math.max(__width, 100), Math.max(__height, 100));
+		return this[p_name];
+	}
+	
 	public function toString():String
 	{
 		return "[object com.jxl.shuriken.core.UIComponent]";

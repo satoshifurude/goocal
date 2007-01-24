@@ -302,9 +302,11 @@ class com.jxl.shuriken.containers.ScrollableList extends Container implements IC
 	{
 		__mcScrollPrevious = SimpleButton(attachMovie(SimpleButton.SYMBOL_NAME, "__mcScrollPrevious", getNextHighestDepth()));
 		__mcScrollPrevious.addEventListener(ShurikenEvent.RELEASE, Delegate.create(this, onScrollPrevious));
+		__mcScrollPrevious.setSize(__width, 4);
 		
 		__mcScrollNext = SimpleButton(attachMovie(SimpleButton.SYMBOL_NAME, "__mcScrollNext", getNextHighestDepth()));
 		__mcScrollNext.addEventListener(ShurikenEvent.RELEASE, Delegate.create(this, onScrollNext));		
+		__mcScrollNext.setSize(__width, 4);
 	}
 	
 	// proxy event
@@ -446,20 +448,29 @@ class com.jxl.shuriken.containers.ScrollableList extends Container implements IC
 				__mcScrollNext.swapDepths(Math.max(__mcScrollNext.getDepth(), 9999));
 			}
 			
+			__mcScrollPrevious.setSize(__width, __mcScrollPrevious.height);
+			__mcScrollNext.setSize(__width, __mcScrollNext.height);
 			
-			/*
 			__mcScrollPrevious.clear()
-			__mcScrollPrevious.lineStyle(0,0xFFFFFF)
-			__mcScrollPrevious.beginFill(0xFFFFFF,50)
-			DrawUtils.drawBox(__mcScrollPrevious, 0,0,__mcScrollPrevious.width,__mcScrollPrevious.height)
-			__mcScrollPrevious.endFill()		
+			__mcScrollPrevious.lineStyle(0, 0x333333)
+			__mcScrollPrevious.beginFill(0xCCCCCC);
+			DrawUtils.drawBox(__mcScrollPrevious, 0, 0, __mcScrollPrevious.width - 1, __mcScrollPrevious.height)
+			var centerX:Number = __width / 2;
+			var tW:Number = 6;
+			var tH:Number = 4;
+			DrawUtils.drawTriangle(__mcScrollPrevious, centerX - (tW / 2), tH, tW, tH);
+			__mcScrollPrevious.beginFill(0x333333);
+			DrawUtils.drawTriangle(__mcScrollPrevious, centerX - (tW / 2), tH, tW, tH);
+			__mcScrollPrevious.endFill();
 		
-			__mcScrollNext.clear()
-			__mcScrollNext.lineStyle(0,0xFFFFFF)
-			__mcScrollNext.beginFill(0xFFFFFF,50)
-			DrawUtils.drawBox(__mcScrollNext, 0,0,__mcScrollNext.width,__mcScrollNext.height)
+			__mcScrollNext.clear();
+			__mcScrollNext.lineStyle(0, 0x333333);
+			__mcScrollNext.beginFill(0xCCCCCC);
+			DrawUtils.drawBox(__mcScrollNext, 0, 0, __mcScrollNext.width - 1, __mcScrollNext.height);
+			DrawUtils.drawTriangle(__mcScrollNext, centerX - (tW / 2), 0, tW, tH, 180);
+			__mcScrollNext.beginFill(0x333333);
+			DrawUtils.drawTriangle(__mcScrollNext, centerX - (tW / 2), 0, tW, tH, 180);
 			__mcScrollNext.endFill()
-			*/
 			
 			__mcScrollPrevious.visible = true;
 			__mcScrollNext.visible = true;			

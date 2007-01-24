@@ -483,28 +483,32 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 	
 	//MOUSE EVENT HANDLERS/----------------------------------
 	
-	public function buttonRelease():Void {
-		super.buttonRelease();
+	private function onRelease():Void
+	{
+		super.onRelease();
+		
 		if (__toggle == true)
 		{
 			selected = !selected;
 		}
-		
-		//var e:ShurikenEvent = new ShurikenEvent(ShurikenEvent.RELEASE, this);
-		//__releaseCallback.call(__callbackScope, e);
 	}
 	
-	public function buttonRollOver():Void {
-		super.buttonRollOver();
+	public function onRollOver():Void
+	{
+		super.onRollOver();
 		setState(OVER_STATE);
 		invalidateDraw();
 	}
 	
-	public function buttonRollOut():Void {
-		super.buttonRollOut();
-		if (__selected) {
+	public function onRollOut():Void
+	{
+		super.onRollOut();
+		if (__selected == true)
+		{
 			setState(SELECTED_STATE);
-		} else {
+		}
+		else
+		{
 			setState(DEFAULT_STATE);
 		}
 		invalidateDraw();

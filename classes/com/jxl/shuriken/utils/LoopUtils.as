@@ -262,7 +262,7 @@ class com.jxl.shuriken.utils.LoopUtils
 	{
 		deleteVars();
 		
-		if(p_destroyClip == false) return;
+		if(p_destroyClip != true) return;
 		
 		__loop_mc.removeMovieClip();
 		delete __loop_mc;

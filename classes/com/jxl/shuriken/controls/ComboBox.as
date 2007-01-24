@@ -90,14 +90,11 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 	[Inspectable(type="List", enumeration="above,below", defaultValue="above", name="Direction")]
 	public function get direction():String { return __direction; }
 	
-	public function set direction(pVal:String):Void
+	public function set direction(p_val:String):Void
 	{
-		if(pVal != __direction)
-		{
-			__direction = pVal;
-			__directionDirty = true;
-			invalidateProperties();
-		}
+		__direction = p_val;
+		__directionDirty = true;
+		invalidateProperties();
 	}
 	
 	private var __rowHeight:Number=3;
@@ -118,14 +115,11 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 	[Inspectable(type="Boolean", defaultValue=true, name="Show Scroll Buttons")]
 	public function get showScrollButtons():Boolean { return __showScrollButtons; }
 	
-	public function set showScrollButtons(pVal:Boolean):Void
+	public function set showScrollButtons(p_val:Boolean):Void
 	{
-		if(pVal != __showScrollButtons)
-		{
-			__showScrollButtons = pVal;
-			__showScrollButtonsDirty = true;
-			invalidateProperties();
-		}
+		__showScrollButtons = p_val;
+		__showScrollButtonsDirty = true;
+		invalidateProperties();
 	}
 	
 	[Inspectable(type="Number", defaultValue=5, name="Row Count")]
@@ -214,6 +208,15 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 			invalidateProperties();
 		}	
 	}
+	
+	public function get selectedIndex():Number { return __selectedIndex }	
+	
+	public function set selectedIndex(p_val:Number):Void
+	{
+		__selectedIndex = p_val;
+		__selectedIndexDirty = true;
+		invalidateProperties();
+	}	
 		
 	private var __childClass:Function						= Button;
 	private var __childClassDirty:Boolean					= false;
@@ -235,6 +238,8 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 	private var __columnWidthDirty:Boolean 					= false;
 	private var __closeWhenSelected:Boolean 				= true;
 	private var __closeWhenSelectedDirty:Boolean 			= false;
+	private var __selectedIndex:Number;
+	private var __selectedIndexDirty:Boolean				= false;
 	
 	private var __MaskOverlap:Number 						= 3;
 	private var __MaskOverlapDirty:Boolean = false;
@@ -273,6 +278,7 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 		com.jxl.shuriken.utils.DrawUtils.drawMask(__mcListMask, 0, 0, 100, 100);
 		__mcList.setMask(__mcListMask);
 		__mcList.tabChildren = false;
+		__mcList.visible = false;
 		
 		setupHitState();
 	}
@@ -379,6 +385,12 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 		{
 			__childClassDirty = false;
 			__mcList.childClass = __childClass;
+		}
+		
+		if(__selectedIndexDirty == true)
+		{
+			__selectedIndexDirty = false;
+			__mcList.selectedIndex = __selectedIndex;
 		}
 
 	}
@@ -526,6 +538,10 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 	public function closeList():Void
 	{
 		__isOpen = false;
+		
+		// KLUDGE: should remove the focus of the item instead
+		// of forcing rid of the yellow focus rect this way
+		Selection.setFocus(null);
 		
 		var finishY : Number = 0;
 			

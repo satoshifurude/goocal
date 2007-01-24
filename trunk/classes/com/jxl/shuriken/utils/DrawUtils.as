@@ -196,4 +196,29 @@ class com.jxl.shuriken.utils.DrawUtils
 		}
 	}
 	
+	public static function drawTriangle(p_mc:MovieClip, 
+										p_x:Number, p_y:Number, 
+										p_width:Number, p_height:Number,
+										p_angle:Number):Void
+	{
+		p_angle = (p_angle == null) ? 0 : p_angle;
+		
+		switch(p_angle)
+		{
+			case 0:
+				p_mc.moveTo(p_x, p_y);
+				p_mc.lineTo(p_x + (p_width / 2), p_y - p_height);
+				p_mc.lineTo(p_x + p_width, p_y);
+				p_mc.lineTo(p_x, p_y);
+				break;
+			
+			case 180:
+				p_mc.moveTo(p_x, p_y);
+				p_mc.lineTo(p_x + p_width, p_y);
+				p_mc.lineTo(p_x + (p_width / 2), p_y + p_height);
+				p_mc.lineTo(p_x, p_y);
+				break;
+		}
+	}
+	
 }

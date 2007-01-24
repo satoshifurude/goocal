@@ -1,6 +1,8 @@
 ﻿class com.jxl.shuriken.utils.DateUtils
 {
-	public static var FORMAT_TIME_MONTH_DAY_FULLYEAR:Number = 0;
+	public static var FORMAT_TIME_MONTH_DAY_FULLYEAR:Number 	= 0;
+	public static var MONTH_DAY_YEAR:Number						= 1;
+	public static var HOUR_MIN_AM_PM:Number						= 2;
 	
 	public static function clone(p_date:Date):Date
 	{
@@ -231,6 +233,29 @@
 				s += p_date.getDate().toString() + " ";
 				s += p_date.getFullYear().toString();
 				return s;
+			
+			case MONTH_DAY_YEAR:
+				// 11/7/2006
+				var s:String = "";
+				s += (p_date.getMonth() + 1) + "/";
+				s += p_date.getDate() + "/";
+				s += p_date.getFullYear().toString();
+				return s;
+				
+		}
+	}
+	
+	public static function parseDate(p_str:String, p_type:Number):Date
+	{
+		switch(p_type)
+		{
+			case MONTH_DAY_YEAR:
+				var d:Date = new Date();
+				var strArray:Array = p_str.split("/");
+				d.setMonth(parseInt(strArray[0]) - 1);
+				d.setDate(parseInt(strArray[1]));
+				d.setFullYear(parseInt(strArray[2]));
+				return d;
 		}
 	}
 	

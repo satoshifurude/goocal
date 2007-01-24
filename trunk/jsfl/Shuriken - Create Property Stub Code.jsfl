@@ -8,6 +8,7 @@ function init()
 	var props_array = [];
 	
 	props_array = gatherProps(props_array);
+	debug("props_array: " + props_array);
 	if(props_array == null)
 	{
 		return;
@@ -20,6 +21,12 @@ function gatherProps(pArray)
 {
 	var xmlPath = fl.configURI + FOLDER_NAME + "/" + XML_FILE_NAME;
 	var results = fl.getDocumentDOM().xmlPanel(xmlPath);
+	
+	debugHeader();
+	debug("xmlPath: " + xmlPath);
+	debug("results: " + results);
+	debug("results.dismiss: " + results.dismiss);
+	
 	if(results.dismiss != "accept")
 	{
 		return;
@@ -40,6 +47,16 @@ function gatherProps(pArray)
 		theGenGetterSetter			= (results.genGetterSetter == "true") ? true : false;
 		theGenInspectable 			= (results.genInspectable == "true") ? true : false;
 		theGenCommitProp 			= (results.genCommitProp == "true") ? true : false;
+		
+		debug("theName: " + theName);
+		debug("theDataType: " + theDataType);
+		debug("theDefaultValue: " + theDefaultValue);
+		debug("theInspectableType: " + theInspectableType);
+		debug("theGenVarDef: " + theGenVarDef);
+		debug("theGenGetterSetter: " + theGenGetterSetter);
+		debug("theGenInspectable: " + theGenInspectable);
+		debug("theGenCommitProp: " + theGenCommitProp);
+		
 		
 		var cg = new CodeGen(theName,
 								theDataType,
@@ -82,7 +99,10 @@ function showCode(pArray)
 	var len = pArray.length;
 	for(var i = 0; i<len; i++)
 	{
-		var jsflPath = LOCAL_TEST_PATH + "/" + FOLDER_NAME + "/" + "createShurikenProperty.jsfl";
+		//var jsflPath = LOCAL_TEST_PATH + "/" + FOLDER_NAME + "/" + "createShurikenProperty.jsfl";
+		var jsflPath = fl.configURI + FOLDER_NAME + "/" + "createShurikenProperty.jsfl";
+		debugHeader();
+		debug("jsflPath: " + jsflPath);
 		var o = pArray[i];
 		var codeStr = createShurikenProperty(o.name, 
 												o.dataType, 

@@ -94,10 +94,12 @@ class com.jxl.shuriken.events.ShurikenEvent extends Event
 	// MovieClipBuilderGroup
 	//public static var MOVIE_CLIPS_CREATED:String					= "com.jxl.shuriken.events.ShurikenEvent.movieClipsCreated";
 
-	// MDArray
+	// MDArray, NumericStepper
 	public static var CHANGE:String 								= "com.jxl.shuriken.events.ShurikenEvent.change";
 
 	public var row:Number;
 	public var col:Number;
 	public var value;
+	
+	public var oldValue;
 }

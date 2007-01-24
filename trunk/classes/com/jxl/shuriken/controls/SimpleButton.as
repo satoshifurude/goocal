@@ -30,44 +30,35 @@ class com.jxl.shuriken.controls.SimpleButton extends UIComponent
 	{
 		super.size();
 		
-		/*
 		clear();
 		lineStyle(0, 0x999999); // uncomment if debugging, draw's an outline for you
 		beginFill(0xCCCCCC); // change alpha to 90 when debugging
 		DrawUtils.drawRoundRect(this, 0, 0, width, height, 6);
 		endFill();
-		*/
 	}
 	
 	private function onPress():Void
 	{
-		buttonPress();
 		dispatchEvent(new ShurikenEvent(ShurikenEvent.PRESS, this));
 	}
 	
 	private function onRelease():Void
 	{
-		buttonRelease();
 		dispatchEvent(new ShurikenEvent(ShurikenEvent.RELEASE, this));
-		//var o = {type: "com.jxl.shuriken.events.ShurikenEvent.release", target: this}
-		//dispatchEvent(o);
 	}
 	
 	private function onReleaseOutside():Void
 	{
-		buttonReleaseOutside();
 		dispatchEvent(new ShurikenEvent(ShurikenEvent.RELEASE_OUTSIDE, this));
 	}
 	
 	private function onRollOver():Void
 	{
-		buttonRollOver();
 		dispatchEvent(new ShurikenEvent(ShurikenEvent.ROLL_OVER, this));
 	}
 	
 	private function onRollOut():Void
 	{
-		buttonRollOut();
 		dispatchEvent(new ShurikenEvent(ShurikenEvent.ROLL_OUT, this));
 	}
 	
@@ -91,16 +82,6 @@ class com.jxl.shuriken.controls.SimpleButton extends UIComponent
 	{
 		return "[object com.jxl.shuriken.controls.SimpleButton]";
 	}
-	
-	//BUTTON EVENTS/-------------------------------------------------
-	
-	//These functions are used by subclasses to process mouse events
-	
-	public function buttonPress():Void{}
-	public function buttonRelease():Void{}
-	public function buttonReleaseOutside():Void{}
-	public function buttonRollOver():Void {}
-	public function buttonRollOut():Void {}
 	
 	
 }

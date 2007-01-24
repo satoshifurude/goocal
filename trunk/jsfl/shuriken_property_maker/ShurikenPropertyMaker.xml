@@ -1,4 +1,4 @@
-<dialog title="Shuriken Property Maker" buttons="accept,cancel">
+﻿<dialog title="Shuriken Property Maker" buttons="accept,cancel">
  
  	<grid>
         <columns>
@@ -9,7 +9,7 @@
 		
             <row align="center">
                 <label value="Use Case Name:"/>
-				<textbox id="useCaseName" value="" size="40" />
+				<textbox id="propertyName" value="" size="40" />
             </row>
 			
             <row align="center">

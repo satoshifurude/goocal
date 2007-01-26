@@ -3,12 +3,11 @@
 import com.jxl.shuriken.core.UIComponent;
 import com.jxl.shuriken.core.UITextField;
 import com.jxl.shuriken.controls.Label;
-import com.jxl.shuriken.controls.DateEditor;
-import com.jxl.shuriken.events.ShurikenEvent;
 import com.jxl.shuriken.controls.ComboBox;
-import com.jxl.shuriken.utils.LoopUtils;
-import com.jxl.shuriken.core.ICollection;
+import com.jxl.shuriken.utils.DateUtils;
 import com.jxl.shuriken.core.Collection;
+import com.jxl.shuriken.utils.LoopUtils;
+import com.jxl.shuriken.events.ShurikenEvent;
 
 class com.jxl.goocal.views.createevent.Step1 extends UIComponent
 {
@@ -20,7 +19,7 @@ class com.jxl.goocal.views.createevent.Step1 extends UIComponent
 	private var __fromDate:Date;
 	private var __fromDateDirty:Boolean 	= false;
 	private var __toDate:Date;
-	private var __toDateDirty:Boolean		= false;
+	private var __toDateDirty:Boolean 		= false;
 	private var __repeats:String			= "Does not repeat";
 	private var __repeatsDirty:Boolean 		= false;
 	private var __repeat_array:Array = ["Does not repeat",
@@ -35,9 +34,11 @@ class com.jxl.goocal.views.createevent.Step1 extends UIComponent
 	private var __what_lbl:Label;
 	private var __what_ti:UITextField;
 	private var __from_lbl:Label;
-	private var __from_de:DateEditor;
+	private var __fromDate_ti:UITextField;
+	private var __fromTime_ti:UITextField;
 	private var __to_lbl:Label;
-	private var __to_de:DateEditor;
+	private var __toDate_ti:UITextField;
+	private var __toTime_ti:UITextField;
 	private var __repeats_lbl:UITextField;
 	private var __repeats_cb:ComboBox;
 	
@@ -68,11 +69,15 @@ class com.jxl.goocal.views.createevent.Step1 extends UIComponent
 	}
 	
 	public function get toDate():Date { return __toDate; }
-	public function set toDate(p_val:Date):Void
+	
+	public function set toDate(pVal:Date):Void
 	{
-		__toDate = p_val;
-		__toDateDirty = true;
-		invalidateProperties();
+		if(pVal != __toDate)
+		{
+			__toDate = pVal;
+			__toDateDirty = true;
+			invalidateProperties();
+		}
 	}
 	
 	public function get repeats():String { return __repeats; }
@@ -86,6 +91,9 @@ class com.jxl.goocal.views.createevent.Step1 extends UIComponent
 			invalidateProperties();
 		}
 	}
+
+	
+	
 	
 	public function Step1()
 	{
@@ -98,11 +106,16 @@ class com.jxl.goocal.views.createevent.Step1 extends UIComponent
 		focusEnabled		= true;
 		tabEnabled			= false;
 		tabChildren			= true;
+		
 	}
 	
 	private function createChildren():Void
 	{
 		super.createChildren();
+		
+		var tabInc:Number = 1;
+		
+		var txtFunc:Function = Delegate.create(this, onTextChanged);
 		
 		if(__what_lbl == null)
 		{
@@ -118,7 +131,8 @@ class com.jxl.goocal.views.createevent.Step1 extends UIComponent
 			__what_ti.borderColor = 0x000000;
 			__what_ti.background = true;
 			__what_ti.backgroundColor = 0xFFFFFF;
-			__what_ti.addEventListener(ShurikenEvent.CHANGE, Delegate.create(this, onTextChanged)); 
+			__what_ti.tabIndex = tabInc++;
+			__what_ti.addEventListener(ShurikenEvent.CHANGE, txtFunc); 
 		}
 		
 		if(__from_lbl == null)
@@ -127,22 +141,58 @@ class com.jxl.goocal.views.createevent.Step1 extends UIComponent
 			__from_lbl.text = "From";
 		}
 		
-		if(__from_de == null)
+		if(__fromDate_ti == null)
 		{
-			__from_de = DateEditor(createComponent(DateEditor, "__from_de"));
-			__from_de.currentDate = __fromDate;
+			__fromDate_ti = UITextField(createComponent(UITextField, "__fromDate_ti"));
+			__fromDate_ti.type = UITextField.TYPE_INPUT;
+			__fromDate_ti.border = true;
+			__fromDate_ti.borderColor = 0x000000;
+			__fromDate_ti.background = true;
+			__fromDate_ti.backgroundColor = 0xFFFFFF;
+			__fromDate_ti.tabIndex = tabInc++;
+			__fromDate_ti.addEventListener(ShurikenEvent.CHANGE, txtFunc);
 		}
-		/*
+		
+		if(__fromTime_ti == null)
+		{
+			__fromTime_ti = UITextField(createComponent(UITextField, "__fromTime_ti"));
+			__fromTime_ti.type = UITextField.TYPE_INPUT;
+			__fromTime_ti.border = true;
+			__fromTime_ti.borderColor = 0x000000;
+			__fromTime_ti.background = true;
+			__fromTime_ti.backgroundColor = 0xFFFFFF;
+			__fromTime_ti.tabIndex = tabInc++;
+			__fromTime_ti.addEventListener(ShurikenEvent.CHANGE, txtFunc);
+		}
+		
 		if(__to_lbl == null)
 		{
 			__to_lbl = Label(createComponent(Label, "__to_lbl"));
 			__to_lbl.text = "To";
 		}
 		
-		if(__to_de == null)
+		if(__toDate_ti == null)
 		{
-			__to_de = DateEditor(createComponent(DateEditor, "__to_de"));
-			__to_de.currentDate = __toDate; 
+			__toDate_ti = UITextField(createComponent(UITextField, "__toDate_ti"));
+			__toDate_ti.type = UITextField.TYPE_INPUT;
+			__toDate_ti.border = true;
+			__toDate_ti.borderColor = 0x000000;
+			__toDate_ti.background = true;
+			__toDate_ti.backgroundColor = 0xFFFFFF;
+			__toDate_ti.tabIndex = tabInc++;
+			__toDate_ti.addEventListener(ShurikenEvent.CHANGE, txtFunc);
+		}
+		
+		if(__toTime_ti == null)
+		{
+			__toTime_ti = UITextField(createComponent(UITextField, "__toTime_ti"));
+			__toTime_ti.type = UITextField.TYPE_INPUT;
+			__toTime_ti.border = true;
+			__toTime_ti.borderColor = 0x000000;
+			__toTime_ti.background = true;
+			__toTime_ti.backgroundColor = 0xFFFFFF;
+			__toTime_ti.tabIndex = tabInc++;
+			__toTime_ti.addEventListener(ShurikenEvent.CHANGE, txtFunc);
 		}
 		
 		if(__repeats_lbl == null)
@@ -158,7 +208,6 @@ class com.jxl.goocal.views.createevent.Step1 extends UIComponent
 			__repeats_cb.showScrollButtons = true;
 			__repeats_cb.addEventListener(ShurikenEvent.ITEM_CLICKED, Delegate.create(this, onRepeatItemClicked));
 		}
-		*/
 	}
 	
 	private function commitProperties():Void
@@ -174,13 +223,15 @@ class com.jxl.goocal.views.createevent.Step1 extends UIComponent
 		if(__fromDateDirty == true)
 		{
 			__fromDateDirty = false;
-			__from_de.currentDate = __fromDate;
+			__fromDate_ti.text = DateUtils.format(__fromDate, DateUtils.MONTH_DAY_YEAR);
+			__fromTime_ti.text = DateUtils.format(__fromDate, DateUtils.HOUR_MIN_AM_PM);
 		}
 		
 		if(__toDateDirty == true)
 		{
 			__toDateDirty = false;
-			__to_de.currentDate = __toDate;
+			__toDate_ti.text = DateUtils.format(__toDate, DateUtils.MONTH_DAY_YEAR);
+			__toTime_ti.text = DateUtils.format(__toDate, DateUtils.HOUR_MIN_AM_PM);
 		}
 		
 		if(__repeatsDirty == true)
@@ -228,16 +279,24 @@ class com.jxl.goocal.views.createevent.Step1 extends UIComponent
 		__from_lbl.move(__what_ti.x, __what_ti.y + __what_ti.height + margin);
 		__from_lbl.setSize(__width, __from_lbl.height);
 		
-		__from_de.move(__from_lbl.x, __from_lbl.y + __from_lbl.height + margin);
-		__from_de.setSize(__width, 40);
+		var halfWidth:Number = (__width / 2) - (margin * 2);
 		
-		__to_lbl.move(__from_de.x, __from_de.y + __from_de.height + margin);
+		__fromDate_ti.move(__from_lbl.x, __from_lbl.y + __from_lbl.height + margin);
+		__fromDate_ti.setSize(halfWidth, __fromDate_ti.height);
+		
+		__fromTime_ti.move(__fromDate_ti.x + __fromDate_ti.width + (margin * 2), __fromDate_ti.y);
+		__fromTime_ti.setSize(halfWidth, __fromTime_ti.height);
+		
+		__to_lbl.move(__fromDate_ti.x, __fromDate_ti.y + __fromDate_ti.height);
 		__to_lbl.setSize(__width, __to_lbl.height);
 		
-		__to_de.move(__to_lbl.x, __to_lbl.y + __to_lbl.height + margin);
-		__to_de.setSize(__width, 40);
+		__toDate_ti.move(__to_lbl.x, __to_lbl.y + __to_lbl.height);
+		__toDate_ti.setSize(halfWidth, __toDate_ti.height);
 		
-		__repeats_lbl.move(__to_de.x, __to_de.y + __to_de.height + margin);
+		__toTime_ti.move(__toDate_ti.x + __toDate_ti.width + (margin * 2), __toDate_ti.y);
+		__toTime_ti.setSize(halfWidth, __toTime_ti.height);
+		
+		__repeats_lbl.move(__toDate_ti.x, __toDate_ti.y + __toDate_ti.height + margin);
 		__repeats_lbl.setSize(__width, __repeats_lbl.height);
 		
 		__repeats_cb.move(__repeats_lbl.x, __repeats_lbl.y + __repeats_lbl.height + margin);
@@ -246,7 +305,29 @@ class com.jxl.goocal.views.createevent.Step1 extends UIComponent
 	
 	private function onTextChanged(p_event:ShurikenEvent):Void
 	{
-		__what = __what_ti.text;
+		switch(p_event.target)
+		{
+			case __what_ti:
+				__what = __what_ti.text;
+				break;
+				
+			case __fromDate_ti:
+				//var parsedDate:Date = DateUtils.parseDate(__fromDate, DateUtils.MONTH_DAY_YEAR);
+				//__fromDate.setMonth(parsedDate.getMonth());
+				//__fromDate.setDate(parsedDate.getDate());
+				//__fromDate.setFullYear(parsedDate.getFullYear());
+				break;
+			
+			case __fromTime_ti:
+				//__fromTime = DateUtils.parseDate(DateUtils.MONTH_DAY_YEAR);
+				break;
+			
+			case __toDate_ti:
+			
+			case __toTime_ti:
+			
+			
+		}
 	}
 	
 	private function onRepeatItemClicked(p_event:ShurikenEvent):Void

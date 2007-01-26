@@ -4,17 +4,14 @@ import com.jxl.shuriken.core.UIComponent;
 import com.jxl.shuriken.controls.NumericStepper;
 import com.jxl.shuriken.events.ShurikenEvent;
 import com.jxl.shuriken.controls.Label;
-import com.jxl.shuriken.controls.SimpleButton;
-import com.jxl.shuriken.controls.Button;
+//import com.jxl.shuriken.controls.SimpleButton;
+//import com.jxl.shuriken.controls.Button;
 import com.jxl.shuriken.events.Event;
 import com.jxl.shuriken.utils.DrawUtils;
 
 class com.jxl.shuriken.controls.DateEditor extends UIComponent
 {
 	public static var SYMBOL_NAME:String = "com.jxl.shuriken.controls.DateEditor";
-	
-	public static var EVENT_OK:String = "ok";
-	public static var EVENT_CANCEL:String = "cancel";
 	
 	public static var FIELD_YEAR:Number 						= 1;
 	public static var FIELD_YEAR_MONTH:Number 					= 2;
@@ -37,8 +34,8 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 	private var __hour_nms:NumericStepper;
 	private var __min_lbl:Label;
 	private var __min_nms:NumericStepper;
-	private var __ok_pb:Button;
-	private var __close_pb:SimpleButton;
+	//private var __ok_pb:Button;
+	//private var __close_pb:SimpleButton;
 	
 	public function get fieldType():Number { return __fieldType; }
 	public function set fieldType(p_val:Number):Void
@@ -62,7 +59,7 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 	private function createChildren():Void
 	{
 		super.createChildren();
-		
+		/*
 		var clickFunc:Function = Delegate.create(this, onOkCloseClick);
 		if(__ok_pb == null)
 		{
@@ -76,6 +73,7 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 			__close_pb = SimpleButton(createComponent(SimpleButton, "__close_pb"));
 			__close_pb.addEventListener(ShurikenEvent.RELEASE, clickFunc);
 		}
+		*/
 		
 		if(__isConstructing == false)
 		{
@@ -213,6 +211,18 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 		
 	}
 	
+	private function onInitialized():Void
+	{
+		super.onInitialized();
+		
+		if(__currentDate == null)
+		{
+			__currentDate = new Date();
+			__currentDateDirty = true;
+			commitProperties();
+		}
+	}
+	
 	private function commitProperties():Void
 	{
 		super.commitProperties();
@@ -255,7 +265,7 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 		__min_lbl.move(__hour_lbl.x + __hour_lbl.width + margin, __hour_lbl.y);
 		__min_lbl.setSize(40, 18);
 		__min_nms.move(__min_lbl.x, __min_lbl.y + __min_lbl.height + margin);
-		
+		/*
 		__ok_pb.setSize(20, 20);
 		__ok_pb.move(4, __height - __ok_pb.height);
 		
@@ -277,13 +287,15 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 		__close_pb.moveTo(endX, startX);
 		__close_pb.lineTo(startX, endX);
 		__close_pb.endFill();
+		*/
 		
-		
+		/*
 		clear();
 		lineStyle(2, 0x112ABB);
 		beginFill(0xFFFFFF);
 		DrawUtils.drawRoundRect(this, 0, 0, __width, __height, 6);
 		endFill();
+		*/
 	}
 	
 	private function onValueChange(p_event:ShurikenEvent):Void
@@ -311,7 +323,7 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 				break;
 		}
 	}
-	
+	/*
 	private function onOkCloseClick(p_event:ShurikenEvent):Void
 	{
 		if(p_event.target == __ok_pb)
@@ -323,7 +335,7 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 			dispatchEvent(new Event(EVENT_CANCEL, this));
 		}
 	}
-	
+	*/
 	
 	
 }

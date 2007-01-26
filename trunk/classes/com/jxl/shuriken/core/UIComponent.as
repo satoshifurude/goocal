@@ -2,18 +2,24 @@
 import com.jxl.shuriken.events.Event;
 import com.jxl.shuriken.events.ShurikenEvent;
 import com.jxl.shuriken.core.IUIComponent;
-import com.jxl.shuriken.events.Callback;
 
 class com.jxl.shuriken.core.UIComponent extends MovieClip implements IUIComponent
 {
 	
 	public static var SYMBOL_NAME:String = "com.jxl.shuriken.core.UIComponent";
+	public static var SYMBOL_OWNER:Object = com.jxl.shuriken.core.UIComponent;
+	
+	public static var EVENT_SIZE:String = "com.jxl.shuriken.core.UIComponent.size";
 	
 	// Abstract variable; set it to whatever you want.
 	public var data:Object;
 	
+	// overwritten by mixin (EventDispatcher)
+	public function addEventListener(p_type:String, p_list:Object):Void{}
+	public function dispatchEvent(p_event:Event):Void{}
+	public function removeEventListener(p_type:String, p_list:Object):Void{}
+	
 	private var __calledOnLoad:Boolean;
-	private var __sizeCallback:Callback;
 	
 	public function get width():Number
 	{
@@ -197,7 +203,7 @@ class com.jxl.shuriken.core.UIComponent extends MovieClip implements IUIComponen
 	
 	// Abstract
 	// check your dirty flags, and call redraw / resize methods
-	private function commitProperties():Void
+	public function commitProperties():Void
 	{
 	}
 	
@@ -223,13 +229,7 @@ class com.jxl.shuriken.core.UIComponent extends MovieClip implements IUIComponen
 		*/
 		//trace("-----------------");
 		//trace("UIComponent::size");
-		//dispatchEvent();
-		__sizeCallback.dispatch(new ShurikenEvent(ShurikenEvent.SIZE, this));
-	}
-	
-	public function setSizeCallback(p_scope:Object, p_callback:Function):Void
-	{
-		__sizeCallback = new Callback(p_scope, p_callback);
+		dispatchEvent(new ShurikenEvent(ShurikenEvent.SIZE, this));
 	}
 	
 	// Abstract
@@ -302,8 +302,7 @@ class com.jxl.shuriken.core.UIComponent extends MovieClip implements IUIComponen
 	public function getData():Object { return data; }
 	public function setData(p_val:Object):Void { data = p_val; }
 	
-	//private static var __makeEventDispatcher = EventDispatcher.initialize(com.jxl.shuriken.core.UIComponent.prototype);
-	//private static var __frameworkInit = frameworkInit();
+	private static var __makeEventDispatcher = EventDispatcher.initialize(com.jxl.shuriken.core.UIComponent.prototype);
 	
 	private var __isConstructing:Boolean;
 	private var __width:Number;

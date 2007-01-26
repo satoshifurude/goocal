@@ -1,0 +1,16 @@
+<dialog title="Shuriken Component Maker" buttons="accept,cancel" >
+ 
+ 	<vbox>
+	
+		<label value="Symbol Name:"/>
+		<textbox id="symbolName" value="" size="72" />
+		
+		<label value="Class Name:"/>
+		<textbox id="className" value="" size="72" />
+		
+		<label value="Base Class:"/>
+		<textbox id="baseClass" value="com.jxl.shuriken.core.UIComponent" size="72" />
+		
+	</vbox>
+	
+</dialog>

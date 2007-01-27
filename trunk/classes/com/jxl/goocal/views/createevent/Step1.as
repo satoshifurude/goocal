@@ -21,16 +21,16 @@ class com.jxl.goocal.views.createevent.Step1 extends UIComponent
 	private var __fromDateDirty:Boolean 	= false;
 	private var __toDate:Date;
 	private var __toDateDirty:Boolean		= false;
-	private var __repeats:String			= "Does not repeat";
-	private var __repeatsDirty:Boolean 		= false;
-	private var __repeat_array:Array = ["Does not repeat",
-										"Daily",
-										"Every weekday (Mon-Fri)",
-										"Every Mon., Wed., and Fri.",
-										"Every Tues., and Thurs.",
-										"Weekly",
-										"Monthly",
-										"Yearly"];
+//	private var __repeats:String			= "Does not repeat";
+//	private var __repeatsDirty:Boolean 		= false;
+//	private var __repeat_array:Array = ["Does not repeat",
+//										"Daily",
+//										"Every weekday (Mon-Fri)",
+//										"Every Mon., Wed., and Fri.",
+//										"Every Tues., and Thurs.",
+//										"Weekly",
+//										"Monthly",
+//										"Yearly"];
 	
 	private var __what_lbl:Label;
 	private var __what_ti:UITextField;
@@ -38,10 +38,10 @@ class com.jxl.goocal.views.createevent.Step1 extends UIComponent
 	private var __from_de:DateEditor;
 	private var __to_lbl:Label;
 	private var __to_de:DateEditor;
-	private var __repeats_lbl:UITextField;
-	private var __repeats_cb:ComboBox;
+//	private var __repeats_lbl:UITextField;
+//	private var __repeats_cb:ComboBox;
 	
-	private var __repeat_lu:LoopUtils;
+	//private var __repeat_lu:LoopUtils;
 	
 	public function get what():String { return __what; }
 	
@@ -74,7 +74,7 @@ class com.jxl.goocal.views.createevent.Step1 extends UIComponent
 		__toDateDirty = true;
 		invalidateProperties();
 	}
-	
+	/*
 	public function get repeats():String { return __repeats; }
 	
 	public function set repeats(p_val:String):Void
@@ -86,7 +86,7 @@ class com.jxl.goocal.views.createevent.Step1 extends UIComponent
 			invalidateProperties();
 		}
 	}
-	
+	*/
 	public function Step1()
 	{
 	}
@@ -132,7 +132,7 @@ class com.jxl.goocal.views.createevent.Step1 extends UIComponent
 			__from_de = DateEditor(createComponent(DateEditor, "__from_de"));
 			__from_de.currentDate = __fromDate;
 		}
-		/*
+		
 		if(__to_lbl == null)
 		{
 			__to_lbl = Label(createComponent(Label, "__to_lbl"));
@@ -144,7 +144,7 @@ class com.jxl.goocal.views.createevent.Step1 extends UIComponent
 			__to_de = DateEditor(createComponent(DateEditor, "__to_de"));
 			__to_de.currentDate = __toDate; 
 		}
-		
+		/*
 		if(__repeats_lbl == null)
 		{
 			__repeats_lbl = UITextField(createComponent(UITextField, "__repeats_lbl"));
@@ -157,6 +157,7 @@ class com.jxl.goocal.views.createevent.Step1 extends UIComponent
 			__repeats_cb.dataProvider = new Collection(__repeat_array);
 			__repeats_cb.showScrollButtons = true;
 			__repeats_cb.addEventListener(ShurikenEvent.ITEM_CLICKED, Delegate.create(this, onRepeatItemClicked));
+			__repeats_cb.selectedIndex = 0;
 		}
 		*/
 	}
@@ -182,7 +183,7 @@ class com.jxl.goocal.views.createevent.Step1 extends UIComponent
 			__toDateDirty = false;
 			__to_de.currentDate = __toDate;
 		}
-		
+		/*
 		if(__repeatsDirty == true)
 		{
 			__repeatsDirty = false;
@@ -194,8 +195,9 @@ class com.jxl.goocal.views.createevent.Step1 extends UIComponent
 								onIfSelectedRepeat,
 								onIfSelectedRepeatDone);
 		}
+		*/
 	}
-	
+	/*
 	private function onIfSelectedRepeat(p_index:Number):Void
 	{
 		var val:String = __repeat_array[p_index];
@@ -212,36 +214,38 @@ class com.jxl.goocal.views.createevent.Step1 extends UIComponent
 		__repeat_lu.destroy();
 		delete __repeat_lu;
 	}
-	
+	*/
 	private function size():Void
 	{
 		super.size();
 		
 		var margin:Number = 2;
+		var m2:Number = margin * 2;
 		
 		__what_lbl.move(0, 0);
 		__what_lbl.setSize(__width, __what_lbl.height);
 		
-		__what_ti.move(__what_lbl.x, __what_lbl.y + __what_lbl.height + margin);
-		__what_ti.setSize(__width, __what_ti.height);
+		__what_ti.move(__what_lbl.x + margin, __what_lbl.y + __what_lbl.height + margin);
+		__what_ti.setSize(__width - m2, __what_ti.height);
 		
 		__from_lbl.move(__what_ti.x, __what_ti.y + __what_ti.height + margin);
-		__from_lbl.setSize(__width, __from_lbl.height);
+		__from_lbl.setSize(40, __from_lbl.height);
 		
-		__from_de.move(__from_lbl.x, __from_lbl.y + __from_lbl.height + margin);
+		__from_de.move(__from_lbl.x + __from_lbl.width + margin, __from_lbl.y);
 		__from_de.setSize(__width, 40);
 		
-		__to_lbl.move(__from_de.x, __from_de.y + __from_de.height + margin);
-		__to_lbl.setSize(__width, __to_lbl.height);
+		__to_lbl.move(__from_lbl.x, __from_de.y + __from_de.height + margin);
+		__to_lbl.setSize(40, __to_lbl.height);
 		
-		__to_de.move(__to_lbl.x, __to_lbl.y + __to_lbl.height + margin);
+		__to_de.move(__to_lbl.x + __to_lbl.width + margin, __to_lbl.y);
 		__to_de.setSize(__width, 40);
-		
-		__repeats_lbl.move(__to_de.x, __to_de.y + __to_de.height + margin);
+		/*
+		__repeats_lbl.move(__to_lbl.x, __to_de.y + __to_de.height + margin);
 		__repeats_lbl.setSize(__width, __repeats_lbl.height);
 		
-		__repeats_cb.move(__repeats_lbl.x, __repeats_lbl.y + __repeats_lbl.height + margin);
-		__repeats_cb.setSize(__width, __repeats_cb.height);
+		__repeats_cb.setSize(__width - m2, __repeats_cb.height);
+		__repeats_cb.move(__repeats_lbl.x + margin, __repeats_lbl.y + __repeats_lbl.height + margin);
+		*/
 	}
 	
 	private function onTextChanged(p_event:ShurikenEvent):Void

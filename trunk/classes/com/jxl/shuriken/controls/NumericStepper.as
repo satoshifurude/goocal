@@ -86,7 +86,7 @@ class com.jxl.shuriken.controls.NumericStepper extends UIComponent
 			__valueField.onChanged = Delegate.create(this, onFieldChanged);
 			__valueField.text = String(__value);
 			__valueField.variable = "__valueField_var";
-			fscommand2("SetInputTextType", _target + ":" + __valueField.variable, "Numeric");
+			//fscommand2("SetInputTextType", _target + ":" + __valueField.variable, "Numeric");
 		}
 		
 		setupButtons();

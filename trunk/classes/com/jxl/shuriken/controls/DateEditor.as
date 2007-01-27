@@ -245,25 +245,25 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 		
 		var margin:Number = 2;
 	
-		__year_lbl.move(4, 4);
-		__year_lbl.setSize(40, 18);
+		__year_lbl.move(0, 0);
+		__year_lbl.setSize(40, 16);
 		__year_nms.move(__year_lbl.x, __year_lbl.y + __year_lbl.height + 2);
 		__year_nms.setSize(40, __year_nms.height);
 		
 		__month_lbl.move(__year_lbl.x + __year_lbl.width + margin, __year_lbl.y);
-		__month_lbl.setSize(40, 18);
+		__month_lbl.setSize(40, 16);
 		__month_nms.move(__month_lbl.x, __month_lbl.y + __month_lbl.height + 2);
 		
 		__day_lbl.move(__month_lbl.x + __month_lbl.width + margin, __month_lbl.y);
-		__day_lbl.setSize(40, 18);
+		__day_lbl.setSize(40, 16);
 		__day_nms.move(__day_lbl.x, __day_lbl.y + __day_lbl.height + margin);
 		
 		__hour_lbl.move(__year_nms.x, __year_nms.y + __year_nms.height + margin);
-		__hour_lbl.setSize(40, 18);
+		__hour_lbl.setSize(40, 16);
 		__hour_nms.move(__hour_lbl.x, __hour_lbl.y + __hour_lbl.height + margin);
 		
 		__min_lbl.move(__hour_lbl.x + __hour_lbl.width + margin, __hour_lbl.y);
-		__min_lbl.setSize(40, 18);
+		__min_lbl.setSize(40, 16);
 		__min_nms.move(__min_lbl.x, __min_lbl.y + __min_lbl.height + margin);
 		/*
 		__ok_pb.setSize(20, 20);

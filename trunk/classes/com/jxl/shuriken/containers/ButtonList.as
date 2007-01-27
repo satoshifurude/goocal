@@ -79,8 +79,9 @@ class com.jxl.shuriken.containers.ButtonList extends List
 		{
 			__selectedIndexDirty = false;
 			if(__toggle == true)
-			{			
-				setSelectedIndex(__selectedIndex, true);
+			{
+				//setSelectedIndex(__selectedIndex, true);
+				setSelectedIndex(__selectedIndex);
 			}
 		}
 		

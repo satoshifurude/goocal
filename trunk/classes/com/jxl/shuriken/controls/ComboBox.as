@@ -216,6 +216,14 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 		__selectedIndexDirty = true;
 		invalidateProperties();
 	}	
+	
+	public function get prompt():String { return __prompt; }
+	public function set prompt(p_val:String):Void
+	{
+		__prompt = p_val;
+		__promptDirty = true;
+		invalidateProperties();
+	}
 		
 	private var __childClass:Function						= Button;
 	private var __childClassDirty:Boolean					= false;
@@ -233,6 +241,8 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 	private var __iconDirty:Boolean							= false;
 	private var __label:String								= "";
 	private var __labelDirty:Boolean						= false;
+	private var __prompt:String 							= "";
+	private var __promptDirty:Boolean						= false;
 	private var __columnWidth:Number 						= 100;
 	private var __columnWidthDirty:Boolean 					= false;
 	private var __closeWhenSelected:Boolean 				= true;
@@ -301,8 +311,10 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 	{
 		__mcList = ScrollableList(attachMovie(ScrollableList.SYMBOL_NAME, "__mcList", getNextHighestDepth()));
 		__mcList.addEventListener(ShurikenEvent.ITEM_CLICKED, Delegate.create(this, onListItemClicked));
+		__mcList.addEventListener(ShurikenEvent.ITEM_SELECTION_CHANGED, Delegate.create(this, onListItemChanged));
 		__mcList.direction = List.DIRECTION_VERTICAL;
 		__mcList.childClass = __childClass;
+		__mcList.toggle = true;
 			
 		__mcList.addEventListener(List.EVENT_SETUP_CHILD, Delegate.create(this, onSetupChild));
 	}		
@@ -336,7 +348,7 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 			invalidateSize();
 		}
 		
-		if (__directionDirty == true)
+		if(__directionDirty == true)
 		{
 			__directionDirty = false;
 			invalidateSize();
@@ -390,6 +402,16 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 		{
 			__selectedIndexDirty = false;
 			__mcList.selectedIndex = __selectedIndex;
+		}
+		
+		if(__promptDirty == true)
+		{
+			__promptDirty = false;
+			if(__label == "" || __label == null)
+			{
+				__label = __prompt;
+				__mcHitState.label = __label;
+			}
 		}
 
 	}
@@ -499,6 +521,18 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 		{
 			closeList();
 		}
+	}
+	
+	private function onListItemChanged(p_event:ShurikenEvent):Void
+	{
+		var event:ShurikenEvent = new ShurikenEvent(ShurikenEvent.ITEM_SELECTION_CHANGED, this);
+		event.child = UIComponent(p_event.target);
+		event.item = p_event.item;
+		event.index = p_event.index;
+		
+		label = __dataProvider.getItemAt(event.index).toString();
+		
+		dispatchEvent(event);
 	}
 	
 	public function openList():Void

@@ -2,8 +2,7 @@
 import mx.transitions.easing.Strong;
 import mx.utils.Delegate;
 
-import com.jxl.shuriken.core.ICollection;
-import com.jxl.shuriken.core.IUIComponent;
+import com.jxl.shuriken.core.Collection;
 import com.jxl.shuriken.core.UIComponent;
 import com.jxl.shuriken.core.UITextField;
 import com.jxl.shuriken.containers.List;
@@ -68,12 +67,12 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 	private var __childSetValueFunctionDirty:Boolean 		= false;
 	
 	
-	public function get dataProvider():ICollection
+	public function get dataProvider():Collection
 	{
 		return __dataProvider;
 	}
 	
-	public function set dataProvider(p_val:ICollection):Void
+	public function set dataProvider(p_val:Collection):Void
 	{
 		__dataProvider = p_val;
 		__dataProviderDirty = true;
@@ -220,7 +219,7 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 		
 	private var __childClass:Function						= Button;
 	private var __childClassDirty:Boolean					= false;
-	private var __dataProvider:ICollection;
+	private var __dataProvider:Collection;
 	private var __dataProviderDirty:Boolean					= false;
 	private var __direction:String							= "above";
 	private var __directionDirty:Boolean					= false;
@@ -489,7 +488,7 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 	private function onListItemClicked(p_event:ShurikenEvent):Void
 	{
 		var event:ShurikenEvent = new ShurikenEvent(ShurikenEvent.ITEM_CLICKED, this);
-		event.child = IUIComponent(p_event.target);
+		event.child = UIComponent(p_event.target);
 		event.item = p_event.item;
 		event.index = p_event.index;
 		dispatchEvent(event);

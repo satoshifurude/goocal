@@ -1,12 +1,11 @@
 ﻿import mx.utils.Delegate;
 
-import com.jxl.shuriken.core.IUIComponent;
 import com.jxl.shuriken.core.UIComponent;
 import com.jxl.shuriken.events.ShurikenEvent;
 import com.jxl.shuriken.containers.List;
 import com.jxl.shuriken.containers.ButtonList;
 import com.jxl.shuriken.controls.Label;
-import com.jxl.shuriken.core.ICollection;
+import com.jxl.shuriken.core.Collection;
 import com.jxl.goocal.views.GCLinkButton;
 
 
@@ -19,11 +18,11 @@ class com.jxl.goocal.views.CalendarList extends UIComponent
 	private var __calendars_list:ButtonList;
 	private var __createNew_link:GCLinkButton;
 	
-	private var __calendars_collection:ICollection;
+	private var __calendars_collection:Collection;
 	private var __calendarsDirty:Boolean = false;
 	
-	public function get calendarsCollection():ICollection { return __calendars_collection; }
-	public function set calendarsCollection(p_val:ICollection):Void
+	public function get calendarsCollection():Collection { return __calendars_collection; }
+	public function set calendarsCollection(p_val:Collection):Void
 	{
 		__calendars_collection = p_val;
 		__calendarsDirty = true;
@@ -96,7 +95,7 @@ class com.jxl.goocal.views.CalendarList extends UIComponent
 		__createNew_link.move(0, __calendars_list.y + __calendars_list.height);
 	}
 	
-	private function refreshCalendarItem(p_child:IUIComponent, p_index:Number, p_item:Object):Void
+	private function refreshCalendarItem(p_child:UIComponent, p_index:Number, p_item:Object):Void
 	{
 		GCLinkButton(p_child).label = p_item.toString();
 	}

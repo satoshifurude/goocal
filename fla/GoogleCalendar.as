@@ -1,7 +1,6 @@
 ﻿
 import mx.utils.Delegate;
 
-import com.jxl.shuriken.core.ICollection;
 import com.jxl.shuriken.core.Collection;
 import com.jxl.shuriken.events.ShurikenEvent;
 import com.jxl.shuriken.core.UIComponent;
@@ -191,7 +190,7 @@ class GoogleCalendar extends UIComponent
 				var today:Date = new Date();
 				__dayView.currentDate = today;
 				
-				var currentEvents:ICollection = new Collection();
+				var currentEvents:Collection = new Collection();
 				var events:Array = ModelLocator.getInstance().entries_array;
 				var i:Number = events.length;
 				while(i--)
@@ -225,7 +224,7 @@ class GoogleCalendar extends UIComponent
 			__dayView.move(0, 40);
 			__dayView.setSize(__width, __height - 40);
 			
-			var currentEvents:ICollection = new Collection();
+			var currentEvents:Collection = new Collection();
 			var events:Array = ModelLocator.getInstance().entries_array;
 			var i:Number = events.length;
 			while(i--)

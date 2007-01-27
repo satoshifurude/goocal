@@ -1,9 +1,8 @@
 ﻿import mx.events.EventDispatcher;
 import com.jxl.shuriken.events.Event;
 import com.jxl.shuriken.events.ShurikenEvent;
-import com.jxl.shuriken.core.IMDArray;
 
-class com.jxl.shuriken.core.MDArray implements IMDArray
+class com.jxl.shuriken.core.MDArray
 {
 	
 	public var rows:Number;

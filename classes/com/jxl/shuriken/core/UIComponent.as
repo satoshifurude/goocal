@@ -1,15 +1,11 @@
 ﻿import mx.events.EventDispatcher;
 import com.jxl.shuriken.events.Event;
 import com.jxl.shuriken.events.ShurikenEvent;
-import com.jxl.shuriken.core.IUIComponent;
 
-class com.jxl.shuriken.core.UIComponent extends MovieClip implements IUIComponent
+class com.jxl.shuriken.core.UIComponent extends MovieClip
 {
 	
 	public static var SYMBOL_NAME:String = "com.jxl.shuriken.core.UIComponent";
-	public static var SYMBOL_OWNER:Object = com.jxl.shuriken.core.UIComponent;
-	
-	public static var EVENT_SIZE:String = "com.jxl.shuriken.core.UIComponent.size";
 	
 	// Abstract variable; set it to whatever you want.
 	public var data:Object;
@@ -273,7 +269,7 @@ class com.jxl.shuriken.core.UIComponent extends MovieClip implements IUIComponen
 		size();
 	}
 	
-	public function createComponent(p_class:IUIComponent, p_name:String):MovieClip
+	public function createComponent(p_class:UIComponent, p_name:String):MovieClip
 	{
 		// HACK: compiler hack; can't put static functions or properties in interfaces
 		var theClass = p_class;
@@ -291,16 +287,6 @@ class com.jxl.shuriken.core.UIComponent extends MovieClip implements IUIComponen
 	{
 		return "[object com.jxl.shuriken.core.UIComponent]";
 	}
-	
-	// IUIComponent implementation
-	public function getEnabled():Boolean { return enabled; }
-	public function getVisible():Boolean { return _visible; }
-	public function getWidth():Number { return __width; }
-	public function getHeight():Number { return __height; }
-	public function getX():Number { return _x; }
-	public function getY():Number { return _y; }
-	public function getData():Object { return data; }
-	public function setData(p_val:Object):Void { data = p_val; }
 	
 	private static var __makeEventDispatcher = EventDispatcher.initialize(com.jxl.shuriken.core.UIComponent.prototype);
 	

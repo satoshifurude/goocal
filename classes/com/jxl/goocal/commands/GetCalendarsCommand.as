@@ -10,7 +10,6 @@ import com.jxl.goocal.business.GetCalendarsDelegate;
 
 import com.jxl.goocal.model.ModelLocator;
 
-import com.jxl.shuriken.core.ICollection;
 import com.jxl.shuriken.core.Collection;
 
 class com.jxl.goocal.commands.GetCalendarsCommand extends CommandTemplate implements Responder
@@ -23,7 +22,7 @@ class com.jxl.goocal.commands.GetCalendarsCommand extends CommandTemplate implem
 	
 	public function onResult(result:ResultEvent):Void
 	{
-		var c:ICollection = new Collection();
+		var c:Collection = new Collection();
 		var a = result.result;
 		var i:Number = a.length;
 		while(i--)

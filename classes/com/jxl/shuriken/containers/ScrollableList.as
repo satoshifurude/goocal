@@ -2,9 +2,7 @@
 import mx.transitions.easing.Strong;
 import mx.utils.Delegate;
 
-import com.jxl.shuriken.core.IUIComponent;
-import com.jxl.shuriken.core.ICollection;
-import com.jxl.shuriken.core.IList;
+import com.jxl.shuriken.core.Collection;
 import com.jxl.shuriken.core.Container;
 import com.jxl.shuriken.containers.List;
 import com.jxl.shuriken.containers.ButtonList;
@@ -14,7 +12,7 @@ import com.jxl.shuriken.utils.DrawUtils;
 import com.jxl.shuriken.events.ShurikenEvent;
 
 [InspectableList("scrollSpeed", "direction", "showButtons")]
-class com.jxl.shuriken.containers.ScrollableList extends Container implements ICollection, IList
+class com.jxl.shuriken.containers.ScrollableList extends Container
 {
 	public static var SYMBOL_NAME:String = "com.jxl.shuriken.containers.ScrollableList";
 	
@@ -134,12 +132,12 @@ class com.jxl.shuriken.containers.ScrollableList extends Container implements IC
 		invalidateProperties();
 	}
 	
-	public function get dataProvider():ICollection
+	public function get dataProvider():Collection
 	{
 		return __dataProvider;
 	}
 	
-	public function set dataProvider(p_val:ICollection):Void
+	public function set dataProvider(p_val:Collection):Void
 	{
 		__dataProvider = p_val;
 		__dataProviderDirty = true;
@@ -202,7 +200,7 @@ class com.jxl.shuriken.containers.ScrollableList extends Container implements IC
 	private var __childSetValueFunction:Function;
 	private var __childSetValueFunctionDirty:Boolean		= false;
 	private var __childSetValueScopeDirty:Boolean			= false;
-	private var __dataProvider:ICollection;
+	private var __dataProvider:Collection;
 	private var __dataProviderDirty:Boolean					= false;
 	private var __direction:String;
 	private var __directionDirty:Boolean					= false;
@@ -606,7 +604,7 @@ class com.jxl.shuriken.containers.ScrollableList extends Container implements IC
 		onTweenVScrollUpdate(pVal);
 	}
 	
-	// ICollection implementation
+	// Collection implementation
 	public function addItem(p_item:Object):Void
 	{
 		__dataProvider.addItem(p_item);
@@ -689,7 +687,7 @@ class com.jxl.shuriken.containers.ScrollableList extends Container implements IC
 	public function getAutoSizeToChildren():Boolean { return __autoSizeToChildren; }
 	public function setAutoSizeToChildren(p_val:Boolean):Void { autoSizeToChildren = p_val; }
 	
-	public function getDataProvider():ICollection { return __dataProvider; }
-	public function setDataProvider(p_val:ICollection):Void { dataProvider = p_val; }
+	public function getDataProvider():Collection { return __dataProvider; }
+	public function setDataProvider(p_val:Collection):Void { dataProvider = p_val; }
 	
 }

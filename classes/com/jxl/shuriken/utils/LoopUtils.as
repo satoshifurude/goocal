@@ -1,4 +1,4 @@
-﻿import com.jxl.shuriken.core.IUIComponent;
+﻿import com.jxl.shuriken.core.UIComponent;
 
 class com.jxl.shuriken.utils.LoopUtils
 {
@@ -32,7 +32,7 @@ class com.jxl.shuriken.utils.LoopUtils
 	public function LoopUtils(p_mc:MovieClip)
 	{
 		__loop_mc = p_mc;
-		if(__loop_mc instanceof IUIComponent)
+		if(__loop_mc instanceof UIComponent)
 		{
 			__isIUI = true;
 		}

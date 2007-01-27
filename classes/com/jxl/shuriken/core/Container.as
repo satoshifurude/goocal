@@ -1,10 +1,7 @@
 ﻿import com.jxl.shuriken.core.UIComponent;
-import com.jxl.shuriken.core.IUIComponent;
-import com.jxl.shuriken.core.IContainer;
 import com.jxl.shuriken.events.ShurikenEvent;
-import com.jxl.shuriken.vo.MovieClipBuilderTicketVO;
 
-class com.jxl.shuriken.core.Container extends UIComponent implements IContainer
+class com.jxl.shuriken.core.Container extends UIComponent
 {
 	public static var SYMBOL_NAME:String = "com.jxl.shuriken.core.Container";
 	
@@ -95,7 +92,7 @@ class com.jxl.shuriken.core.Container extends UIComponent implements IContainer
 	
 	public function createChild(p_class:Function, 
 								p_name:String, 
-								p_initObj:Object):IUIComponent
+								p_initObj:Object):UIComponent
 	{
 		return createChildAt(__aChild.length, p_class, p_name, p_initObj);
 	}
@@ -103,7 +100,7 @@ class com.jxl.shuriken.core.Container extends UIComponent implements IContainer
 	public function createChildAt(p_index:Number, 
 								  p_class:Function, 
 								  p_name:String, 
-								  p_initObj:Object):IUIComponent
+								  p_initObj:Object):UIComponent
 	{
 		if(p_class == null)
 		{
@@ -140,12 +137,12 @@ class com.jxl.shuriken.core.Container extends UIComponent implements IContainer
 		return ref;
 	}
 	
-	public function getChildAt(p_index:Number):IUIComponent
+	public function getChildAt(p_index:Number):UIComponent
 	{
 		return __aChild[p_index];
 	}
 	
-	public function getChildIndex(p_child:IUIComponent):Number
+	public function getChildIndex(p_child:UIComponent):Number
 	{
 		var i:Number = __aChild.length;
 		while(i--)
@@ -158,7 +155,7 @@ class com.jxl.shuriken.core.Container extends UIComponent implements IContainer
 		return -1;
 	}
 	
-	public function setChildIndex(p_child:IUIComponent, p_index:Number):Boolean
+	public function setChildIndex(p_child:UIComponent, p_index:Number):Boolean
 	{
 		var currentIndex:Number = getChildIndex(p_child);
 		if(currentIndex == p_index) return false;
@@ -201,7 +198,7 @@ class com.jxl.shuriken.core.Container extends UIComponent implements IContainer
 		}
 	}
 	
-	public function removeChild(p_child:IUIComponent):Void
+	public function removeChild(p_child:UIComponent):Void
 	{
 		var childIndex:Number = getChildIndex(p_child);
 		removeChildAt(childIndex);

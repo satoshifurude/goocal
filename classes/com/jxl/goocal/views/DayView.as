@@ -5,7 +5,7 @@ import com.jxl.shuriken.core.UIComponent;
 
 import com.jxl.goocal.views.GCHeading;
 import com.jxl.goocal.views.EventList;
-import com.jxl.shuriken.core.ICollection;
+import com.jxl.shuriken.core.Collection;
 import com.jxl.shuriken.events.ShurikenEvent;
 import com.jxl.shuriken.utils.DrawUtils;
 import com.jxl.shuriken.utils.DateUtils;
@@ -20,7 +20,7 @@ class com.jxl.goocal.views.DayView extends UIComponent
 	public static var EVENT_BACK_TO_MONTH:String = "backToMonth";
 	public static var EVENT_CREATE_NEW:String = "createNew";
 	
-	private var __events:ICollection;
+	private var __events:Collection;
 	private var __eventsDirty:Boolean 			= false;
 	private var __currentDate:Date;
 	private var __currentDateDirty:Boolean		= false;
@@ -30,8 +30,8 @@ class com.jxl.goocal.views.DayView extends UIComponent
 	private var __createNewEvent_link:GCLinkButton;
 	private var __backToMonthView_link:GCLinkButton;
 	
-	public function get events():ICollection { return __events; }
-	public function set events(p_val:ICollection):Void
+	public function get events():Collection { return __events; }
+	public function set events(p_val:Collection):Void
 	{
 		__events = p_val;
 		__eventsDirty = true;

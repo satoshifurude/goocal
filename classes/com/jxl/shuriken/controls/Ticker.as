@@ -304,7 +304,8 @@ class com.jxl.shuriken.controls.Ticker extends DataSelectorTemplate {
 	
 	}
 
-	private function next():Void{	
+	private function next():Void
+	{	
 			
 		if(__bInDone && __bOutDone && (dataProvider.length > 1) && (__bPause==false)){					
 			moveItemIn()

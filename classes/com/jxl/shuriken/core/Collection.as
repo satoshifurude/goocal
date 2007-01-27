@@ -1,10 +1,9 @@
 ﻿import mx.events.EventDispatcher;
 
-import com.jxl.shuriken.core.ICollection;
 import com.jxl.shuriken.events.Event;
 import com.jxl.shuriken.events.ShurikenEvent;
 
-class com.jxl.shuriken.core.Collection implements ICollection
+class com.jxl.shuriken.core.Collection
 {
 	public function get source():Array { return __source; }
 	

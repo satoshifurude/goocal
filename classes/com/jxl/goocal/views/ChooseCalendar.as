@@ -4,7 +4,7 @@ import com.jxl.shuriken.core.UIComponent;
 import com.jxl.shuriken.controls.ComboBox;
 import com.jxl.shuriken.controls.CheckBox;
 import com.jxl.shuriken.controls.Button;
-import com.jxl.shuriken.core.ICollection;
+import com.jxl.shuriken.core.Collection;
 import com.jxl.shuriken.events.Event;
 import com.jxl.shuriken.events.ShurikenEvent;
 
@@ -15,8 +15,8 @@ class com.jxl.goocal.views.ChooseCalendar extends UIComponent
 	
 	public static var EVENT_SUBMIT:String = "com.jxl.goocal.views.ChooseCalendar.submit";
 	
-	public function get calendars():ICollection { return __calendars; }
-	public function set calendars(p_val:ICollection):Void
+	public function get calendars():Collection { return __calendars; }
+	public function set calendars(p_val:Collection):Void
 	{
 		__calendars = p_val;
 		__calendarsDirty = true;
@@ -31,7 +31,7 @@ class com.jxl.goocal.views.ChooseCalendar extends UIComponent
 		invalidateProperties();
 	}
 	
-	private var __calendars:ICollection;
+	private var __calendars:Collection;
 	private var __calendarsDirty:Boolean 		= false;
 	private var __autoChoose:Boolean				= false;
 	private var __autoChooseDirty:Boolean			= false;

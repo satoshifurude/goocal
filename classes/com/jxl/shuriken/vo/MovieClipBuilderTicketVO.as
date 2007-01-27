@@ -1,10 +1,9 @@
-﻿import com.jxl.shuriken.vo.IValueObject;
-import com.jxl.shuriken.events.IEventDispatcher;
+﻿
 import com.jxl.shuriken.events.Event;
 import com.jxl.shuriken.events.ShurikenEvent;
 import mx.events.EventDispatcher;
 
-class com.jxl.shuriken.vo.MovieClipBuilderTicketVO implements IValueObject, IEventDispatcher
+class com.jxl.shuriken.vo.MovieClipBuilderTicketVO
 {
 	
 	public var linkage:String;

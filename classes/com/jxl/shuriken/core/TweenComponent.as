@@ -8,8 +8,7 @@ import com.jxl.shuriken.events.ShurikenEvent;
 class com.jxl.shuriken.core.TweenComponent extends UIComponent
 {
 	
-	public static var symbolName:String = "com.jxl.shuriken.core.TweenComponent";
-	public static var symbolOwner:Object = com.jxl.shuriken.core.TweenComponent;
+	public static var SYMBOL_NAME:String = "com.jxl.shuriken.core.TweenComponent";
 	
 	public static var EVENT_EFFECT_MOVE_START:String = "effectMoveStart";
 	public static var EVENT_EFFECT_MOVE_END:String = "effectMoveEnd";

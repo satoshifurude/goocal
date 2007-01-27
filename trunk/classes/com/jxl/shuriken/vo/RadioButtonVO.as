@@ -1,6 +1,4 @@
-﻿import com.jxl.shuriken.vo.IValueObject;
-
-class com.jxl.shuriken.vo.RadioButtonVO implements IValueObject
+﻿class com.jxl.shuriken.vo.RadioButtonVO
 {
 	public var label:String 			= "";
 	public var selected:Boolean			= false;
@@ -14,7 +12,7 @@ class com.jxl.shuriken.vo.RadioButtonVO implements IValueObject
 	}
 	
 	// WARNING: gets reference to data property
-	public function clone():IValueObject
+	public function clone():RadioButtonVO
 	{
 		return new RadioButtonVO(label, selected, data);
 	}

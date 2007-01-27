@@ -23,4 +23,10 @@ class com.jxl.shuriken.controls.LinkButton extends Button
 		if(__mcLabel != null) __mcLabel.align = UITextField.ALIGN_LEFT;
 	}
 	
+	// HACK: does not dispatch size event; if needed, fix here
+	// don't want SimpleButton's background, so overwriting here
+	private function size():Void
+	{
+	}
+	
 }

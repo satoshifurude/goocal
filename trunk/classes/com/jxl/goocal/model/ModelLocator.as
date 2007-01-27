@@ -1,4 +1,4 @@
-﻿import com.jxl.shuriken.core.ICollection;
+﻿import com.jxl.shuriken.core.Collection;
 import com.jxl.goocal.vo.CalendarVO;
 import com.jxl.goocal.vo.EntryVO;
 
@@ -16,7 +16,7 @@ class com.jxl.goocal.model.ModelLocator
 		return inst;
 	}
 	
-	public var calendars:ICollection; // array of strings
+	public var calendars:Collection; // array of strings
 	public var selectedCalendar:String;
 	public var authCode:String;
 	public var username:String;

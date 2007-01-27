@@ -2,13 +2,7 @@
 
 class com.jxl.shuriken.controls.RadioButton extends Button
 {
-	
-	//REQUIRED INFO/------------------------------------------
-	
-	public static var symbolName:String = "com.jxl.shuriken.controls.RadioButton";
-	public static var symbolOwner:Object = com.jxl.shuriken.controls.RadioButton;
-	
-	public var className:String = "RadioButton";
+	public static var SYMBOL_NAME:String = "com.jxl.shuriken.controls.RadioButton";
 	
 	private var __mcRadioButtonOutline:MovieClip;
 	private var __mcRadioButtonCenter:MovieClip;

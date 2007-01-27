@@ -5,7 +5,6 @@ import com.jxl.shuriken.controls.SimpleButton;
 import com.jxl.shuriken.controls.Button;
 import com.jxl.shuriken.core.UIComponent;
 import com.jxl.shuriken.events.ShurikenEvent;
-import com.jxl.shuriken.core.IUIComponent;
 
 class com.jxl.shuriken.containers.ButtonList extends List
 {
@@ -100,7 +99,7 @@ class com.jxl.shuriken.containers.ButtonList extends List
 	}
 	
 	// Called by draw
-	private function setupChild(p_child:IUIComponent):Void
+	private function setupChild(p_child:UIComponent):Void
 	{
 		//DebugWindow.debugHeader();
 		//DebugWindow.debug("ButtonList::setupChild");
@@ -195,12 +194,12 @@ class com.jxl.shuriken.containers.ButtonList extends List
 	{
 		//DebugWindow.debugHeader();
 		//DebugWindow.debug("ButtonList::onListItemClicked");
-		var index:Number = getChildIndex(IUIComponent(p_event.target));
+		var index:Number = getChildIndex(UIComponent(p_event.target));
 		var item:Object = __dataProvider.getItemAt(index);
 		setSelectedIndex(index);	
 		
 		var event:ShurikenEvent = new ShurikenEvent(ShurikenEvent.ITEM_CLICKED, this);
-		event.child = IUIComponent(p_event.target);
+		event.child = UIComponent(p_event.target);
 		event.item = item;
 		event.index = index;
 		dispatchEvent(event);
@@ -210,11 +209,11 @@ class com.jxl.shuriken.containers.ButtonList extends List
 	{
 		//DebugWindow.debugHeader();
 		//DebugWindow.debug("ButtonList::onListItemRollOver");
-		var index:Number = getChildIndex(IUIComponent(p_event.target));
+		var index:Number = getChildIndex(UIComponent(p_event.target));
 		var item:Object = __dataProvider.getItemAt(index);
 		
 		var event:ShurikenEvent = new ShurikenEvent(ShurikenEvent.ITEM_ROLL_OVER, this);
-		event.child = IUIComponent(p_event.target);
+		event.child = UIComponent(p_event.target);
 		event.item = item;
 		event.index = index;
 		dispatchEvent(event);
@@ -224,7 +223,7 @@ class com.jxl.shuriken.containers.ButtonList extends List
 	{
 		//DebugWindow.debugHeader();
 		//DebugWindow.debug("ButtonList::onListItemSelectionChanged");
-		setSelectedIndex(getChildIndex(IUIComponent(p_event.target)), true);
+		setSelectedIndex(getChildIndex(UIComponent(p_event.target)), true);
 	}
 	
 }

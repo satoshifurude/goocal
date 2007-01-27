@@ -9,7 +9,6 @@ import com.jxl.shuriken.events.ShurikenEvent;
 
 class com.jxl.shuriken.controls.RadioButtonGroup extends List
 {
-	//REQUIRED INFO/------------------------------------------
 	
 	public static var SYMBOL_NAME:String = "com.jxl.shuriken.controls.RadioButtonGroup";
 	

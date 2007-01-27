@@ -1,6 +1,6 @@
 ﻿import mx.utils.Delegate;
 
-import com.jxl.shuriken.core.IUIComponent;
+import com.jxl.shuriken.core.UIComponent;
 import com.jxl.shuriken.containers.ScrollableList;
 import com.jxl.shuriken.events.ShurikenEvent;
 import com.jxl.shuriken.controls.Button;
@@ -77,7 +77,7 @@ class com.jxl.goocal.views.EventList extends ScrollableList
 		__mcScrollNext.setSize(width, __mcScrollNext.height);
 	}
 	
-	private function refreshEventItem(p_child:IUIComponent, p_index:Number, p_item:Object):Void
+	private function refreshEventItem(p_child:UIComponent, p_index:Number, p_item:Object):Void
 	{
 		var vo:EntryVO = EntryVO(p_item);
 		EventItem(p_child).eventTime = vo.toHourString();
@@ -88,8 +88,8 @@ class com.jxl.goocal.views.EventList extends ScrollableList
 	{
 		var event:ShurikenEvent = new ShurikenEvent(ShurikenEvent.ITEM_CLICKED, this);
 		event.lastSelected = null; // TODO: fix this
-		event.selected = IUIComponent(p_event.target);
-		var childIndex:Number = __mcList.getChildIndex(IUIComponent(p_event.target));
+		event.selected = UIComponent(p_event.target);
+		var childIndex:Number = __mcList.getChildIndex(UIComponent(p_event.target));
 		event.item = __dataProvider.getItemAt(childIndex);
 		dispatchEvent(event);
 	}

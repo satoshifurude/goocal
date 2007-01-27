@@ -5,7 +5,7 @@ import com.jxl.shuriken.events.ShurikenEvent;
 import com.jxl.shuriken.controls.calendarclasses.CalendarDay;
 import com.jxl.shuriken.core.MDArray;
 import com.jxl.shuriken.utils.DateUtils;
-import com.jxl.shuriken.core.IUIComponent;
+import com.jxl.shuriken.core.UIComponent;
 import com.jxl.shuriken.core.UITextField;
 import com.jxl.shuriken.controls.Button;
 import com.jxl.shuriken.utils.LoopUtils;
@@ -371,18 +371,18 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 		if(__date_mdarray.length == 0 || __date_mdarray == null) return;
 		__child_mdarray = new MDArray(__date_mdarray.rows, __date_mdarray.cols);
 		var i:Number = 0;
-		var child:IUIComponent = createChildAt(i, __childClass);
-		child.setData({r: 0, c: 0});
+		var child:UIComponent = createChildAt(i, __childClass);
+		child.data = {r: 0, c: 0};
 		child.addEventListener(ShurikenEvent.SELECTION_CHANGED, __daySelectionChanged);
 		__child_mdarray.setCell(0, 0, child);
 		
 		if(__autoSizeToChildren == true)
 		{
-			__columnWidth = child.getWidth();
+			__columnWidth = child.width;
 			calculateHorizontalPageSize();
 			dispatchEvent(new ShurikenEvent(ShurikenEvent.COLUMN_WIDTH_CHANGED, this));
 		
-			__rowHeight = child.getHeight();
+			__rowHeight = child.height;
 			calculateVerticalPageSize();
 			dispatchEvent(new ShurikenEvent(ShurikenEvent.ROW_HEIGHT_CHANGED, this));
 		}
@@ -415,8 +415,8 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 	
 	private function drawNext(p_val:Number, p_currentRow:Number, p_currentCol:Number):Void
 	{
-		var child:IUIComponent = createChildAt(++p_val, __childClass);
-		child.setData({r: p_currentRow, c: p_currentCol});
+		var child:UIComponent = createChildAt(++p_val, __childClass);
+		child.data = {r: p_currentRow, c: p_currentCol};
 		child.addEventListener(ShurikenEvent.SELECTION_CHANGED, __daySelectionChanged);
 		__child_mdarray.setCell(p_currentRow, p_currentCol, child);
 		setupChild(child);
@@ -466,7 +466,7 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 	
 	private function sizeNext(p_val:Number, p_currentRow:Number, p_currentCol:Number):Void
 	{
-		var child:IUIComponent = getChildAt(p_val);
+		var child:UIComponent = getChildAt(p_val);
 		
 		var theX:Number = (__columnWidth + __childHorizontalMargin) * (p_currentCol);
 		var theY:Number = (__rowHeight + __childVerticalMargin) * (p_currentRow);
@@ -535,7 +535,7 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 	{
 		var item = __date_mdarray.getCell(p_currentRow, p_currentCol);
 		var theDate:Date = item;
-		var child:IUIComponent = getChildAt(p_val);
+		var child:UIComponent = getChildAt(p_val);
 		__childSetValueFunction.call(__childSetValueScope, child, p_val, theDate);
 	}
 	
@@ -556,7 +556,7 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 		}
 	}
 	
-	public function refreshSetValue(p_child:IUIComponent, p_index:Number, p_item:Object):Void
+	public function refreshSetValue(p_child:UIComponent, p_index:Number, p_item:Object):Void
 	{
 		CalendarDay(p_child).label = p_item.getDate();
 		var val = p_item;
@@ -590,7 +590,7 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 			CalendarDay(p_child).setSelectedNoEvent(false);
 		}
 		
-		var obj:Object = p_child.getData();
+		var obj:Object = p_child.data;
 		var bgColor = __color_mdarray.getCell(obj.r, obj.c);
 		if(CalendarDay(p_child).selected == false)
 		{
@@ -631,7 +631,7 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 	private function colorNext(p_val:Number, p_currentRow:Number, p_currentCol:Number):Void
 	{
 		var bgColor = __color_mdarray.getCell(p_currentRow, p_currentCol);
-		var child:IUIComponent = getChildAt(p_val);
+		var child:UIComponent = getChildAt(p_val);
 		if(CalendarDay(child).selected == false)
 		{
 			CalendarDay(child).background = true;
@@ -685,7 +685,7 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 		
 		deselectLastSelected();
 		
-		var obj:Object = p_tar.getData();
+		var obj:Object = p_tar.data;
 		// HACK: casting hack; AS2 fails at life
 		var theDate = __date_mdarray.getCell(obj.r, obj.c);
 		//DebugWindow.debug("You selected " + theDate);
@@ -818,7 +818,7 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 	}
 	
 	// override
-	public function setupChild(p_child:IUIComponent):Void
+	public function setupChild(p_child:UIComponent):Void
 	{
 		//CalendarDay(p_child).addEventListener(ShurikenEvent.RELEASE, __dayClickedDelegate);
 		//CalendarDay(p_child).buttonRelease = __dayClickedDelegate;
@@ -830,13 +830,13 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 	{
 		//DebugWindow.debugHeader();
 		//DebugWindow.debug("ButtonList::onListItemClicked");
-		var index:Number = getChildIndex(IUIComponent(p_event.target));
+		var index:Number = getChildIndex(UIComponent(p_event.target));
 		//var item:Object = __dataProvider.getItemAt(index);
-		var o:Object = IUIComponent(p_event.target).getData();
+		var o:Object = UIComponent(p_event.target).data;
 		var item:Object = __date_mdarray.getCell(o.r, o.c);
 		
 		var event:ShurikenEvent = new ShurikenEvent(ShurikenEvent.ITEM_CLICKED, this);
-		event.child = IUIComponent(p_event.target);
+		event.child = UIComponent(p_event.target);
 		event.item = item;
 		event.index = index;
 		

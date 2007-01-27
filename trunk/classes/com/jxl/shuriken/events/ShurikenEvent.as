@@ -1,6 +1,6 @@
 ﻿import com.jxl.shuriken.events.Event;
-import com.jxl.shuriken.core.IUIComponent;
-import com.jxl.shuriken.core.IList;
+import com.jxl.shuriken.core.UIComponent;
+import com.jxl.shuriken.containers.List;
 import com.jxl.shuriken.controls.RadioButton;
 
 class com.jxl.shuriken.events.ShurikenEvent extends Event
@@ -21,7 +21,7 @@ class com.jxl.shuriken.events.ShurikenEvent extends Event
 	public static var BEFORE_ALL_CHILDREN_REMOVED:String 			= "com.jxl.shuriken.events.ShurikenEvent.beforeAllChildrenRemoved";
 	public static var ALL_CHILDREN_REMOVED:String 					= "com.jxl.shuriken.events.ShurikenEvent.allChildrenRemoved";
 	
-	public var child:IUIComponent;
+	public var child:UIComponent;
 	public var index:Number;
 	public var oldIndex:Number;
 	public var newIndex:Number;
@@ -62,7 +62,7 @@ class com.jxl.shuriken.events.ShurikenEvent extends Event
 	public static var ROW_HEIGHT_CHANGED:String						=  "com.jxl.shuriken.events.ShurikenEvent.rowHeightChanged";
 	public static var SETUP_CHILD:String							=  "com.jxl.shuriken.events.ShurikenEvent.setupChild";
 	
-	public var list:IList;
+	public var list:List;
 	
 	// TweenComponent
 	public static var EFFECT_MOVE_START:String						=  "com.jxl.shuriken.events.ShurikenEvent.effectMoveStart";
@@ -75,16 +75,20 @@ class com.jxl.shuriken.events.ShurikenEvent extends Event
 	public static var ITEM_SELECTION_CHANGED:String					= "com.jxl.shuriken.events.ShurikenEvent.itemSelectionChanged";
 	
 	public var item:Object;
-	public var lastSelected:IUIComponent;
-	public var selected:IUIComponent;
+	public var lastSelected:UIComponent;
+	public var selected:UIComponent;
 	
 	// ButtonBar
 	public static var ITEM_ROLL_OVER:String							= "com.jxl.shuriken.events.ShurikenEvent.itemRollOver";
 
 	// RadioButtonGroup
 	public static var RADIO_BUTTON_CLICKED:String 					= "com.jxl.shuriken.events.ShurikenEvent.radioButtonClicked";
-
+	
+	// NOTE: if not using RadioButton, comment out
+	// for filesize & RAM savings
 	public var radioButton:RadioButton;
+	// NOTE: if not using RadioButton, comment out
+	// for filesize & RAM savings
 	public var lastRadioButton:RadioButton;
 	public var lastIndex:Number;
 	

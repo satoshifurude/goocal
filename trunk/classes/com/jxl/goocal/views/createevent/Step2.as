@@ -3,7 +3,6 @@ import com.jxl.shuriken.core.UITextField;
 import com.jxl.shuriken.controls.Label;
 import com.jxl.shuriken.controls.ComboBox;
 import com.jxl.shuriken.utils.DateUtils;
-import com.jxl.shuriken.core.ICollection;
 import com.jxl.shuriken.core.Collection;
 
 class com.jxl.goocal.views.createevent.Step2 extends UIComponent
@@ -13,7 +12,7 @@ class com.jxl.goocal.views.createevent.Step2 extends UIComponent
 	
 	private var __where:String 								= "";
 	private var __whereDirty:Boolean 						= false;
-	private var __calendars:ICollection;
+	private var __calendars:Collection;
 	private var __calendarsDirty:Boolean					= false;
 	private var __description:String						= "";
 	private var __descriptionDirty:Boolean					= false;
@@ -33,8 +32,8 @@ class com.jxl.goocal.views.createevent.Step2 extends UIComponent
 		invalidateProperties();
 	}
 	
-	public function get calendars():ICollection { return __calendars; }
-	public function set calendars(p_val:ICollection):Void
+	public function get calendars():Collection { return __calendars; }
+	public function set calendars(p_val:Collection):Void
 	{
 		__calendars = p_val;
 		__calendarsDirty = true;

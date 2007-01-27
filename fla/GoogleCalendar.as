@@ -13,6 +13,7 @@ import com.jxl.goocal.views.CalendarList;
 import com.jxl.goocal.views.DayView;
 import com.jxl.goocal.views.MonthView;
 import com.jxl.goocal.views.EntryView;
+import com.jxl.goocal.views.CreateEvent;
 
 import com.jxl.goocal.controller.CommandRegistry;
 import com.jxl.goocal.events.LoginEvent;
@@ -51,6 +52,7 @@ class GoogleCalendar extends UIComponent
 	private var __dayView:DayView;
 	private var __monthView:MonthView;
 	private var __entryView:EntryView;
+	private var __createEvent:CreateEvent;
 	
 	public function GoogleCalendar()
 	{
@@ -95,9 +97,8 @@ class GoogleCalendar extends UIComponent
 		event.username = __login_mc.username;
 		event.password = __login_mc.password;
 		//DebugWindow.debug("__login_mc.username: " + __login_mc.username + ", __login_mc.password: " + __login_mc.password);
-		__login_mc.removeMovieClip();
-		delete __login_mc;
 		
+		destroyViews();
 		showActivity("Logging In...");
 		
 		CommandRegistry.getInstance().dispatchEvent(event);
@@ -184,6 +185,7 @@ class GoogleCalendar extends UIComponent
 			{
 				__dayView = DayView(createComponent(DayView, "__dayView"));
 				__dayView.addEventListener(DayView.EVENT_BACK_TO_MONTH, Delegate.create(this, showMonthView));
+				__dayView.addEventListener(DayView.EVENT_CREATE_NEW, Delegate.create(this, showCreateEvent));
 				__dayView.addEventListener(ShurikenEvent.ITEM_CLICKED, Delegate.create(this, onDayEventClicked));
 				__dayView.move(0, 40);
 				__dayView.setSize(__width, __height - 40);
@@ -251,11 +253,7 @@ class GoogleCalendar extends UIComponent
 		//DebugWindow.debug("GoogleCalendar::onDayEventClicked");
 		showActivity("Getting Event Details...");
 		
-		if(__dayView != null)
-		{
-			__dayView.removeMovieClip();
-			delete __dayView;
-		}
+		destroyViews();
 		
 		// TODO: get the full entry, and show it in the EntryView
 		var entryVO:EntryVO = EntryVO(p_event.item);
@@ -272,12 +270,7 @@ class GoogleCalendar extends UIComponent
 	{
 		hideActivity(true);
 		
-		//if(__monthView != null) __monthView.visible = false;
-		if(__monthView != null)
-		{
-			__monthView.removeMovieClip();
-			delete __monthView;
-		}
+		destroyViews();
 		
 		if(__entryView == null)
 		{
@@ -292,23 +285,7 @@ class GoogleCalendar extends UIComponent
 	
 	private function showMonthView():Void
 	{
-		if(__loggingIn_lbl != null)
-		{
-		   __loggingIn_lbl.removeMovieClip();
-			delete __loggingIn_lbl;
-		}
-		
-		if(__dayView != null)
-		{
-			__dayView.removeMovieClip();
-			delete __dayView;
-		}
-		
-		if(__entryView != null)
-		{
-			__entryView.removeMovieClip();
-			delete __entryView;
-		}
+		destroyViews();
 		
 		if(__monthView == null)
 		{
@@ -316,10 +293,6 @@ class GoogleCalendar extends UIComponent
 			__monthView.addEventListener(MonthView.EVENT_DATE_SELECTED, Delegate.create(this, onDateClicked));
 			__monthView.move(0, 40);
 		}
-		//else
-		//{
-			//__monthView.visible = true;
-		//}
 	}
 	
 	private function showActivity(p_msg:String):Void
@@ -372,12 +345,7 @@ class GoogleCalendar extends UIComponent
 																onSetCurrentDate);
 		event.currentDate = __monthView.selectedDate;
 		
-		//if(__monthView != null) __monthView.visible = false;
-		if(__monthView != null)
-		{
-			__monthView.removeMovieClip();
-			delete __monthView;
-		}
+		destroyViews();
 		
 		CommandRegistry.getInstance().dispatchEvent(event);
 	}
@@ -416,6 +384,27 @@ class GoogleCalendar extends UIComponent
 		{
 			showActivity(String(p_boolOrMsg));
 		}
+	}
+	
+	private function showCreateEvent():Void
+	{
+		destroyViews();
+		
+		if(__createEvent == null)
+		{
+			__createEvent = CreateEvent(createComponent(CreateEvent, "__createEvent"));
+			__createEvent.move(0, 0);
+		}
+	}
+	
+	private function destroyViews():Void
+	{
+		if(__login_mc != null) __login_mc.removeMovieClip(); delete __login_mc;
+		if(__calendarList != null) __calendarList.removeMovieClip(); delete __calendarList;
+		if(__dayView != null) __dayView.removeMovieClip(); delete __dayView;
+		if(__monthView != null) __monthView.removeMovieClip(); delete __monthView;
+		if(__entryView != null) __entryView.removeMovieClip(); delete __entryView;
+		if(__createEvent != null) __createEvent.removeMovieClip(); delete __createEvent;
 	}
 	
 	

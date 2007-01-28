@@ -63,7 +63,6 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 		if(value != __selected && __toggle == true)
 		{
 			__selected = value;
-			__selectedDirty = true;
 			
 			if (__selected == true)
 			{

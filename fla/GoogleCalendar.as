@@ -54,6 +54,9 @@ class GoogleCalendar extends UIComponent
 	private var __entryView:EntryView;
 	private var __createEvent:CreateEvent;
 	
+	public var username:String;
+	public var password:String;
+	
 	public function GoogleCalendar()
 	{
 	}
@@ -64,6 +67,26 @@ class GoogleCalendar extends UIComponent
 		
 		__width = 176;
 		__height = 208;
+		
+		var lv:LoadVars = new LoadVars();
+		lv.owner = this;
+		lv.onLoad = function(success)
+		{
+			if(success == true)
+			{
+				if(this.owner.__login_mc != null)
+				{
+					this.owner.__login_mc.username = lv.username;
+					this.owner.__login_mc.password = lv.password;
+				}
+				else
+				{
+					this.owner.username = lv.username;
+					this.owner.password = lv.password;
+				}
+			}
+		};
+		lv.load("config.txt");
 	}
 	
 	public function createChildren():Void
@@ -83,7 +106,14 @@ class GoogleCalendar extends UIComponent
 		if(__login_mc == null)
 		{
 			__login_mc = LoginForm(attachMovie(LoginForm.SYMBOL_NAME, "__login_mc", getNextHighestDepth()));
-			__login_mc.addEventListener(LoginForm.EVENT_SUBMIT, Delegate.create(this, onLogin));
+			__login_mc.setSubmitCallback(this, onLogin);
+			if(username != null)
+			{
+				__login_mc.username = username;
+				__login_mc.password = password;
+				delete username;
+				delete password;
+			}
 			__login_mc.move(0, 56);
 		}
 	}
@@ -109,7 +139,7 @@ class GoogleCalendar extends UIComponent
 		//DebugWindow.debugHeader();
 		//DebugWindow.debug("GoogleCalendar::onLoggedIn");
 		//DebugWindow.debug("p_callback.isLoggedIn: " + p_callback.isLoggedIn);
-		if(p_callback.isLoggedIn == true)
+		if(p_callback.isLoggedIn == LoginCallback.LOGGED_IN_SUCCESS)
 		{
 			gotoAndPlay("main");
 			showActivity("Getting Calendars...");
@@ -120,7 +150,12 @@ class GoogleCalendar extends UIComponent
 			CommandRegistry.getInstance().dispatchEvent(event);
 			
 		}
-		else
+		else if(p_callback.isLoggedIn == LoginCallback.LOGGED_IN_FAILED_ATTEMPT)
+		{
+			showActivity(p_callback.progress);
+			__loggingIn_lbl.color = 0xCC0000;
+		}
+		else if(p_callback.isLoggedIn == LoginCallback.LOGGED_IN_FAILED)
 		{
 			showActivity("Login Failed.");
 			__loggingIn_lbl.color = 0xCC0000;
@@ -141,7 +176,7 @@ class GoogleCalendar extends UIComponent
 				__calendarList.move(0, 40);
 				__calendarList.setSize(width, __calendarList.height);
 				__calendarList.calendarsCollection = ModelLocator.getInstance().calendars;
-				__calendarList.addEventListener(ShurikenEvent.ITEM_CLICKED, Delegate.create(this, onCalendarSelected));
+				__calendarList.setItemClickCallback(this, onCalendarSelected);
 			}
 		}
 	}
@@ -184,9 +219,9 @@ class GoogleCalendar extends UIComponent
 			if(__dayView == null)
 			{
 				__dayView = DayView(createComponent(DayView, "__dayView"));
-				__dayView.addEventListener(DayView.EVENT_BACK_TO_MONTH, Delegate.create(this, showMonthView));
-				__dayView.addEventListener(DayView.EVENT_CREATE_NEW, Delegate.create(this, showCreateEvent));
-				__dayView.addEventListener(ShurikenEvent.ITEM_CLICKED, Delegate.create(this, onDayEventClicked));
+				__dayView.setMonthViewCallback(this, showMonthView);
+				__dayView.setCreateNewCallback(this, showCreateEvent);
+				__dayView.setItemClickCallback(this, onDayEventClicked);
 				__dayView.move(0, 40);
 				__dayView.setSize(__width, __height - 40);
 				var today:Date = new Date();
@@ -221,8 +256,8 @@ class GoogleCalendar extends UIComponent
 		if(__dayView == null)
 		{
 			__dayView = DayView(createComponent(DayView, "__dayView"));
-			__dayView.addEventListener(DayView.EVENT_BACK_TO_MONTH, Delegate.create(this, showMonthView));
-			__dayView.addEventListener(ShurikenEvent.ITEM_CLICKED, Delegate.create(this, onDayEventClicked));
+			__dayView.setMonthViewCallback(this, showMonthView);
+			__dayView.setItemClickCallback(this, onDayEventClicked);
 			__dayView.move(0, 40);
 			__dayView.setSize(__width, __height - 40);
 			
@@ -251,6 +286,9 @@ class GoogleCalendar extends UIComponent
 	{
 		//DebugWindow.debugHeader();
 		//DebugWindow.debug("GoogleCalendar::onDayEventClicked");
+		//DebugWindow.debug("p_event.item: " + p_event.item);
+		//DebugWindow.debugProps(p_event.item);
+		
 		showActivity("Getting Event Details...");
 		
 		destroyViews();
@@ -277,7 +315,7 @@ class GoogleCalendar extends UIComponent
 			__entryView = EntryView(createComponent(EntryView, "__entryView"));
 			__entryView.move(0, 40);
 			__entryView.setSize(__width, __height - 40);
-			__entryView.addEventListener(EntryView.EVENT_BACK_TO_MONTH, Delegate.create(this, showMonthView));
+			__entryView.setMonthCallback(this, showMonthView);
 		}
 		
 		__entryView.entry = ModelLocator.getInstance().currentEntry;
@@ -290,7 +328,7 @@ class GoogleCalendar extends UIComponent
 		if(__monthView == null)
 		{
 			__monthView = MonthView(createComponent(MonthView, "__monthView"));
-			__monthView.addEventListener(MonthView.EVENT_DATE_SELECTED, Delegate.create(this, onDateClicked));
+			__monthView.setDateSelectedCallback(this, onDateClicked);
 			__monthView.move(0, 40);
 		}
 	}

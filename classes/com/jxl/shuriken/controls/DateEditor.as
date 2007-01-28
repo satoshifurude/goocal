@@ -95,8 +95,6 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 			}
 		}
 		
-		var changeFunc:Function = Delegate.create(this, onValueChange);
-		
 		if(__fieldType != FIELD_DAY_HOUR_MIN)
 		{
 		
@@ -109,7 +107,7 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 			if(__year_nms == null)
 			{
 				__year_nms = NumericStepper(createComponent(NumericStepper, "__year_nms"));
-				__year_nms.addEventListener(ShurikenEvent.CHANGE, changeFunc);
+				__year_nms.setChangeCallback(this, onValueChange);
 			}
 			
 			if(__fieldType == FIELD_YEAR) return;
@@ -123,7 +121,7 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 			if(__month_nms == null)
 			{
 				__month_nms = NumericStepper(createComponent(NumericStepper, "__month_nms"));
-				__month_nms.addEventListener(ShurikenEvent.CHANGE, changeFunc);
+				__month_nms.setChangeCallback(this, onValueChange);
 			}
 			
 			if(__fieldType == FIELD_YEAR_MONTH) return;
@@ -137,7 +135,7 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 			if(__day_nms == null)
 			{
 				__day_nms = NumericStepper(createComponent(NumericStepper, "__day_nms"));
-				__day_nms.addEventListener(ShurikenEvent.CHANGE, changeFunc);
+				__day_nms.setChangeCallback(this, onValueChange);
 			}
 			
 			if(__fieldType == FIELD_YEAR_MONTH_DAY) return;
@@ -151,7 +149,7 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 			if(__hour_nms == null)
 			{
 				__hour_nms = NumericStepper(createComponent(NumericStepper, "__hour_nms"));
-				__hour_nms.addEventListener(ShurikenEvent.CHANGE, changeFunc);
+				__hour_nms.setChangeCallback(this, onValueChange);
 			}
 			
 			if(__fieldType == FIELD_YEAR_MONTH_DAY_HOUR) return;
@@ -165,7 +163,7 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 			if(__min_nms == null)
 			{
 				__min_nms = NumericStepper(createComponent(NumericStepper, "__min_nms"));
-				__min_nms.addEventListener(ShurikenEvent.CHANGE, changeFunc);
+				__min_nms.setChangeCallback(this, onValueChange);
 			}
 		}
 		else
@@ -180,7 +178,7 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 			if(__day_nms == null)
 			{
 				__day_nms = NumericStepper(createComponent(NumericStepper, "__day_nms"));
-				__day_nms.addEventListener(ShurikenEvent.CHANGE, changeFunc);
+				__day_nms.setChangeCallback(this, onValueChange);
 			}
 			
 			if(__hour_lbl == null)
@@ -192,7 +190,7 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 			if(__hour_nms == null)
 			{
 				__hour_nms = NumericStepper(createComponent(NumericStepper, "__hour_nms"));
-				__hour_nms.addEventListener(ShurikenEvent.CHANGE, changeFunc);
+				__hour_nms.setChangeCallback(this, onValueChange);
 			}
 			
 			if(__min_lbl == null)
@@ -204,7 +202,7 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 			if(__min_nms == null)
 			{
 				__min_nms = NumericStepper(createComponent(NumericStepper, "__min_nms"));
-				__min_nms.addEventListener(ShurikenEvent.CHANGE, changeFunc);
+				__min_nms.setChangeCallback(this, onValueChange);
 			}
 		}
 		
@@ -265,37 +263,6 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 		__min_lbl.move(__hour_lbl.x + __hour_lbl.width + margin, __hour_lbl.y);
 		__min_lbl.setSize(40, 16);
 		__min_nms.move(__min_lbl.x, __min_lbl.y + __min_lbl.height + margin);
-		/*
-		__ok_pb.setSize(20, 20);
-		__ok_pb.move(4, __height - __ok_pb.height);
-		
-		
-		__close_pb.setSize(10, 10);
-		__close_pb.move(__width - __close_pb.width - 4, 4);
-		__close_pb.clear();
-		__close_pb.beginFill(0xCC0000);
-		DrawUtils.drawRoundRect(__close_pb, 0, 0, __close_pb.width, __close_pb.height, 2);
-		__close_pb.lineStyle(2, 0xFFFFFF);
-		var startX:Number = 3;
-		var endX:Number = 7;
-		__close_pb.moveTo(startX, startX);
-		__close_pb.lineTo(endX, endX);
-		__close_pb.moveTo(endX, startX);
-		__close_pb.lineTo(startX, endX);
-		__close_pb.moveTo(startX, startX);
-		__close_pb.lineTo(endX, endX);
-		__close_pb.moveTo(endX, startX);
-		__close_pb.lineTo(startX, endX);
-		__close_pb.endFill();
-		*/
-		
-		/*
-		clear();
-		lineStyle(2, 0x112ABB);
-		beginFill(0xFFFFFF);
-		DrawUtils.drawRoundRect(this, 0, 0, __width, __height, 6);
-		endFill();
-		*/
 	}
 	
 	private function onValueChange(p_event:ShurikenEvent):Void
@@ -323,19 +290,6 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 				break;
 		}
 	}
-	/*
-	private function onOkCloseClick(p_event:ShurikenEvent):Void
-	{
-		if(p_event.target == __ok_pb)
-		{
-			dispatchEvent(new Event(EVENT_OK, this));
-		}
-		else
-		{
-			dispatchEvent(new Event(EVENT_CANCEL, this));
-		}
-	}
-	*/
 	
 	
 }

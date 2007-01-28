@@ -1,6 +1,5 @@
 ﻿import mx.utils.Delegate;
 
-import com.jxl.shuriken.core.IUIComponent;
 import com.jxl.shuriken.core.UIComponent;
 import com.jxl.shuriken.containers.List;
 import com.jxl.shuriken.controls.RadioButton;
@@ -13,6 +12,7 @@ class com.jxl.shuriken.controls.RadioButtonGroup extends List
 	public static var SYMBOL_NAME:String = "com.jxl.shuriken.controls.RadioButtonGroup";
 	
 	private var __lastSelectedChild:RadioButton;
+	private var __clickCallback:Callback;
 	
 	public function init():Void
 	{
@@ -32,11 +32,11 @@ class com.jxl.shuriken.controls.RadioButtonGroup extends List
 		p_child.selected 				= rbvo.selected;		
 	}
 	
-	private function setupChild(p_child:IUIComponent):Void
+	private function setupChild(p_child:UIComponent):Void
 	{
 		super.setupChild(p_child);
 		
-		p_child.addEventListener(ShurikenEvent.RELEASE, Delegate.create(this, onRadioButtonRelease));
+		if(p_child instanceof SimpleButton) p_child.setReleaseCallback(this, onRadioButtonRelease);
 	}
 	
 	private function onRadioButtonRelease(p_event:ShurikenEvent):Void
@@ -57,7 +57,12 @@ class com.jxl.shuriken.controls.RadioButtonGroup extends List
 		event.lastRadioButton = lastRadioButton;
 		event.index = releasedIndex;
 		event.lastIndex = lastSelectedIndex;
-		dispatchEvent(event);
+		__clickCallback.dispatch(event);
+	}
+	
+	public function setClickCallback(scope:Object, func:Function):Void
+	{
+		__clickCallback.dispatch(scope, func);
 	}
 	
 	

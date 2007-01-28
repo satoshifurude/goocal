@@ -9,14 +9,24 @@ class com.jxl.goocal.business.LoginDelegate
 {
 	private var responder:Responder;
 	private var lv:LoadVars;
+	private var attempts:Number;
+	private var maxAttempts:Number = 3;
+	private var username:String;
+	private var password:String;
+	private var __progressScope:Object;
+	private var __progressFunction:Function;
 	
 	function LoginDelegate(p_responder:Responder)
 	{
 		responder = p_responder;
+		attempts = 0;
 	}
 	
 	public function login(p_username:String, p_password:String):Void
 	{
+		attempts++;
+		username = p_username;
+		password = p_password;
 		lv = new LoadVars();
 		lv.onData = Delegate.create(this, onGetAuthCode);
 		lv.cmd = "get_auth";
@@ -40,10 +50,24 @@ class com.jxl.goocal.business.LoginDelegate
 		}
 		else
 		{
-			var fault:Fault = new Fault("failure", "login failure", "Failed to login.", "Login");
-			var fe:FaultEvent = new FaultEvent(fault);
-			responder.onFault(fe);
+			if(attempts < maxAttempts)
+			{
+				__progressFunction.call(__progressScope, "Failed attempt " + attempts + ".  Trying again...");
+				login(username, password);
+			}
+			else
+			{
+				var fault:Fault = new Fault("failure", "login failure", "Failed to login.", "Login");
+				var fe:FaultEvent = new FaultEvent(fault);
+				responder.onFault(fe);
+			}
 		}
+	}
+	
+	public function setProgressCallback(scope:Object, func:Function):Void
+	{
+		__progressScope = scope;
+		__progressFunction = func;
 	}
 	
 }

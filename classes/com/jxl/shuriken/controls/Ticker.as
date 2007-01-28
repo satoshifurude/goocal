@@ -1,4 +1,8 @@
-﻿import mx.effects.Tween;
+﻿// TODO: This class needs an overhaul.  It should
+// support both horizontal AND vertical scrolling
+// as well as the new event callback structure.
+
+import mx.effects.Tween;
 import mx.utils.Delegate;
 import mx.transitions.easing.Strong;
 
@@ -131,15 +135,17 @@ class com.jxl.shuriken.controls.Ticker extends DataSelectorTemplate {
 		super.onInitialized();	
 	}	
 
-	private function createChildren():Void{
+	private function createChildren():Void
+	{
 		var fOnTickerItemClicked:Function
 		var fOnTickerItemRollOver:Function
 		var fOnTickerItemRollOut:Function
 		
 		super.createChildren();
 		
-		__mcItem1=Button(attachMovie(Button.symbolName,"__mcItem1", getNextHighestDepth()) )	
-		__mcItem2=Button(attachMovie(Button.symbolName,"__mcItem2", getNextHighestDepth()) )	
+		// TOOD: refactor this to be easier to extend
+		__mcItem1 = Button(attachMovie(Button.symbolName,"__mcItem1", getNextHighestDepth()) )	
+		__mcItem2 = Button(attachMovie(Button.symbolName,"__mcItem2", getNextHighestDepth()) )	
 		__mcItem2.move(0, inY)
 			
 	
@@ -214,7 +220,8 @@ class com.jxl.shuriken.controls.Ticker extends DataSelectorTemplate {
 
 	}
 
-	private function onTickerItemClicked(pEvent:Object):Void{		
+	private function onTickerItemClicked(pEvent:Object):Void
+	{		
 		dispatchEvent({type:EVENT_TICKER_CLICK, target: this, currentIndex:currentIndex});			
 	}
 	

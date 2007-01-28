@@ -41,13 +41,13 @@ class com.jxl.shuriken.controls.TextArea extends UITextField
 		if(__upArrow_pb == null)
 		{
 			__upArrow_pb = SimpleButton(createComponent(SimpleButton, "__upArrow_pb"));
-			__upArrow_pb.addEventListener(ShurikenEvent.RELEASE, Delegate.create(this, onUpArrowRelease));
+			__upArrow_pb.setReleaseCallback(this, onUpArrowRelease);
 		}
 		
 		if(__downArrow_pb == null)
 		{
 			__downArrow_pb = SimpleButton(createComponent(SimpleButton, "__downArrow_pb"));
-			__downArrow_pb.addEventListener(ShurikenEvent.RELEASE, Delegate.create(this, onDownArrowRelease));
+			__downArrow_pb.setReleaseCallback(this, onDownArrowRelease);
 		}
 	}
 	

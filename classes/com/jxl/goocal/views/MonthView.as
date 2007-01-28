@@ -6,6 +6,7 @@ import com.jxl.shuriken.events.ShurikenEvent;
 import com.jxl.shuriken.events.Event;
 
 import com.jxl.goocal.views.GCLinkButton;
+import com.jxl.shuriken.events.Callback;
 
 class com.jxl.goocal.views.MonthView extends UIComponent
 {
@@ -14,6 +15,7 @@ class com.jxl.goocal.views.MonthView extends UIComponent
 	public static var EVENT_DATE_SELECTED:String = "dateSelected";
 	
 	private var __selectedDate:Date;
+	private var __dateSelectedCallback:Callback;
 	
 	private var __cal:CalendarBase;
 	private var __createNew_link:GCLinkButton;
@@ -48,7 +50,7 @@ class com.jxl.goocal.views.MonthView extends UIComponent
 		if(__cal == null)
 		{
 			__cal = CalendarBase(createComponent(CalendarBase, "__cal"));
-			__cal.addEventListener(ShurikenEvent.ITEM_CLICKED, Delegate.create(this, onDayClicked));
+			__cal.setItemClickCallback(this, onDayClicked);
 		}
 		
 		if(__createNew_link == null)
@@ -102,7 +104,7 @@ class com.jxl.goocal.views.MonthView extends UIComponent
 		// HACK: compiler hack, cannot cast to Date in AS2
 		var o = p_event.item;
 		__selectedDate = o;
-		dispatchEvent(new Event(EVENT_DATE_SELECTED, this));
+		__dateSelectedCallback.dispatch(new Event(EVENT_DATE_SELECTED, this));
 	}
 	
 	private function onIdle():Void
@@ -126,4 +128,8 @@ class com.jxl.goocal.views.MonthView extends UIComponent
 		invalidateSize();
 	}
 
+	public function setDateSelectedCallback(scope:Object, func:Function):Void
+	{
+		__dateSelectedCallback = new Callback(scope, func);
+	}
 }

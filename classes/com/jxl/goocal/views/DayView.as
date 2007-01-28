@@ -10,6 +10,7 @@ import com.jxl.shuriken.events.ShurikenEvent;
 import com.jxl.shuriken.utils.DrawUtils;
 import com.jxl.shuriken.utils.DateUtils;
 import com.jxl.shuriken.events.Event;
+import com.jxl.shuriken.events.Callback;
 
 import com.jxl.goocal.views.GCLinkButton;
 
@@ -24,6 +25,8 @@ class com.jxl.goocal.views.DayView extends UIComponent
 	private var __eventsDirty:Boolean 			= false;
 	private var __currentDate:Date;
 	private var __currentDateDirty:Boolean		= false;
+	private var __createNewCallback:Callback;
+	private var __monthViewCallback:Callback;
 	
 	private var __title_lbl:GCHeading;
 	private var __event_list:EventList;
@@ -65,21 +68,20 @@ class com.jxl.goocal.views.DayView extends UIComponent
 		if(__event_list == null)
 		{
 			__event_list = EventList(createComponent(EventList, "__event_list"));
-			__event_list.addEventListener(ShurikenEvent.ITEM_CLICKED, Delegate.create(this, onEventItemClicked));
 		}
 		
 		if(__createNewEvent_link == null)
 		{
 			__createNewEvent_link = GCLinkButton(createComponent(GCLinkButton, "__createNewEvent_link"));
 			__createNewEvent_link.label = "Create New Event...";
-			__createNewEvent_link.addEventListener(ShurikenEvent.RELEASE, Delegate.create(this, onCreateNew));
+			__createNewEvent_link.setReleaseCallback(this, onCreateNew);
 		}
 		
 		if(__backToMonthView_link == null)
 		{
 			__backToMonthView_link = GCLinkButton(createComponent(GCLinkButton, "__backToMonthView_link"));
 			__backToMonthView_link.label = "Back to Month view...";
-			__backToMonthView_link.addEventListener(ShurikenEvent.RELEASE, Delegate.create(this, onBackToMonthView));
+			__backToMonthView_link.setReleaseCallback(this, onBackToMonthView);
 		}
 		
 	}
@@ -131,24 +133,34 @@ class com.jxl.goocal.views.DayView extends UIComponent
 		endFill();
 	}
 	
-	private function onEventItemClicked(p_event:ShurikenEvent):Void
-	{
-		//DebugWindow.debugHeader();
-		//DebugWindow.debug("DayView::onEventItemClicked");
-		var event:ShurikenEvent = new ShurikenEvent(ShurikenEvent.ITEM_CLICKED, this);
-		event.selected = p_event.selected;
-		event.item = p_event.item;
-		dispatchEvent(event);
-	}
-	
 	private function onCreateNew(p_event:ShurikenEvent):Void
 	{
-		dispatchEvent(new Event(EVENT_CREATE_NEW, this));
+		__createNewCallback.dispatch(new Event(EVENT_CREATE_NEW, this));
 	}
 	
 	private function onBackToMonthView(p_event:ShurikenEvent):Void
 	{
-		dispatchEvent(new Event(EVENT_BACK_TO_MONTH, this));
+		__monthViewCallback.dispatch(new Event(EVENT_BACK_TO_MONTH, this));
 	}
+	
+	
+	public function setCreateNewCallback(scope:Object, func:Function):Void
+	{
+		__createNewCallback = new Callback(scope, func);
+	}
+	
+	public function setMonthViewCallback(scope:Object, func:Function):Void
+	{
+		__monthViewCallback = new Callback(scope, func);
+	}
+	
+	public function setItemClickCallback(scope:Object, func:Function):Void
+	{
+		//DebugWindow.debugHeader();
+		//DebugWindow.debug("setItemClickCallback, scope: " + scope + ", func: " + func);
+		//DebugWindow.debug("__event_list: " + __event_list);
+		__event_list.setItemClickCallback(scope, func);
+	}
+	
 	
 }

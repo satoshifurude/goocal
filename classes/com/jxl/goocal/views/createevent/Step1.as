@@ -118,7 +118,7 @@ class com.jxl.goocal.views.createevent.Step1 extends UIComponent
 			__what_ti.borderColor = 0x000000;
 			__what_ti.background = true;
 			__what_ti.backgroundColor = 0xFFFFFF;
-			__what_ti.addEventListener(ShurikenEvent.CHANGE, Delegate.create(this, onTextChanged)); 
+			__what_ti.setChangeCallback(this, onTextChanged); 
 		}
 		
 		if(__from_lbl == null)

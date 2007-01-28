@@ -1,6 +1,6 @@
-﻿import mx.events.EventDispatcher;
-import com.jxl.shuriken.events.Event;
+﻿import com.jxl.shuriken.events.Event;
 import com.jxl.shuriken.events.ShurikenEvent;
+import com.jxl.shuriken.events.Callback;
 
 class com.jxl.shuriken.core.MDArray
 {
@@ -85,13 +85,6 @@ class com.jxl.shuriken.core.MDArray
 		var cellLoc:Number = (r * rows) + c;
 		return cellLoc;
 	}
-	
-	// overwritten by mixin
-	public function addEventListener(p_type:String, p_list:Object):Void{}
-	public function dispatchEvent(p_event:Event):Void{}
-	public function removeEventListener(p_type:String, p_list:Object):Void{}
-	
-	private static var __makeEventDispatcher = EventDispatcher.initialize(com.jxl.shuriken.core.MDArray.prototype);
 	
 	/*
 	public function toString():String

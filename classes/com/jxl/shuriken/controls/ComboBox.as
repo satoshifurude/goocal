@@ -13,6 +13,7 @@ import com.jxl.shuriken.controls.Button;
 import com.jxl.shuriken.controls.LinkButton;
 import com.jxl.shuriken.utils.DrawUtils;
 import com.jxl.shuriken.events.ShurikenEvent;
+import com.jxl.shuriken.events.Callback;
 
 [InspectableList("scrollSpeed", "direction", "rowHeight", "showScrollButtons", "visibleRowCount", "columnWidth", "closeWhenSelected", "MaskOverlap" )]
 class com.jxl.shuriken.controls.ComboBox extends UIComponent
@@ -253,7 +254,10 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 	private var __MaskOverlap:Number 						= 3;
 	private var __MaskOverlapDirty:Boolean = false;
 		
-	private var __scrollSpeed:Number 						= 500;	
+	private var __scrollSpeed:Number 						= 500;
+	
+	private var __itemClickedCallback:Callback;
+	private var __itemSelectionChangedCallack:Callback;
 
 	private var openPosition:Number;
 	
@@ -292,34 +296,25 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 		setupHitState();
 	}
 	
-	/*
-	* Called on each child before its setValue function
-	* allows a subclass of list to set up a child without using the setValue function.
-	*/
-	private function onSetupChild(pEvent:Object)
-	{
-	}
-	
 	private function setupHitState():Void
 	{
 		__mcHitState = Button(attachMovie(Button.SYMBOL_NAME, "__mcHitState", getNextHighestDepth()));
-		__mcHitState.addEventListener(ShurikenEvent.PRESS, Delegate.create(this, onComboBoxClick));
-		__mcHitState.addEventListener(ShurikenEvent.MOUSE_DOWN_OUTSIDE, Delegate.create(this, onComboBoxClickOutside));
+		__mcHitState.setPressCallback(this, onComboBoxClick);
+		__mcHitState.setMouseDownOutsideCallback(this, onComboBoxClickOutside);
 	}
 	
 	private function setupList():Void
 	{
 		__mcList = ScrollableList(attachMovie(ScrollableList.SYMBOL_NAME, "__mcList", getNextHighestDepth()));
-		__mcList.addEventListener(ShurikenEvent.ITEM_CLICKED, Delegate.create(this, onListItemClicked));
-		__mcList.addEventListener(ShurikenEvent.ITEM_SELECTION_CHANGED, Delegate.create(this, onListItemChanged));
+		__mcList.setItemClickCallback(this, onListItemClicked);
+		__mcList.setItemSelectionChangedCallback(this, onListItemChanged);
 		__mcList.direction = List.DIRECTION_VERTICAL;
 		__mcList.childClass = __childClass;
 		__mcList.toggle = true;
-			
-		__mcList.addEventListener(List.EVENT_SETUP_CHILD, Delegate.create(this, onSetupChild));
 	}		
 	
-	private function setupLabel():Void{
+	private function setupLabel():Void
+	{
 		__mcLabel = UITextField(attachMovie(UITextField.SYMBOL_NAME, "__mcLabel", getNextHighestDepth()));
 		__mcLabel.multiline 	= false;
 		__mcLabel.wordWrap 	= false;
@@ -507,13 +502,18 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 		}
 	}
 	
+	public function setItemClickedCallback(scope:Object, func:Function):Void
+	{
+		__itemClickedCallback = new Callback(scope, func);
+	}
+	
 	private function onListItemClicked(p_event:ShurikenEvent):Void
 	{
 		var event:ShurikenEvent = new ShurikenEvent(ShurikenEvent.ITEM_CLICKED, this);
 		event.child = UIComponent(p_event.target);
 		event.item = p_event.item;
 		event.index = p_event.index;
-		dispatchEvent(event);
+		__itemClickedCallback.dispatch(event);
 		
 		label = __dataProvider.getItemAt(event.index).toString();
 		
@@ -532,7 +532,12 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 		
 		label = __dataProvider.getItemAt(event.index).toString();
 		
-		dispatchEvent(event);
+		__itemSelectionChangedCallack.dispatch(event);
+	}
+	
+	public function setItemSelectionChangedCallback(scope:Object, func:Function):Void
+	{
+		__itemSelectionChangedCallack = new Callback(scope, func);
 	}
 	
 	public function openList():Void

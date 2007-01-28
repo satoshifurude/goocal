@@ -9,6 +9,7 @@ import com.jxl.shuriken.core.UIComponent;
 import com.jxl.shuriken.core.UITextField;
 import com.jxl.shuriken.controls.Button;
 import com.jxl.shuriken.utils.LoopUtils;
+import com.jxl.shuriken.events.Callback;
 
 class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 {
@@ -27,9 +28,9 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 	private var __nextMonthWeekendColor:Number 		= 0xE8EEF7;
 	private var __nextMonthWeekdayColor:Number		= 0xFFFFFF;
 	private var __finishedDrawing:Boolean			= false;
-	private var __daySelectionChanged:Function;
 	private var __lastDaySelected:CalendarDay;
 	private var __enabledDirty:Boolean				= false;
+	private var __itemClickCallback:Callback;
 	private var __dayClickedDelegate:Function;
 	
 	private var __loop_mc:MovieClip;
@@ -92,8 +93,6 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 		
 		if(__currentDate == null) 		__currentDate = new Date();
 		__autoSizeToChildren 			= true;
-		__daySelectionChanged			= Delegate.create(this, onDaySelectionChanged);
-		//__dayClickedDelegate			= Delegate.create(this, onListItemClicked);
 		__dayClickedDelegate			= function():Void
 											{
 												this._parent.onListItemClicked(new ShurikenEvent(ShurikenEvent.SELECTION_CHANGED, this));;
@@ -373,18 +372,18 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 		var i:Number = 0;
 		var child:UIComponent = createChildAt(i, __childClass);
 		child.data = {r: 0, c: 0};
-		child.addEventListener(ShurikenEvent.SELECTION_CHANGED, __daySelectionChanged);
+		Button(child).setSelectionChangeCallback(this, onDaySelectionChanged);
 		__child_mdarray.setCell(0, 0, child);
 		
 		if(__autoSizeToChildren == true)
 		{
 			__columnWidth = child.width;
 			calculateHorizontalPageSize();
-			dispatchEvent(new ShurikenEvent(ShurikenEvent.COLUMN_WIDTH_CHANGED, this));
+			__colWChangeCallback.dispatch(new ShurikenEvent(ShurikenEvent.COLUMN_WIDTH_CHANGED, this));
 		
 			__rowHeight = child.height;
 			calculateVerticalPageSize();
-			dispatchEvent(new ShurikenEvent(ShurikenEvent.ROW_HEIGHT_CHANGED, this));
+			__rowHChangeCallback.dispatch(new ShurikenEvent(ShurikenEvent.ROW_HEIGHT_CHANGED, this));
 		}
 		
 		setupChild(child);
@@ -417,7 +416,7 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 	{
 		var child:UIComponent = createChildAt(++p_val, __childClass);
 		child.data = {r: p_currentRow, c: p_currentCol};
-		child.addEventListener(ShurikenEvent.SELECTION_CHANGED, __daySelectionChanged);
+		Button(child).setSelectionChangeCallback(this, onDaySelectionChanged);
 		__child_mdarray.setCell(p_currentRow, p_currentCol, child);
 		setupChild(child);
 	}
@@ -844,8 +843,13 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 		//DebugWindow.debug("item: " + event.item);
 		//DebugWindow.debug("index: " + event.index);
 		
-		dispatchEvent(event);
+		__itemClickCallback.dispatch(event);
 	}
 	
 	
+	
+	public function setItemClickCallback(scope:Object, func:Function):Void
+	{
+		__itemClickCallback = new Callback(scope, func);
+	}
 }

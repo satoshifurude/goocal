@@ -61,7 +61,7 @@ class com.jxl.goocal.views.CreateEvent extends UIComponent
 				if(__next_pb == null)
 				{
 					__next_pb = Button(createComponent(Button, "__next_pb"));
-					__next_pb.addEventListener(ShurikenEvent.RELEASE, Delegate.create(this, nextStep));
+					__next_pb.setReleaseCallback(this, nextStep);
 					__next_pb.label = "Next";
 				}
 				break;
@@ -71,7 +71,7 @@ class com.jxl.goocal.views.CreateEvent extends UIComponent
 				if(__back_pb == null)
 				{
 					__back_pb = Button(createComponent(Button, "__back_pb"));
-					__back_pb.addEventListener(ShurikenEvent.RELEASE, Delegate.create(this, previousStep));
+					__back_pb.setReleaseCallback(this, previousStep);
 					__back_pb.label = "Back";
 				}
 				break;

@@ -6,6 +6,7 @@ import com.jxl.shuriken.controls.TextArea;
 import com.jxl.shuriken.utils.DrawUtils;
 import com.jxl.shuriken.events.Event;
 import com.jxl.shuriken.events.ShurikenEvent;
+import com.jxl.shuriken.events.Callback;
 
 import com.jxl.goocal.views.GCHeading;
 import com.jxl.goocal.views.GCTimeHeading;
@@ -31,6 +32,7 @@ class com.jxl.goocal.views.EntryView extends UIComponent
 	
 	private var __entry:EntryVO;
 	private var __entryDirty:Boolean = false;
+	private var __monthCallback:Callback;
 	
 	public function get entry():EntryVO { return __entry; }
 	public function set entry(p_val:EntryVO):Void
@@ -86,7 +88,7 @@ class com.jxl.goocal.views.EntryView extends UIComponent
 		{
 			__month_link = GCLinkButton(createComponent(GCLinkButton, "__month_link"));
 			__month_link.label = "month";
-			__month_link.addEventListener(ShurikenEvent.RELEASE, Delegate.create(this, onMonthClick));
+			__month_link.setReleaseCallback(this, onMonthClick);
 		}
 		
 		if(__view_txt == null)
@@ -161,7 +163,12 @@ class com.jxl.goocal.views.EntryView extends UIComponent
 	
 	private function onMonthClick(p_event:ShurikenEvent):Void
 	{
-		dispatchEvent(new Event(EVENT_BACK_TO_MONTH, this));
+		__monthCallback.dispatch(new Event(EVENT_BACK_TO_MONTH, this));
+	}
+	
+	public function setMonthCallback(scope:Object, func:Function):Void
+	{
+		__monthCallback = new Callback(scope, func);
 	}
 	
 }

@@ -18,6 +18,7 @@ class com.jxl.shuriken.controls.RadioButton extends Button
 	{
 		super.createChildren();
 		
+		// TODO: make the below factories so easier to extend
 		__mcRadioButtonOutline = attachMovie("RadioButtonOutline", "__mcRadioButtonOutline", getNextHighestDepth());
 		__mcRadioButtonCenter = attachMovie("RadioButtonCenter", "__mcRadioButtonCenter", getNextHighestDepth());
 	}

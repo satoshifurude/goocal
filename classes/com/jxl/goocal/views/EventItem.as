@@ -4,6 +4,7 @@ import com.jxl.shuriken.core.UIComponent;
 import com.jxl.goocal.views.GCTimeHeading;
 import com.jxl.goocal.views.GCLinkButton;
 import com.jxl.shuriken.events.ShurikenEvent;
+import com.jxl.shuriken.events.Callback;
 
 class com.jxl.goocal.views.EventItem extends UIComponent
 {
@@ -17,6 +18,7 @@ class com.jxl.goocal.views.EventItem extends UIComponent
 	private var __eventTimeDirty:Boolean		= false;
 	private var __eventName:String 				= "";
 	private var __eventNameDirty:Boolean 		= false;
+	private var __nameLinkCallback:Callback;
 	
 	public function get eventTime():String { return __eventTime; }
 	public function set eventTime(p_val:String):Void
@@ -49,7 +51,7 @@ class com.jxl.goocal.views.EventItem extends UIComponent
 		{
 			__name_link = GCLinkButton(createComponent(GCLinkButton, "__name_link"));
 			__name_link.textSize = 14;
-			__name_link.addEventListener(ShurikenEvent.RELEASE, Delegate.create(this, onEventItemClicked));
+			__name_link.setReleaseCallback(this, onNameLinkClick);
 		}
 	}
 	
@@ -81,9 +83,20 @@ class com.jxl.goocal.views.EventItem extends UIComponent
 		__name_link.setSize(__width, 20);
 	}
 	
-	private function onEventItemClicked(p_event:ShurikenEvent):Void
+	public function toString():String
 	{
-		dispatchEvent(new ShurikenEvent(ShurikenEvent.RELEASE, this));
+		return "[class com.jxl.goocal.views.EventItem]";
+	}
+	
+	private function onNameLinkClick(p_event:ShurikenEvent):Void
+	{
+		p_event.target = this;
+		__nameLinkCallback.dispatch(p_event);
+	}
+	
+	public function setReleaseCallback(scope:Object, func:Function):Void
+	{
+		__nameLinkCallback = new Callback(scope, func);
 	}
 	
 }

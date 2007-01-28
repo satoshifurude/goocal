@@ -5,6 +5,7 @@ import com.jxl.shuriken.controls.SimpleButton;
 import com.jxl.shuriken.controls.Button;
 import com.jxl.shuriken.core.UIComponent;
 import com.jxl.shuriken.events.ShurikenEvent;
+import com.jxl.shuriken.events.Callback;
 
 class com.jxl.shuriken.containers.ButtonList extends List
 {
@@ -62,7 +63,9 @@ class com.jxl.shuriken.containers.ButtonList extends List
 	private var __selectedItemDirty:Boolean			= false;
 	private var __selectedChild:Button;
 	private var __selectedChildDirty:Boolean		= false;
-	private var __buttonSelectionDelegate:Function;
+	private var __itemSelectionChanged:Callback;
+	private var __itemClickCallback:Callback;
+	private var __itemRollOverCallback:Callback;
 	
 	private function commitProperties():Void
 	{
@@ -102,18 +105,30 @@ class com.jxl.shuriken.containers.ButtonList extends List
 	// Called by draw
 	private function setupChild(p_child:UIComponent):Void
 	{
-		//DebugWindow.debugHeader();
-		//DebugWindow.debug("ButtonList::setupChild");
-		var simpleButton:SimpleButton = SimpleButton(p_child);
-		simpleButton.addEventListener(ShurikenEvent.RELEASE, Delegate.create(this, onListItemClicked));
+		if(p_child instanceof SimpleButton)
+		{
+			var simpleButton:SimpleButton = SimpleButton(p_child);
+			simpleButton.setReleaseCallback(this, onListItemClicked);
+		}
+		// KLUDGE: need better enforcement, but interfaces are too heavy
+		// and we can't demand people extend SimpleButton
+		//else if(p_child.hasOwnProperty("setReleaseCallback") == true)
+		// BUG: above is giving whack results... it traces out function,
+		// apparently according to enumeration and hasOwnProperty, it does not
+		// wtf...>!?!?!?
+		else
+		{
+			// HACK: compiler hack
+			p_child["setReleaseCallback"](this, onListItemClicked);
+		}
+		
 		//simpleButton.addEventListener(ShurikenEvent.ROLL_OVER, Delegate.create(this, onListItemRollOver));
 		if(p_child instanceof Button == true)
 		{
 			var button:Button = Button(p_child);
 			if(__toggle == true)
 			{
-				if(__buttonSelectionDelegate == null) Delegate.create(this, onListItemSelectionChanged);
-				button.addEventListener(ShurikenEvent.SELECTION_CHANGED, __buttonSelectionDelegate);
+				button.setSelectionChangeCallback(this, onListItemSelectionChanged);
 				button.toggle = true;
 				
 				if(__selectedIndex > -1)
@@ -145,9 +160,9 @@ class com.jxl.shuriken.containers.ButtonList extends List
 		if(__lastSelected != null) __lastSelected.selected = false;
 		
 		__lastSelected = Button(getChildAt(p_index));
-		__lastSelected.removeEventListener(ShurikenEvent.SELECTION_CHANGED, __buttonSelectionDelegate);
+		__lastSelected.setSelectionChangeCallback();
 		__lastSelected.selected = true;
-		__lastSelected.addEventListener(ShurikenEvent.SELECTION_CHANGED, __buttonSelectionDelegate);
+		__lastSelected.setSelectionChangeCallback(this, onListItemSelectionChanged);
 		
 		var item = __dataProvider.getItemAt(p_index);
 		__selectedItem = item;
@@ -161,7 +176,7 @@ class com.jxl.shuriken.containers.ButtonList extends List
 			event.selected = __lastSelected;
 			event.item = item;
 			event.index = p_index;
-			dispatchEvent(event);
+			__itemSelectionChanged.dispatch(event);
 		}
 		
 	}
@@ -195,6 +210,11 @@ class com.jxl.shuriken.containers.ButtonList extends List
 	{
 		//DebugWindow.debugHeader();
 		//DebugWindow.debug("ButtonList::onListItemClicked");
+		//DebugWindow.debug("p_event: " + p_event);
+		//DebugWindow.debug("p_event.target: " + p_event.target);
+		//DebugWindow.debug("__dataProvider: " + __dataProvider);
+		//DebugWindow.debug("UIComponent(p_event.target): " + UIComponent(p_event.target));
+		//DebugWindow.debug("index: " + index);
 		var index:Number = getChildIndex(UIComponent(p_event.target));
 		var item:Object = __dataProvider.getItemAt(index);
 		setSelectedIndex(index);	
@@ -203,7 +223,9 @@ class com.jxl.shuriken.containers.ButtonList extends List
 		event.child = UIComponent(p_event.target);
 		event.item = item;
 		event.index = index;
-		dispatchEvent(event);
+		//DebugWindow.debug("item: " + item);
+		//DebugWindow.debug("index: " + index);
+		__itemClickCallback.dispatch(event);
 	}
 	
 	private function onListItemRollOver(p_event:ShurikenEvent):Void
@@ -217,7 +239,7 @@ class com.jxl.shuriken.containers.ButtonList extends List
 		event.child = UIComponent(p_event.target);
 		event.item = item;
 		event.index = index;
-		dispatchEvent(event);
+		__itemRollOverCallback.dispatch(event);
 	}
 	
 	private function onListItemSelectionChanged(p_event:ShurikenEvent):Void
@@ -225,6 +247,24 @@ class com.jxl.shuriken.containers.ButtonList extends List
 		//DebugWindow.debugHeader();
 		//DebugWindow.debug("ButtonList::onListItemSelectionChanged");
 		setSelectedIndex(getChildIndex(UIComponent(p_event.target)), true);
+	}
+	
+	public function setItemSelectionChangedCallback(scope:Object, func:Function):Void
+	{
+		__itemSelectionChanged = new Callback(scope, func);
+	}
+	
+	public function setItemClickCallback(scope:Object, func:Function):Void
+	{
+		//DebugWindow.debugHeader();
+		//DebugWindow.debug("ButtonList::setItemClickCallback, scope: " + scope + ", func: " + func);
+		__itemClickCallback = new Callback(scope, func);
+		//DebugWindow.debug("__itemClickCallback: " + __itemClickCallback);
+	}
+	
+	public function setItemRollOverCallback(scope:Object, func:Function):Void
+	{
+		__itemRollOverCallback = new Callback(scope, func);
 	}
 	
 }

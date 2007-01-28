@@ -1,7 +1,6 @@
-﻿import mx.events.EventDispatcher;
-
-import com.jxl.shuriken.events.Event;
+﻿import com.jxl.shuriken.events.Event;
 import com.jxl.shuriken.events.ShurikenEvent;
+import com.jxl.shuriken.events.Callback;
 
 class com.jxl.shuriken.core.Collection
 {
@@ -14,6 +13,7 @@ class com.jxl.shuriken.core.Collection
 	}
 	
 	private var __source:Array;
+	private var __callback:Callback;
 	
 	public function Collection(p_source:Array)
 	{
@@ -89,18 +89,22 @@ class com.jxl.shuriken.core.Collection
 		return __source.length;
 	}
 	
-	private function onCollectionChanged(p_type:String, p_index:Number):Void
+	public function setChangeCallback(scope:Object, func:Function):Void
 	{
-		dispatchEvent(new ShurikenEvent(ShurikenEvent.COLLECTION_CHANGED, this, p_index, p_type));
+		if(scope == null)
+		{
+			delete __callback;
+			return;
+		}
+		if(__callback != null) trace("WARNING: Someone is adding another callback to Collection; it only supports 1.");
+		__callback = new Callback(scope, func);
 	}
 	
-	// overwritten by mixin
-	public function addEventListener(p_type:String, p_list:Object):Void{}
-	public function dispatchEvent(p_event:Event):Void{}
-	public function removeEventListener(p_type:String, p_list:Object):Void{}
+	private function onCollectionChanged(p_type:String, p_index:Number):Void
+	{
+		__callback.dispatch(new ShurikenEvent(ShurikenEvent.COLLECTION_CHANGED, this, p_index, p_type));
+	}
 	
-	private static var __makeEventDispatcher = EventDispatcher.initialize(com.jxl.shuriken.core.Collection.prototype);
-
 	public function toString():String
 	{
 		return __source.toString();	

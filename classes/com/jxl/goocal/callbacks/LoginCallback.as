@@ -1,9 +1,14 @@
 ﻿class com.jxl.goocal.callbacks.LoginCallback
 {
-	public var isLoggedIn:Boolean = false;
+	public static var LOGGED_IN_SUCCESS:Number = 0;
+	public static var LOGGED_IN_FAILED:Number = 1;
+	public static var LOGGED_IN_FAILED_ATTEMPT:Number = 2;
 	
-	public function LoginCallback(p_isLoggedIn:Boolean)
+	public var isLoggedIn:Number;
+	public var progress:String;
+	
+	public function LoginCallback(p_isLoggedIn:Number)
 	{
-		isLoggedIn = (p_isLoggedIn == true) ? true : false;
+		isLoggedIn = (p_isLoggedIn == 0) ? 0 : 1;
 	}
 }

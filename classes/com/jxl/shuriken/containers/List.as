@@ -8,6 +8,7 @@ import com.jxl.shuriken.controls.Button;
 import com.jxl.shuriken.utils.DrawUtils;
 import com.jxl.shuriken.core.Collection;
 import com.jxl.shuriken.events.ShurikenEvent;
+import com.jxl.shuriken.events.Callback;
 
 [InspectableList("direction", "columnWidth", "rowHeight", "align", "childHorizontalMargin", "childVerticalMargin")]
 class com.jxl.shuriken.containers.List extends Container
@@ -16,10 +17,6 @@ class com.jxl.shuriken.containers.List extends Container
 	
 	public static var ALIGN_LEFT:String 					= "left";
 	public static var ALIGN_CENTER:String 					= "center";
-	
-	public static var EVENT_COL_WIDTH_CHANGED:String 		= "columnWidthChanged";
-	public static var EVENT_ROW_HEIGHT_CHANGED:String 		= "rowWidthChanged";
-	public static var EVENT_SETUP_CHILD:String 				= "childSetup";
 	
 	public static var DIRECTION_HORIZONTAL:String 			= "horizontal";
 	public static var DIRECTION_VERTICAL:String 			= "vertical";
@@ -75,7 +72,7 @@ class com.jxl.shuriken.containers.List extends Container
 		__autoSizeToChildren = false;
 		__autoSizeToChildrenDirty = true;
 		invalidateProperties();
-		dispatchEvent(new ShurikenEvent(ShurikenEvent.COLUMN_WIDTH_CHANGED, this));
+		__colWChangeCallback.dispatch(new ShurikenEvent(ShurikenEvent.COLUMN_WIDTH_CHANGED, this));
 	}
 	
 	[Inspectable(defaultValue=null, type="Number", name="Row Height")]
@@ -89,9 +86,11 @@ class com.jxl.shuriken.containers.List extends Container
 		__autoSizeToChildren = false;
 		__autoSizeToChildrenDirty = true;
 		invalidateProperties();
-		dispatchEvent(new ShurikenEvent(ShurikenEvent.ROW_HEIGHT_CHANGED, this));
+		__rowHChangeCallback.dispatch(new ShurikenEvent(ShurikenEvent.ROW_HEIGHT_CHANGED, this));
 		size();
 	}
+	
+	
 	
 	[Inspectable(type="List", enumeration="left,center", defaultValue="left"]
 	public function get align():String
@@ -145,15 +144,10 @@ class com.jxl.shuriken.containers.List extends Container
 		if(__dataProvider != null)
 		{
 			var oldDP:Collection = __dataProvider;
-			if(__collectionDelegate != null)
-			{
-				__dataProvider.removeEventListener(ShurikenEvent.COLLECTION_CHANGED, __collectionDelegate);
-			}
+			__dataProvider.setChangeCallback();
 		}
-		if(__collectionDelegate == null) __collectionDelegate = Delegate.create(this, onCollectionChanged);
 		__dataProvider = p_val;
-		if(__dataProvider == oldDP) __dataProvider.removeEventListener(ShurikenEvent.COLLECTION_CHANGED, __collectionDelegate);
-		__dataProvider.addEventListener(ShurikenEvent.COLLECTION_CHANGED, __collectionDelegate);
+		__dataProvider.setChangeCallback(this, onCollectionChanged);
 		__dataProviderDirty = true;
 		invalidateProperties();
 	}
@@ -193,7 +187,9 @@ class com.jxl.shuriken.containers.List extends Container
 	
 	private var __dataProvider:Collection;
 	private var __dataProviderDirty:Boolean						= false;
-	private var __collectionDelegate:Function;
+	private var __colWChangeCallback:Callback;
+	private var __rowHChangeCallback:Callback;
+	private var __setupChildCallback:Callback;
 	
 	public function List()
 	{
@@ -264,7 +260,7 @@ class com.jxl.shuriken.containers.List extends Container
 		var event:ShurikenEvent = new ShurikenEvent(ShurikenEvent.SETUP_CHILD, this);
 		event.child = p_child;
 		event.list = this;
-		dispatchEvent(event);
+		__setupChildCallback.dispatch(event);
 	}
 	
 	private function commitProperties():Void
@@ -365,11 +361,11 @@ class com.jxl.shuriken.containers.List extends Container
 		{
 			__columnWidth = child.width;
 			calculateHorizontalPageSize();
-			dispatchEvent(new ShurikenEvent(ShurikenEvent.COLUMN_WIDTH_CHANGED, this));
+			__colWChangeCallback.dispatch(new ShurikenEvent(ShurikenEvent.COLUMN_WIDTH_CHANGED, this));
 		
 			__rowHeight = child.height;
 			calculateVerticalPageSize();
-			dispatchEvent(new ShurikenEvent(ShurikenEvent.ROW_HEIGHT_CHANGED, this));
+			__rowHChangeCallback.dispatch(new ShurikenEvent(ShurikenEvent.ROW_HEIGHT_CHANGED, this));
 		}
 		
 		setupChild(child);
@@ -477,7 +473,7 @@ class com.jxl.shuriken.containers.List extends Container
 	{
 		__columnWidth = p_val;
 		calculateHorizontalPageSize();
-		dispatchEvent(new ShurikenEvent(ShurikenEvent.COLUMN_WIDTH_CHANGED, this));
+		__colWChangeCallback.dispatch(new ShurikenEvent(ShurikenEvent.COLUMN_WIDTH_CHANGED, this));
 	}
 	
 	// # items that fit in 1 page 
@@ -597,6 +593,21 @@ class com.jxl.shuriken.containers.List extends Container
 				break;
 			
 		}
+	}
+	
+	public function setColumnWidthChangedCallback(scope:Object, func:Function):Void
+	{
+		__colWChangeCallback = new Callback(scope, func);
+	}
+	
+	public function setRowHeightChangedCallback(scope:Object, func:Function):Void
+	{
+		__rowHChangeCallback = new Callback(scope, func);
+	}
+	
+	public function setSetupChildCallback(scope:Object, func:Function):Void
+	{
+		__setupChildCallback = new Callback(scope, func);
 	}
 	
 }

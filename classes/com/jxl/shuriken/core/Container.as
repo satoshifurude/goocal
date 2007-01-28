@@ -1,5 +1,6 @@
 ﻿import com.jxl.shuriken.core.UIComponent;
 import com.jxl.shuriken.events.ShurikenEvent;
+import com.jxl.shuriken.events.Callback;
 
 class com.jxl.shuriken.core.Container extends UIComponent
 {
@@ -22,8 +23,13 @@ class com.jxl.shuriken.core.Container extends UIComponent
 	private var __numChildren:Number;
 	private var __aChild:Array;
 	private var __clipContent:Boolean;
-	
 	private var __clipContentDirty:Boolean;
+	private var __childCreatedCallback:Callback;
+	private var __childIndexChangeCallback:Callback;
+	private var __childBeforeRemovedCallback:Callback;
+	private var __childRemovedCallback:Callback;
+	private var __beforeAllChildrenRemovedCallback:Callback;
+	private var __allChildrenRemovedCallback:Callback;
 	
 	// We sometimes have the need to put stuff under all the children, what I call "ghost children".
 	// For most use-cases, you could just use Composition, and instead of extending a Container
@@ -133,7 +139,10 @@ class com.jxl.shuriken.core.Container extends UIComponent
 		// FIXME: casting is failing, fix later
 		var ref = mc;
 		if(ref != null) __aChild.splice(p_index, 0, ref);
-		dispatchEvent(new ShurikenEvent(ShurikenEvent.CHILD_CREATED, this, ref, p_index));
+		var event:ShurikenEvent = new ShurikenEvent(ShurikenEvent.CHILD_CREATED, this);
+		event.child = ref;
+		event.newIndex = p_index;
+		__childCreatedCallback.dispatch(event);
 		return ref;
 	}
 	
@@ -176,7 +185,7 @@ class com.jxl.shuriken.core.Container extends UIComponent
 		ce.child = p_child;
 		ce.oldIndex = currentIndex;
 		ce.newIndex = p_index;
-		dispatchEvent(ce);
+		__childIndexChangeCallback.dispatch(ce);
 	}
 	
 	public function removeChildAt(p_index:Number):Void
@@ -187,14 +196,14 @@ class com.jxl.shuriken.core.Container extends UIComponent
 			var ce:ShurikenEvent = new ShurikenEvent(ShurikenEvent.CHILD_BEFORE_REMOVED, this);
 			ce.child = child;
 			ce.index = p_index;
-			dispatchEvent(ce);
+			__childBeforeRemovedCallback.dispatch(ce);
 			
 			removeAndCleanup_child(child, p_index);
 			
 			var cer:ShurikenEvent = new ShurikenEvent(ShurikenEvent.CHILD_REMOVED, this);
 			cer.child = child;
 			cer.index = p_index;
-			dispatchEvent(cer);
+			__childRemovedCallback.dispatch(cer);
 		}
 	}
 	
@@ -206,14 +215,14 @@ class com.jxl.shuriken.core.Container extends UIComponent
 	
 	public function removeAllChildren():Void
 	{
-		dispatchEvent(new ShurikenEvent(ShurikenEvent.BEFORE_ALL_CHILDREN_REMOVED, this));
+		__beforeAllChildrenRemovedCallback.dispatch(new ShurikenEvent(ShurikenEvent.BEFORE_ALL_CHILDREN_REMOVED, this));
 		var i:Number = __aChild.length;
 		while(i--)
 		{
 			removeAndCleanup_child(__aChild[i], i);
 		}
 		__aChild = [];
-		dispatchEvent(new ShurikenEvent(ShurikenEvent.ALL_CHILDREN_REMOVED, this));
+		__allChildrenRemovedCallback.dispatch(new ShurikenEvent(ShurikenEvent.ALL_CHILDREN_REMOVED, this));
 	}
 	
 	private function removeAndCleanup_child(p_child:UIComponent, p_index:Number):Void
@@ -232,10 +241,33 @@ class com.jxl.shuriken.core.Container extends UIComponent
 		return -1;
 	}
 	
-	// IContainer Implementation
-	public function getNumChildren():Number { return __aChild.length; }
+	public function setChildCreatedCallback(scope:Object, func:Function):Void
+	{
+		__childCreatedCallback = new Callback(scope, func);
+	}
 	
+	public function setChildIndexChangeCallback(scope:Object, func:Function):Void
+	{
+		__childIndexChangeCallback = new Callback(scope, func);
+	}
 	
+	public function setChildBeforeRemovedCallback(scope:Object, func:Function):Void
+	{
+		__childBeforeRemovedCallback = new Callback(scope, func);
+	}
 	
+	public function setChildRemovedCallback(scope:Object, func:Function):Void
+	{
+		__childRemovedCallback = new Callback(scope, func);
+	}
 	
+	public function setBeforeAllChildrenRemovedCallback(scope:Object, func:Function):Void
+	{
+		__beforeAllChildrenRemovedCallback = new Callback(scope, func);
+	}
+	
+	public function setAllChildrenRemovedCallback(scope:Object, func:Function):Void
+	{
+		__allChildrenRemovedCallback = new Callback(scope, func);
+	}
 }

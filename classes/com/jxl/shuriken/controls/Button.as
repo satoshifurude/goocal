@@ -1,33 +1,24 @@
-﻿import com.jxl.shuriken.controls.SimpleButton;
+﻿import mx.utils.Delegate;
+
+import com.jxl.shuriken.controls.SimpleButton;
 import com.jxl.shuriken.core.UITextField;
 import com.jxl.shuriken.controls.Loader;
 import com.jxl.shuriken.events.ShurikenEvent;
-import mx.utils.Delegate;
+import com.jxl.shuriken.events.Callback;
 
 [InspectableList("alignIcon", "background", "backgroundColor", "bold", "border", "borderColor", "embedFonts", "label", "color", "textSize", "multiline", "wordWrap", "font", "password", "selectable", "restrict", "maxChars", "toggle", "selected")]
 class com.jxl.shuriken.controls.Button extends SimpleButton
 {
-	//REQUIRED INFO/------------------------------------------
+	public static var SYMBOL_NAME:String 				= "com.jxl.shuriken.controls.Button";
 	
-	public static var SYMBOL_NAME:String = "com.jxl.shuriken.controls.Button";
+	public static var ALIGN_ICON_LEFT:String 			= "alignIconLeft";
+	public static var ALIGN_ICON_CENTER:String 			= "alignIconCenter";
+	public static var ALIGN_ICON_RIGHT:String 			= "alignIconRight";
 	
-	public static var EVENT_SELECTION_CHANGED:String = "selectionChanged";
+	public static var SELECTED_STATE:String 			= "selected";
+	public static var DEFAULT_STATE:String 				= "default";
+	public static var OVER_STATE:String 				= "over";
 	
-	public static var ALIGN_ICON_LEFT:String = "alignIconLeft";
-	public static var ALIGN_ICON_CENTER:String = "alignIconCenter";
-	public static var ALIGN_ICON_RIGHT:String = "alignIconRight";
-	
-	public static var SELECTED_STATE:String = "selected";
-	public static var DEFAULT_STATE:String = "default";
-	public static var OVER_STATE:String = "over";
-	
-	public var className:String = "Button";
-	
-	//PUBILC PROPERTIES/--------------------------------------
-	
-	/**
-	* Text on Button's label
-	*/
 	[Inspectable(type="String", defaultValue="", name="Label")]
 	public function get label():String { return __label; }
 	public function set label(pVal:String):Void
@@ -82,8 +73,8 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 			{
 				setState(DEFAULT_STATE);
 			}
-			dispatchEvent(new ShurikenEvent(ShurikenEvent.SELECTION_CHANGED, this));
-			invalidateProperties();
+			__selectionChangeCallback.dispatch(new ShurikenEvent(ShurikenEvent.SELECTION_CHANGED, this));
+			invalidateDraw();
 		}
 		
 	}
@@ -397,20 +388,10 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 	
 	public function get currentState():String { return __currentState; }
 	
-	
-	/**
-	* Draws basic states for debug purposes
-	*/
-	public var debug:Boolean = false;
-	
-	
-	//PRIVATE VARS/---------------------------------------
-		
 	private var __label:String;
 	private var __labelDirty:Boolean;
 	
 	private var __selected:Boolean						= false;
-	private var __selectedDirty:Boolean;
 	
 	private var __toggle:Boolean;
 	private var __toggleDirty:Boolean;
@@ -420,8 +401,6 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 	
 	private var __icon:String;
 	private var __iconDirty:Boolean;
-	
-	private var __loadInitDelegate:Function;
 	
 	private var __backgroundDirty:Boolean 				= false;
 	private var __background:Boolean					= false;
@@ -474,23 +453,19 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 	private var __underline:Boolean						= false;
 	private var __underlineDirty:Boolean				= false;
 	
-	//ASSETS/------------------------------------------------
+	private var __selectionChangeCallback:Callback;
+	
 	private var __mcLabel:UITextField;
 	private var __mcIcon:Loader;
 	
-	//private var __callbackScope:Object;
-	//private var __releaseCallback:Function;
-	
-	//MOUSE EVENT HANDLERS/----------------------------------
-	
 	private function onRelease():Void
 	{
-		super.onRelease();
-		
 		if (__toggle == true)
 		{
-			selected = !selected;
+			selected = !__selected;
 		}
+		
+		super.onRelease();
 	}
 	
 	public function onRollOver():Void
@@ -529,8 +504,6 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 	public function init():Void
 	{
 		super.init();		
-		
-		__loadInitDelegate = Delegate.create(this, onIconLoaded);
 		
 		focusEnabled		= true;
 		tabEnabled			= true;
@@ -660,12 +633,6 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 			__mcLabel.underline = __underline;
 		}
 		
-		if(__selectedDirty == true)
-		{
-			__selectedDirty = false;
-			invalidateDraw();
-		}
-		
 		if(__toggleDirty == true)
 		{
 			__toggleDirty = false;
@@ -680,11 +647,10 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 				if(__mcIcon == null) __mcIcon = Loader(attachMovie(Loader.symbolName, "__mcIcon", getNextHighestDepth()));
 				__mcIcon.scaleContent = false;
 				__mcIcon.load(__icon);
-				__mcIcon.addEventListener(ShurikenEvent.LOAD_INIT, __loadInitDelegate);
+				__mcIcon.setLoadInitCallback(this, onIconLoaded);
 			}
 			else
 			{
-				__mcIcon.removeEventListener(ShurikenEvent.LOAD_INIT, __loadInitDelegate);
 				__mcIcon.removeMovieClip();
 				delete __mcIcon;
 			}
@@ -695,49 +661,6 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 			__alignIconDirty = false;
 			invalidateSize();
 		}
-	}
-	
-	//Override this function to draw your own states
-	private function draw():Void
-	{
-		//trace("Button::draw");
-		super.draw();
-		
-		
-		if (debug) {
-			
-			var currentColor:Number;
-			
-			switch (__currentState) {
-				
-				case DEFAULT_STATE:
-					currentColor = 0x666666;
-					break;
-					
-				case SELECTED_STATE:
-					currentColor = 0xFF0000;
-					break;
-					
-				case OVER_STATE:
-					currentColor = 0xAAAAAA;
-					break;
-				
-			}
-			
-			
-			
-			clear();
-			
-			beginFill(currentColor, 100);
-			moveTo(0,0);
-			lineTo(width,0);
-			lineTo(width,height);
-			lineTo(0,height);
-			lineTo(0,0);
-			endFill();
-			
-		}
-		
 	}
 
 	private function size():Void
@@ -825,8 +748,8 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 	
 	private function setState(pState:String):Void
 	{
-		//trace("-----------------------");
-		//trace("Button::setState, pState: " + pState);
+		//DebugWindow.debugHeader();
+		//DebugWindow.debug("Button::setState, pState: " + pState);
 		__lastState = __currentState;
 		__currentState = pState;
 	}
@@ -842,5 +765,15 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 	public function toString():String
 	{
 		return "[object com.jxl.shuriken.controls.Button]";
+	}
+	
+	public function setSelectionChangeCallback(scope:Object, func:Function):Void
+	{
+		if(scope == null)
+		{
+			delete __selectionChangeCallback;
+			return;
+		}
+		__selectionChangeCallback = new Callback(scope, func);
 	}
 }

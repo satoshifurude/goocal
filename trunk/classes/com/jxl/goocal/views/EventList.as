@@ -45,16 +45,10 @@ class com.jxl.goocal.views.EventList extends ScrollableList
 	private function setupButtons():Void
 	{
 		__mcScrollPrevious = GCUpArrowButton(createComponent(GCUpArrowButton, "__mcScrollPrevious"));
-		__mcScrollPrevious.addEventListener(ShurikenEvent.RELEASE, Delegate.create(this, onScrollPrevious));
+		__mcScrollPrevious.setReleaseCallback(this, onScrollPrevious);
 		
 		__mcScrollNext = GCDownArrowButton(createComponent(GCDownArrowButton, "__mcScrollNext"));
-		__mcScrollNext.addEventListener(ShurikenEvent.RELEASE, Delegate.create(this, onScrollNext));		
-	}
-	
-	public function onSetupChild(p_event:ShurikenEvent):Void
-	{
-		super.onSetupChild(p_event);
-		EventItem(p_event.child).addEventListener(ShurikenEvent.RELEASE, Delegate.create(this, onEventItemClicked));
+		__mcScrollNext.setReleaseCallback(this, onScrollNext);		
 	}
 	
 	public function setSize(p_width:Number, p_height:Number):Void
@@ -91,7 +85,7 @@ class com.jxl.goocal.views.EventList extends ScrollableList
 		event.selected = UIComponent(p_event.target);
 		var childIndex:Number = __mcList.getChildIndex(UIComponent(p_event.target));
 		event.item = __dataProvider.getItemAt(childIndex);
-		dispatchEvent(event);
+		//dispatchEvent(event);
 	}
 	
 }

@@ -1,7 +1,6 @@
-﻿import com.jxl.shuriken.core.Container;
-import com.jxl.shuriken.core.ICollection;
+﻿import com.jxl.shuriken.core.UIComponent;
 
-class com.jxl.shuriken.controls.Calendar extends Container implements ICollection
+class com.jxl.shuriken.controls.Calendar extends UIComponent
 {
 	public static var SYMBOL_NAME:String = "com.jxl.shuriken.controls.Calendar";
 	

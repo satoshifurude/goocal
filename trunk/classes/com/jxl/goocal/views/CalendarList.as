@@ -55,7 +55,6 @@ class com.jxl.goocal.views.CalendarList extends UIComponent
 			__calendars_list.childClass				= GCLinkButton;
 			__calendars_list.childSetValueFunction 	= refreshCalendarItem;
 			__calendars_list.childSetValueScope		= this;
-			__calendars_list.addEventListener(ShurikenEvent.ITEM_CLICKED, Delegate.create(this, onLinkButtonClicked));
 			
 			// NOTE: hi-jacking the setupChild function.  While I could use the event,
 			// profiling shows that it is a major performance killer dispatching
@@ -100,16 +99,9 @@ class com.jxl.goocal.views.CalendarList extends UIComponent
 		GCLinkButton(p_child).label = p_item.toString();
 	}
 	
-	private function onLinkButtonClicked(p_event:ShurikenEvent):Void
+	public function setItemClickCallback(scope:Object, func:Function):Void
 	{
-		//trace("-------------------");
-		//trace("CalendarList::onLinkButtonClicked");
-		// bubble it up
-		var event:ShurikenEvent = new ShurikenEvent(ShurikenEvent.ITEM_CLICKED, this);
-		event.item = p_event.item;
-		event.lastSelected = p_event.lastSelected;
-		event.selected = p_event.selected;
-		dispatchEvent(event);
+		__calendars_list.setItemClickCallback(scope, func);
 	}
 	
 }

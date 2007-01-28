@@ -1,6 +1,7 @@
-﻿import mx.utils.Delegate;
+﻿// TODO: class needs an overhaul
 
-import com.jxl.shuriken.core.IUIComponent;
+import mx.utils.Delegate;
+
 import com.jxl.shuriken.containers.List;
 import com.jxl.shuriken.core.UIComponent;
 import com.jxl.shuriken.controls.SimpleButton;
@@ -9,8 +10,7 @@ import com.jxl.shuriken.events.ShurikenEvent;
 class com.jxl.shuriken.containers.TileList extends List
 {
 	
-	public static var symbolName:String = "com.jxl.shuriken.containers.TileList";
-	public static var symbolOwner:Object = com.jxl.shuriken.containers.TileList;
+	public static var SYMBOL_NAME:String = "com.jxl.shuriken.containers.TileList";
 	
 	public static var EVENT_ITEM_CLICKED:String ="EventItemClicked"
 	
@@ -33,7 +33,7 @@ class com.jxl.shuriken.containers.TileList extends List
 		if(__align == ALIGN_LEFT){
 			for(var r:Number = 0; r<rows; r++){
 				for(var c:Number = 0; c<cols; c++){
-					var child:IUIComponent = getChildAt(counter++);
+					var child:UIComponent = getChildAt(counter++);
 					child.move(origX, origY);
 					origX += __columnWidth + __childHorizontalMargin;
 				}
@@ -54,14 +54,14 @@ class com.jxl.shuriken.containers.TileList extends List
 	private function onListItemClicked(p_event:ShurikenEvent):Void
 	{		
 
-		var index = getChildIndex(IUIComponent(p_event.target));
+		var index = getChildIndex(UIComponent(p_event.target));
 		var item = __dataProvider[index];
 		
 		// FIXME: huh?  List doesn't have this method...
 		//setSelectedIndex(index);	
 		
 		var event:ShurikenEvent = new ShurikenEvent(ShurikenEvent.ITEM_CLICKED, this);
-		event.child = IUIComponent(p_event.target);
+		event.child = UIComponent(p_event.target);
 		event.item = item;
 		event.index = index;
 		dispatchEvent(event);

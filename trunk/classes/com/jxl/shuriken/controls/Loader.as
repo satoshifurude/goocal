@@ -1,5 +1,6 @@
 ﻿import com.jxl.shuriken.core.UIComponent;
 import com.jxl.shuriken.events.ShurikenEvent;
+import com.jxl.shuriken.events.Callback;
 
 
 [Event("loadComplete")]
@@ -39,6 +40,8 @@ class com.jxl.shuriken.controls.Loader extends UIComponent
 	private var __isLoading:Boolean;
 	private var __clipLoader:MovieClipLoader;
 	private var __contentPath:String;
+	private var __loadCompleteCallback:Callback;
+	private var __loadInitCallback:Callback;
 	
 	public function load(pPath:String):Void
 	{
@@ -91,7 +94,7 @@ class com.jxl.shuriken.controls.Loader extends UIComponent
 		var event:ShurikenEvent = new ShurikenEvent(ShurikenEvent.LOAD_COMPLETE, this);
 		event.loaderTarget = pmcTarget;
 		event.httpStatus = pHTTPStatus;
-		dispatchEvent(event);
+		__loadCompleteCallback.dispatch(event);
 	}
 	
 	private function onLoadInit(pmcTarget:MovieClip):Void
@@ -127,6 +130,16 @@ class com.jxl.shuriken.controls.Loader extends UIComponent
 		
 		var event:ShurikenEvent = new ShurikenEvent(ShurikenEvent.LOAD_INIT, this);
 		event.loaderTarget = pmcTarget;
-		dispatchEvent(event);	
+		__loadInitCallback.dispatch(event);	
+	}
+	
+	public function setLoadCompleteCallback(scope:Object, func:Function):Void
+	{
+		__loadCompleteCallback = new Callback(scope, func);
+	}
+	
+	public function setLoadInitCallback(scope:Object, func:Function):Void
+	{
+		__loadInitCallback = new Callback(scope, func);
 	}
 }

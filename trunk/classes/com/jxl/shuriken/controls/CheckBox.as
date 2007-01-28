@@ -4,10 +4,7 @@ import com.jxl.shuriken.core.UITextField;
 class com.jxl.shuriken.controls.CheckBox extends Button
 {
 	
-	//REQUIRED INFO/------------------------------------------
-	
 	public static var SYMBOL_NAME:String = "com.jxl.shuriken.controls.CheckBox";
-	public static var symbolOwner:Object = com.jxl.shuriken.controls.CheckBox;
 	
 	private var __mcCheckBoxOutline:MovieClip;
 	private var __mcCheckBoxCenter:MovieClip;
@@ -41,6 +38,8 @@ class com.jxl.shuriken.controls.CheckBox extends Button
 		__mcLabel.multiline 	= true;
 		__mcLabel.wordWrap 		= true;
 		
+		// TODO: below should be 2 factories taht create the MovieClip's;
+		// that way, easier to extend
 		__mcCheckBoxOutline = attachMovie("CheckBoxOutline", "__mcCheckBoxOutline", getNextHighestDepth());
 		__mcCheckBoxCenter = attachMovie("CheckBoxCenter", "__mcCheckBoxCenter", getNextHighestDepth());
 	}
@@ -48,6 +47,9 @@ class com.jxl.shuriken.controls.CheckBox extends Button
 	// Overwrite; do not call super
 	private function draw():Void
 	{
+		//DebugWindow.debugHeader();
+		//DebugWindow.debug("CheckBox::draw, __currentState: " + __currentState);
+		//DebugWindow.debug("selected: " + selected);
 		switch (__currentState)
 		{
 				

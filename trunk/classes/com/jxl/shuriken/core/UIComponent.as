@@ -1,5 +1,4 @@
-﻿import mx.events.EventDispatcher;
-import com.jxl.shuriken.events.Event;
+﻿import com.jxl.shuriken.events.Event;
 import com.jxl.shuriken.events.ShurikenEvent;
 
 class com.jxl.shuriken.core.UIComponent extends MovieClip
@@ -9,11 +8,6 @@ class com.jxl.shuriken.core.UIComponent extends MovieClip
 	
 	// Abstract variable; set it to whatever you want.
 	public var data:Object;
-	
-	// overwritten by mixin (EventDispatcher)
-	public function addEventListener(p_type:String, p_list:Object):Void{}
-	public function dispatchEvent(p_event:Event):Void{}
-	public function removeEventListener(p_type:String, p_list:Object):Void{}
 	
 	private var __calledOnLoad:Boolean;
 	
@@ -50,11 +44,6 @@ class com.jxl.shuriken.core.UIComponent extends MovieClip
 	public function UIComponent()
 	{
 		constructObject();
-	}
-	
-	public function getSymbolName():String
-	{
-		return SYMBOL_NAME;
 	}
 	
 	public function init():Void
@@ -225,7 +214,7 @@ class com.jxl.shuriken.core.UIComponent extends MovieClip
 		*/
 		//trace("-----------------");
 		//trace("UIComponent::size");
-		dispatchEvent(new ShurikenEvent(ShurikenEvent.SIZE, this));
+		//dispatchEvent(new ShurikenEvent(ShurikenEvent.SIZE, this));
 	}
 	
 	// Abstract
@@ -287,8 +276,6 @@ class com.jxl.shuriken.core.UIComponent extends MovieClip
 	{
 		return "[object com.jxl.shuriken.core.UIComponent]";
 	}
-	
-	private static var __makeEventDispatcher = EventDispatcher.initialize(com.jxl.shuriken.core.UIComponent.prototype);
 	
 	private var __isConstructing:Boolean;
 	private var __width:Number;

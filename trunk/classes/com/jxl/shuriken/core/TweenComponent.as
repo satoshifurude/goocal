@@ -4,6 +4,7 @@ import mx.transitions.easing.Strong;
 import com.jxl.shuriken.core.UIComponent;
 import com.jxl.shuriken.managers.TweenManager;
 import com.jxl.shuriken.events.ShurikenEvent;
+import com.jxl.shuriken.events.Callback;
 
 class com.jxl.shuriken.core.TweenComponent extends UIComponent
 {
@@ -90,11 +91,31 @@ class com.jxl.shuriken.core.TweenComponent extends UIComponent
 		// interaction, but this causes an invalidate, and thus an infinite loop
 		//enabled = false;
 		
-		dispatchEvent(new ShurikenEvent(ShurikenEvent.EFFECT_MOVE_START, this));
+		__moveStartCallback.dispatch(new ShurikenEvent(ShurikenEvent.EFFECT_MOVE_START, this));
 		
 		__tweenMove = new Tween(this, [__oldX, __oldY], [__targetX, __targetY], moveSpeed);
 		__tweenMove.easingEquation = Strong.easeOut;
 		__tweenMove.setTweenHandlers("onTweenMoveUpdate", "onTweenMoveEnd");
+	}
+	
+	public function setMoveStartCallback(scope:Object, func:Function):Void
+	{
+		__moveStartCallback = new Callback(scope, func);
+	}
+	
+	public function setMoveEndCallback(scope:Object, func:Function):Void
+	{
+		__moveEndCallback = new Callback(scope, func);
+	}
+	
+	public function setSizeStartCallback(scope:Object, func:Function):Void
+	{
+		__sizeStartCallback = new Callback(scope, func);
+	}
+	
+	public function setSizeEndCallback(scope:Object, func:Function):Void
+	{
+		__sizeEndCallback = new Callback(scope, func);
 	}
 	
 	private function removeMoveTween():Void
@@ -118,7 +139,7 @@ class com.jxl.shuriken.core.TweenComponent extends UIComponent
 		onTweenMoveUpdate(pVal);
 		delete __tweenMove;
 		//enabled = true
-		dispatchEvent(new ShurikenEvent(ShurikenEvent.EFFECT_MOVE_START, this));
+		__moveEndCallback.dispatch(new ShurikenEvent(ShurikenEvent.EVENT_EFFECT_MOVE_END, this));
 	}
 	
 	private function sizeToTargets():Void
@@ -127,7 +148,7 @@ class com.jxl.shuriken.core.TweenComponent extends UIComponent
 		
 		//enabled = false
 		
-		dispatchEvent(new ShurikenEvent(ShurikenEvent.EFFECT_MOVE_START, this));
+		__sizeStartCallback.dispatch(new ShurikenEvent(ShurikenEvent.EVENT_EFFECT_SIZE_START, this));
 		
 		__tweenSize = new Tween(this, [__oldWidth, __oldHeight], [__targetWidth, __targetHeight], sizeSpeed);
 		__tweenSize.easingEquation = Strong.easeOut;
@@ -146,7 +167,7 @@ class com.jxl.shuriken.core.TweenComponent extends UIComponent
 		onTweenSizeUpdate(pVal);
 		delete __tweenSize;	
 		//enabled = true			
-		dispatchEvent(new ShurikenEvent(ShurikenEvent.EFFECT_MOVE_START, this));
+		__sizeEndCallback.dispatch(new ShurikenEvent(ShurikenEvent.EVENT_EFFECT_SIZE_END, this));
 	}
 	
 	private function removeSizeTween():Void

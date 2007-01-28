@@ -1,5 +1,6 @@
 ﻿import com.jxl.shuriken.core.UIComponent;
 import com.jxl.shuriken.events.ShurikenEvent;
+import com.jxl.shuriken.events.Callback;
 
 [InspectableList("align", "background", "backgroundColor", "bold", "border", "borderColor", "embedFonts", "html", "htmlText", "text", "color", "textSize", "multiline", "wordWrap", "font", "password", "selectable", "restrict", "maxChars", "type")]
 class com.jxl.shuriken.core.UITextField extends UIComponent
@@ -455,6 +456,8 @@ class com.jxl.shuriken.core.UITextField extends UIComponent
 	private var __underlineDirty:Boolean;
 	private var __urlDirty:Boolean;
 	
+	private var __changeCallback:Callback;
+	
 	public function UITextField()
 	{
 	}
@@ -762,8 +765,13 @@ class com.jxl.shuriken.core.UITextField extends UIComponent
 		callLater(this, dispatchChange);
 	}
 	
+	public function setChangeCallback(p_scope:Object, p_func:Function):Void
+	{
+		__changeCallback = new Callback(p_scope, p_func);
+	}
+	
 	private function dispatchChange():Void
 	{
-		dispatchEvent(new ShurikenEvent(ShurikenEvent.CHANGE, this));
+		__changeCallback.dispatch(new ShurikenEvent(ShurikenEvent.CHANGE, this));
 	}
 }

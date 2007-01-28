@@ -7,6 +7,7 @@ import com.jxl.shuriken.controls.Button;
 import com.jxl.shuriken.controls.CheckBox;
 import com.jxl.shuriken.events.Event;
 import com.jxl.shuriken.events.ShurikenEvent;
+import com.jxl.shuriken.events.Callback;
 
 
 class com.jxl.goocal.views.LoginForm extends UIComponent
@@ -50,9 +51,9 @@ class com.jxl.goocal.views.LoginForm extends UIComponent
 	private var __rememberDirty:Boolean			= false;
 	private var __saveSOListener:Function;
 	private var __initialSOList:Function;
-	private var __rememberList:Function;
 	private var __closingList:Function;
-	private var __submitList:Function;
+	private var __rememberCallback:Callback;
+	private var __submitCallback:Callback;
 	
 	private var __username_lbl:Label;
 	private var __username_ti:UITextField;
@@ -69,21 +70,19 @@ class com.jxl.goocal.views.LoginForm extends UIComponent
 	{
 		super.onInitialized();
 		
-		var f:Function = Delegate.create(this, onTextChanged);
-		__username_ti.addEventListener(ShurikenEvent.CHANGE, f);
-		__password_ti.addEventListener(ShurikenEvent.CHANGE, f);
+		__username_ti.setChangeCallback(this, onTextChanged);
+		__password_ti.setChangeCallback(this, onTextChanged);
 		__username_lbl.text = "Username";
 		__password_lbl.text = "Password";
 		__password_ti.password = true;
 		
-		if(__rememberList == null) __rememberList = Delegate.create(this, onRemember);
-		__remember_ch.addEventListener(ShurikenEvent.RELEASE, __rememberList);
+		__remember_ch.setReleaseCallback(this, onRemember);
 		__remember_ch.label = "Remember Me";
 		__remember_ch.setSize(120, __remember_ch.height);
 		
-		if(__submitList == null) __submitList = Delegate.create(this, onSubmit);
-		__submit_pb.addEventListener(ShurikenEvent.RELEASE, __submitList);
+		__submit_pb.setReleaseCallback(this, onSubmit);
 		__submit_pb.label = "Login";
+		
 		if(System.capabilities.isDebugger == false)
 		{
 			if(__initialSOList == null)
@@ -98,10 +97,6 @@ class com.jxl.goocal.views.LoginForm extends UIComponent
 			var readSO:SharedObject = SharedObject.getLocal(soName);
 			onInitialSOReady(readSO);
 		}
-		
-		//username = "";
-		//password = "";
-		
 		
 		commitProperties();
 	}
@@ -125,9 +120,14 @@ class com.jxl.goocal.views.LoginForm extends UIComponent
 		if(__rememberDirty == true)
 		{
 			__rememberDirty = false;
-			__remember_ch.removeEventListener(ShurikenEvent.RELEASE, __rememberList);
+			__remember_ch.setReleaseCallback();
 			__remember_ch.selected = __remember;
-			__remember_ch.addEventListener(ShurikenEvent.RELEASE, __rememberList);
+			//DebugWindow.debugHeader();
+			//DebugWindow.debug("LoginForm::commitProperties");
+			__remember = __remember_ch.selected;
+			//DebugWindow.debug("__remember: " + __remember);
+			//DebugWindow.debug("__remember_ch.selected: " + __remember_ch.selected);
+			__remember_ch.setReleaseCallback(this, onRemember);
 			//enabled = false;
 			if(System.capabilities.isDebugger == false)
 			{
@@ -182,20 +182,21 @@ class com.jxl.goocal.views.LoginForm extends UIComponent
 		//DebugWindow.debug("__username: " + __username);
 		//DebugWindow.debug("__password: " + __password);
 		__remember = __remember_ch.selected;
+		//DebugWindow.debug("__remember: " + __remember);
 		__rememberDirty = true;
 		invalidateProperties();
-		dispatchEvent(new Event(EVENT_REMEMBER_CHANGED, this));
+		__rememberCallback.dispatch(new Event(EVENT_REMEMBER_CHANGED, this));
 		//DebugWindow.debug("__username: " + __username);
 		//DebugWindow.debug("__password: " + __password);
 	}
 	
 	private function onSubmit(p_event:ShurikenEvent):Void
 	{
-		__submit_pb.removeEventListener(ShurikenEvent.RELEASE, __submitList);
+		__submit_pb.setReleaseCallback();
 		
 		if(__remember == false)
 		{
-			dispatchEvent(new Event(EVENT_SUBMIT, this));
+			__submitCallback.dispatch(new Event(EVENT_SUBMIT, this));
 		}
 		else
 		{
@@ -243,9 +244,9 @@ class com.jxl.goocal.views.LoginForm extends UIComponent
 			if(p_so.data.remember == true)
 			{
 				__remember = true;
-				__remember_ch.removeEventListener(ShurikenEvent.RELEASE, __rememberList);
+				__remember_ch.setReleaseCallback();
 				__remember_ch.selected = __remember;
-				__remember_ch.addEventListener(ShurikenEvent.RELEASE, __rememberList);
+				__remember_ch.setReleaseCallback(this, onRemember);
 			}
 		}
 		
@@ -261,6 +262,16 @@ class com.jxl.goocal.views.LoginForm extends UIComponent
 		p_so.flush();
 		SharedObject.removeListener(soName);
 		delete __closingList;
-		dispatchEvent(new Event(EVENT_SUBMIT, this));
+		__submitCallback.dispatch(new Event(EVENT_SUBMIT, this));
+	}
+	
+	public function setRememberCallback(scope:Object, func:Function):Void
+	{
+		__rememberCallback = new Callback(scope, func);
+	}
+	
+	public function setSubmitCallback(scope:Object, func:Function):Void
+	{
+		__submitCallback = new Callback(scope, func);
 	}
 }

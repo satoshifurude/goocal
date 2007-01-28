@@ -3,6 +3,7 @@
 import com.jxl.shuriken.core.UIComponent;
 import com.jxl.shuriken.controls.SimpleButton;
 import com.jxl.shuriken.events.ShurikenEvent;
+import com.jxl.shuriken.events.Callback;
 import com.jxl.shuriken.utils.DrawUtils;
 
 class com.jxl.shuriken.controls.NumericStepper extends UIComponent
@@ -20,6 +21,7 @@ class com.jxl.shuriken.controls.NumericStepper extends UIComponent
 	// increments are only allowed to be positive
 	private var __incrementAmount:Number 				= 1;
 	private var __incrementAmountDirty:Boolean			= false;
+	private var __changeCallback:Callback;
 	
 	private var __valueField:TextField;
 	private var __upArrow:SimpleButton;
@@ -98,7 +100,7 @@ class com.jxl.shuriken.controls.NumericStepper extends UIComponent
 		if(__upArrow == null)
 		{
 			__upArrow = SimpleButton(createComponent(SimpleButton, "__upArrow"));
-			__upArrow.addEventListener(ShurikenEvent.RELEASE, Delegate.create(this, increment));
+			__upArrow.setReleaseCallback(this, increment);
 			// magic numberz 4 t3h w1n!
 			__upArrow.setSize(12, 9);
 		}
@@ -106,7 +108,7 @@ class com.jxl.shuriken.controls.NumericStepper extends UIComponent
 		if(__downArrow == null)
 		{
 			__downArrow = SimpleButton(createComponent(SimpleButton, "__downArrow"));
-			__downArrow.addEventListener(ShurikenEvent.RELEASE, Delegate.create(this, decrement));
+			__downArrow.setReleaseCallback(this, decrement);
 			__downArrow.setSize(12, 9);
 		}
 	}
@@ -171,7 +173,7 @@ class com.jxl.shuriken.controls.NumericStepper extends UIComponent
 			var event:ShurikenEvent = new ShurikenEvent(ShurikenEvent.CHANGE, this);
 			event.oldValue = oldVal;
 			event.value = __value;
-			dispatchEvent(event);
+			__changeCallback.dispatch(event);
 		}
 	}
 	
@@ -189,5 +191,10 @@ class com.jxl.shuriken.controls.NumericStepper extends UIComponent
 	public function decrement():Void
 	{
 		if(__value - __incrementAmount >= __minimum) value = __value - __incrementAmount;
+	}
+	
+	public function setChangeCallback(scope:Object, func:Function):Void
+	{
+		__changeCallback = new Callback(scope, func);
 	}
 }

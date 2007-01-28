@@ -7,6 +7,7 @@ import com.jxl.shuriken.controls.Button;
 import com.jxl.shuriken.core.Collection;
 import com.jxl.shuriken.events.Event;
 import com.jxl.shuriken.events.ShurikenEvent;
+import com.jxl.shuriken.events.Callback;
 
 
 class com.jxl.goocal.views.ChooseCalendar extends UIComponent
@@ -32,9 +33,10 @@ class com.jxl.goocal.views.ChooseCalendar extends UIComponent
 	}
 	
 	private var __calendars:Collection;
-	private var __calendarsDirty:Boolean 		= false;
+	private var __calendarsDirty:Boolean 			= false;
 	private var __autoChoose:Boolean				= false;
 	private var __autoChooseDirty:Boolean			= false;
+	private var __submitCallback:Callback;
 	
 	private var __calendar_cb:ComboBox;
 	private var __autoChoose_ch:CheckBox;
@@ -49,7 +51,7 @@ class com.jxl.goocal.views.ChooseCalendar extends UIComponent
 	{
 		super.onInitialized();
 		
-		__submit_pb.addEventListener(ShurikenEvent.RELEASE, Delegate.create(this, onSubmit));
+		__submit_pb.setReleaseCallback(this, onSubmit);
 		__calendar_cb.direction = ComboBox.DIRECTION_BELOW;
 		
 		__calendarsDirty 		= true;
@@ -76,6 +78,11 @@ class com.jxl.goocal.views.ChooseCalendar extends UIComponent
 	
 	private function onSubmit(p_event:ShurikenEvent):Void
 	{
-		dispatchEvent(new Event(EVENT_SUBMIT, this));
+		__submitCallback.dispatch(new Event(EVENT_SUBMIT, this));
+	}
+	
+	public function setSubmitCallback(scope:Object, func:Function):Void
+	{
+		__submitCallback = new Callback(scope, func);
 	}
 }

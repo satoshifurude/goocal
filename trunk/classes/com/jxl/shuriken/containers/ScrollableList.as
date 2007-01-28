@@ -284,57 +284,18 @@ class com.jxl.shuriken.containers.ScrollableList extends Container
 	private function setupList():Void
 	{
 		__mcList = ButtonList(attachMovie(ButtonList.SYMBOL_NAME, "__mcList", getNextHighestDepth()));
-
-		__mcList.addEventListener(ShurikenEvent.SETUP_CHILD, Delegate.create(this, onSetupChild));
-		//__mcList.setupChild = Delegate.create(this, onSetupChild);
-		__mcList.addEventListener(ShurikenEvent.COLUMN_WIDTH_CHANGED, Delegate.create(this, onColumnWidthChanged));
-		__mcList.addEventListener(ShurikenEvent.ROW_HEIGHT_CHANGED, Delegate.create(this, onRowHeightChanged));		
-
-		__mcList.addEventListener(ShurikenEvent.ITEM_CLICKED, Delegate.create(this, onItemClicked))
-		__mcList.addEventListener(ShurikenEvent.ITEM_SELECTION_CHANGED, Delegate.create(this, onItemSelectionChanged))
-	
 		__mcList.childClass = __childClass;
 	}
 	
 	private function setupButtons():Void
 	{
 		__mcScrollPrevious = SimpleButton(attachMovie(SimpleButton.SYMBOL_NAME, "__mcScrollPrevious", getNextHighestDepth()));
-		__mcScrollPrevious.addEventListener(ShurikenEvent.RELEASE, Delegate.create(this, onScrollPrevious));
+		__mcScrollPrevious.setReleaseCallback(this, onScrollPrevious);
 		__mcScrollPrevious.setSize(__width, 4);
 		
 		__mcScrollNext = SimpleButton(attachMovie(SimpleButton.SYMBOL_NAME, "__mcScrollNext", getNextHighestDepth()));
-		__mcScrollNext.addEventListener(ShurikenEvent.RELEASE, Delegate.create(this, onScrollNext));		
+		__mcScrollNext.setReleaseCallback(this, onScrollNext);		
 		__mcScrollNext.setSize(__width, 4);
-	}
-	
-	// proxy event
-	private function onSetupChild(p_event:ShurikenEvent):Void
-	{	
-		var event:ShurikenEvent = new ShurikenEvent(ShurikenEvent.SETUP_CHILD, this);
-		event.child = p_event.child;
-		event.list = p_event.list;
-		dispatchEvent(event);
-	}
-	
-	private function onItemClicked(p_event:ShurikenEvent):Void
-	{
-		//DebugWindow.debugHeader();
-		//DebugWindow.debug("ScrollableList::onItemClicked");
-		var event:ShurikenEvent = new ShurikenEvent(ShurikenEvent.ITEM_CLICKED, this);
-		event.child = p_event.child;
-		event.item = p_event.item;
-		event.index = p_event.index;
-		dispatchEvent(event);	
-	}
-	
-	private function onItemSelectionChanged(p_event:ShurikenEvent):Void
-	{
-		var event:ShurikenEvent = new ShurikenEvent(ShurikenEvent.ITEM_SELECTION_CHANGED, this);
-		event.lastSelected = p_event.lastSelected;
-		event.selected = p_event.selected;
-		event.item = p_event.item;
-		event.index = p_event.index;
-		dispatchEvent(event);
 	}
 	
 	private function commitProperties():Void
@@ -574,16 +535,6 @@ class com.jxl.shuriken.containers.ScrollableList extends Container
 		}
 	}
 	
-	private function onColumnWidthChanged(p_event:ShurikenEvent):Void
-	{
-		dispatchEvent(new ShurikenEvent(ShurikenEvent.COLUMN_WIDTH_CHANGED, this));
-	}
-	
-	private function onRowHeightChanged(p_event:ShurikenEvent):Void
-	{	
-		dispatchEvent(new ShurikenEvent(ShurikenEvent.ROW_HEIGHT_CHANGED, this));	
-	}
-	
 	private function onTweenHScrollUpdate(pVal:Number):Void
 	{
 		__mcList.move(pVal, __mcList.y);
@@ -604,90 +555,41 @@ class com.jxl.shuriken.containers.ScrollableList extends Container
 		onTweenVScrollUpdate(pVal);
 	}
 	
-	// Collection implementation
-	public function addItem(p_item:Object):Void
+	// *********************************************************************************
+	// Proxy Callbacks
+	// TODO: maybe __resolve would be faster?  Need
+	// to satisfy strong-typing via vars if you change
+	
+	// ButtonList's
+	public function setItemClickCallback(scope:Object, func:Function):Void
 	{
-		__dataProvider.addItem(p_item);
+		__mcList.setItemClickCallback(scope, func);
 	}
 	
-	public function addItemAt(p_item:Object, p_index:Number):Void
+	public function setItemSelectionChangedCallback(scope:Object, func:Function):Void
 	{
-		__dataProvider.addItemAt(p_item, p_index);	
+		__mcList.setItemSelectionChangedCallback(scope, func);
 	}
 	
-	public function getItemAt(p_index:Number):Object
+	public function setItemRollOverCallback(scope:Object, func:Function):Void
 	{
-		return __dataProvider.getItemAt(p_index);
+		__mcList.setItemRollOverCallback(scope, func);
 	}
 	
-	public function getItemIndex(p_item:Object):Number
+	// List's
+	public function setColumnWidthChangedCallback(scope:Object, func:Function):Void
 	{
-		return __dataProvider.getItemIndex(p_item);	
+		__mcList.setColumnWidthChangedCallback(scope, func);
 	}
 	
-	public function itemUpdated(p_item:Object, p_propName:String, p_oldVal:Object, p_newVal:Object ):Void
+	public function setRowHeightChangedCallback(scope:Object, func:Function):Void
 	{
-		__dataProvider.itemUpdated(p_item, p_propName, p_oldVal, p_newVal);
-	}
-
-	public function removeAll():Void
-	{
-		__dataProvider.removeAll();
+		__mcList.setRowHeightChangedCallback(scope, func);
 	}
 	
-	public function removeItemAt(p_index:Number):Object
+	public function setSetupChildCallback(scope:Object, func:Function):Void
 	{
-		return __dataProvider.removeItemAt(p_index);
+		__mcList.setSetupChildCallback(scope, func);
 	}
-	
-	public function setItemAt(p_item:Object, p_index:Number):Object
-	{
-		return __dataProvider.setItemAt(p_item, p_index);
-	}
-	
-	public function getLength():Number
-	{
-		return __dataProvider.getLength();
-	}
-	
-	// IList implementation
-	public function setDirection(p_direction:String):Void { direction = p_direction; }
-	public function getDirection():String { return __direction; }
-	
-	public function getHorizontalPageSize():Number { return __horizontalPageSize; }
-	public function getVerticalPageSize():Number { return __verticalPageSize; }
-	
-	public function getChildClass():Function { return __childClass; }
-	public function setChildClass(p_class:Function):Void { childClass = p_class; }
-	
-	public function getChildSetValueFunction():Function
-	{
-		return __childSetValueFunction;
-	}
-	public function setChildSetValueFunction(p_function:Function):Void { childSetValueFunction = p_function; }
-	
-	public function getChildSetValueScope():Object { return __childSetValueScope; }
-	public function setChildSetValueScope(p_val:Object):Void { childSetValueScope = p_val; }
-	
-	public function getColumnWidth():Number { return __columnWidth; }
-	public function setColumnWidth(p_val:Number):Void { columnWidth = p_val; }
-	
-	public function getRowHeight():Number { return __rowHeight; }
-	public function setRowHeight(p_val:Number):Void	{ rowHeight = p_val; }
-	
-	public function getAlign():String { return __align; }
-	public function setAlign(p_val:String):Void { align = p_val; }
-	
-	public function getChildHorizontalMargin():Number { return __childHorizontalMargin; }
-	public function setChildHorizontalMargin(p_val:Number):Void { childHorizontalMargin = p_val; }
-	
-	public function getChildVerticalMargin():Number { return __childVerticalMargin; }
-	public function setChildVerticalMargin(p_val:Number):Void { childVerticalMargin = p_val; }
-	
-	public function getAutoSizeToChildren():Boolean { return __autoSizeToChildren; }
-	public function setAutoSizeToChildren(p_val:Boolean):Void { autoSizeToChildren = p_val; }
-	
-	public function getDataProvider():Collection { return __dataProvider; }
-	public function setDataProvider(p_val:Collection):Void { dataProvider = p_val; }
 	
 }

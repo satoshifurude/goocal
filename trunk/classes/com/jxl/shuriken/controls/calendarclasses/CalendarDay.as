@@ -1,6 +1,7 @@
 ﻿import com.jxl.shuriken.core.UIComponent;
 import com.jxl.shuriken.utils.DrawUtils;
 import com.jxl.shuriken.events.ShurikenEvent;
+import com.jxl.shuriken.events.Callback;
 
 class com.jxl.shuriken.controls.calendarclasses.CalendarDay extends UIComponent
 {
@@ -12,6 +13,8 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarDay extends UIComponent
 	private var __label:String				= "";
 	private var __labelDirty:Boolean		= false;
 	private var __backgroundColor:Number;
+	private var __selectionChangedCallback:Callback;
+	
 	private var __border_mc:MovieClip;
 	private var __txt:TextField;
 	
@@ -28,7 +31,7 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarDay extends UIComponent
 	public function set selected(p_val:Boolean):Void
 	{
 		setSelectedNoEvent(p_val);
-		dispatchEvent(new ShurikenEvent(ShurikenEvent.SELECTION_CHANGED, this));
+		__selectionChangedCallback.dispatch(new ShurikenEvent(ShurikenEvent.SELECTION_CHANGED, this));
 	}
 	
 	public function setSelectedNoEvent(p_val:Boolean):Void
@@ -145,6 +148,11 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarDay extends UIComponent
 		
 		__txt._width = __width;
 		__txt._height = __height;
+	}
+	
+	public function setSelectionChangedCallback(scope:Object, func:Function):Void
+	{
+		__selectionChangedCallback = new Callback(scope, func);
 	}
 	
 }

@@ -65,6 +65,16 @@ class com.jxl.shuriken.controls.NumericStepper extends UIComponent
 	{
 	}
 	
+	
+	public function setMinMax(min:Number, max:Number):Void
+	{
+		__minimum = min;
+		__maximum = max;
+		__minimumDirty = true;
+		__maximumDirty = true;
+		invalidateProperties();
+	}
+	
 	private function createChildren():Void
 	{
 		super.createChildren();

@@ -1,50 +1,23 @@
 ﻿import com.jxl.shuriken.core.UIComponent;
-import com.jxl.shuriken.core.UITextField;
 import com.jxl.shuriken.controls.Label;
-import com.jxl.shuriken.controls.ComboBox;
-import com.jxl.shuriken.utils.DateUtils;
-import com.jxl.shuriken.core.Collection;
+import com.jxl.shuriken.controls.DateEditor;
 
 class com.jxl.goocal.views.createevent.Step2 extends UIComponent
 {
 	
 	public static var SYMBOL_NAME:String = "com.jxl.goocal.views.createevent.Step2";
 	
-	private var __where:String 								= "";
-	private var __whereDirty:Boolean 						= false;
-	private var __calendars:Collection;
-	private var __calendarsDirty:Boolean					= false;
-	private var __description:String						= "";
-	private var __descriptionDirty:Boolean					= false;
+	private var __toDate:Date;
+	private var __toDateDirty:Boolean		= false;
 	
-	private var __where_lbl:Label;
-	private var __where_ti:UITextField;
-	private var __calendar_lbl:Label;
-	private var __calendars_cb:ComboBox;
-	private var __description_lbl:Label;
-	private var __description_txt:UITextField;
+	private var __to_lbl:Label;
+	private var __to_de:DateEditor;
 	
-	public function get where():String { return __where; }
-	public function set where(p_val:String):Void
+	public function get toDate():Date { return __toDate; }
+	public function set toDate(p_val:Date):Void
 	{
-		__where = p_val;
-		__whereDirty = true;
-		invalidateProperties();
-	}
-	
-	public function get calendars():Collection { return __calendars; }
-	public function set calendars(p_val:Collection):Void
-	{
-		__calendars = p_val;
-		__calendarsDirty = true;
-		invalidateProperties();
-	}
-	
-	public function get description():String { return __description; }
-	public function set description(p_val:String):Void
-	{
-		__description = p_val;
-		__descriptionDirty = true;
+		__toDate = p_val;
+		__toDateDirty = true;
 		invalidateProperties();
 	}
 	
@@ -61,37 +34,45 @@ class com.jxl.goocal.views.createevent.Step2 extends UIComponent
 		tabChildren			= true;
 	}
 	
-	private function onInitialized():Void
+	private function createChildren():Void
 	{
-		super.onInitialized();
+		super.createChildren();
 		
-		__whereDirty			= true;
-		__calendarsDirty 		= true;
-		__descriptionDirty 		= true;
-		commitProperties();
+		if(__to_lbl == null)
+		{
+			__to_lbl = Label(createComponent(Label, "__to_lbl"));
+			__to_lbl.text = "To";
+		}
+		
+		if(__to_de == null)
+		{
+			__to_de = DateEditor(createComponent(DateEditor, "__to_de"));
+			__to_de.currentDate = __toDate; 
+		}
 	}
 	
 	private function commitProperties():Void
 	{
 		super.commitProperties();
 		
-		if(__whereDirty == true)
+		if(__toDateDirty == true)
 		{
-			__whereDirty = false;
-			__where_ti.text = __where;
-		}
-		
-		if(__calendarsDirty == true)
-		{
-			__calendarsDirty = false;
-			__calendars_cb.dataProvider = __calendars;
-		}
-		
-		if(__descriptionDirty == true)
-		{
-			__descriptionDirty = false;
-			__description_txt.text = __description;
+			__toDateDirty = false;
+			__to_de.currentDate = __toDate;
 		}
 	}
 	
+	private function size():Void
+	{
+		super.size();
+		
+		var margin:Number = 2;
+		var m2:Number = margin * 2;
+		
+		__to_lbl.move(0, 0);
+		__to_lbl.setSize(40, __to_lbl.height);
+		
+		__to_de.move(__to_lbl.x + __to_lbl.width + margin, __to_lbl.y);
+		__to_de.setSize(__width, 40);
+	}
 }

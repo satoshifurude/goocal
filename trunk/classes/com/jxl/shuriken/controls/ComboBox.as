@@ -535,11 +535,6 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 		__itemSelectionChangedCallack.dispatch(event);
 	}
 	
-	public function setItemSelectionChangedCallback(scope:Object, func:Function):Void
-	{
-		__itemSelectionChangedCallack = new Callback(scope, func);
-	}
-	
 	public function openList():Void
 	{
 		__isOpen = true;
@@ -601,4 +596,10 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 		__tweenScroll.easingEquation = Strong.easeOut;
 		__tweenScroll.setTweenHandlers("onTweenVScrollUpdate", "onTweenVScrollCloseEnd");
 	}
+	
+	public function setItemSelectionChangedCallback(scope:Object, func:Function):Void
+	{
+		__itemSelectionChangedCallack = new Callback(scope, func);
+	}
+	
 }

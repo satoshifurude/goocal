@@ -34,8 +34,6 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 	private var __hour_nms:NumericStepper;
 	private var __min_lbl:Label;
 	private var __min_nms:NumericStepper;
-	//private var __ok_pb:Button;
-	//private var __close_pb:SimpleButton;
 	
 	public function get fieldType():Number { return __fieldType; }
 	public function set fieldType(p_val:Number):Void
@@ -59,21 +57,6 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 	private function createChildren():Void
 	{
 		super.createChildren();
-		/*
-		var clickFunc:Function = Delegate.create(this, onOkCloseClick);
-		if(__ok_pb == null)
-		{
-			__ok_pb = Button(createComponent(Button, "__ok_pb"));
-			__ok_pb.label = "OK";
-			__ok_pb.addEventListener(ShurikenEvent.RELEASE, clickFunc);
-		}
-		
-		if(__close_pb == null)
-		{
-			__close_pb = SimpleButton(createComponent(SimpleButton, "__close_pb"));
-			__close_pb.addEventListener(ShurikenEvent.RELEASE, clickFunc);
-		}
-		*/
 		
 		if(__isConstructing == false)
 		{
@@ -108,6 +91,7 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 			{
 				__year_nms = NumericStepper(createComponent(NumericStepper, "__year_nms"));
 				__year_nms.setChangeCallback(this, onValueChange);
+				__year_nms.setMinMax(1000, 9999);
 			}
 			
 			if(__fieldType == FIELD_YEAR) return;
@@ -122,6 +106,7 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 			{
 				__month_nms = NumericStepper(createComponent(NumericStepper, "__month_nms"));
 				__month_nms.setChangeCallback(this, onValueChange);
+				__month_nms.setMinMax(1, 12);
 			}
 			
 			if(__fieldType == FIELD_YEAR_MONTH) return;
@@ -136,6 +121,9 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 			{
 				__day_nms = NumericStepper(createComponent(NumericStepper, "__day_nms"));
 				__day_nms.setChangeCallback(this, onValueChange);
+				// TODO: this should keep track of the month instead of being hardcoded
+				// to 31; some months have 28 and 30 days, not 31
+				__day_nms.setMinMax(1, 31);
 			}
 			
 			if(__fieldType == FIELD_YEAR_MONTH_DAY) return;
@@ -150,6 +138,7 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 			{
 				__hour_nms = NumericStepper(createComponent(NumericStepper, "__hour_nms"));
 				__hour_nms.setChangeCallback(this, onValueChange);
+				__hour_nms.setMinMax(0, 23);
 			}
 			
 			if(__fieldType == FIELD_YEAR_MONTH_DAY_HOUR) return;
@@ -164,6 +153,7 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 			{
 				__min_nms = NumericStepper(createComponent(NumericStepper, "__min_nms"));
 				__min_nms.setChangeCallback(this, onValueChange);
+				__min_nms.setMinMax(0, 59);
 			}
 		}
 		else
@@ -179,6 +169,9 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 			{
 				__day_nms = NumericStepper(createComponent(NumericStepper, "__day_nms"));
 				__day_nms.setChangeCallback(this, onValueChange);
+				// TODO: this should keep track of the month instead of being hardcoded
+				// to 31; some months have 28 and 30 days, not 31
+				__day_nms.setMinMax(1, 31);
 			}
 			
 			if(__hour_lbl == null)
@@ -191,6 +184,7 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 			{
 				__hour_nms = NumericStepper(createComponent(NumericStepper, "__hour_nms"));
 				__hour_nms.setChangeCallback(this, onValueChange);
+				__hour_nms.setMinMax(0, 23);
 			}
 			
 			if(__min_lbl == null)
@@ -203,6 +197,7 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 			{
 				__min_nms = NumericStepper(createComponent(NumericStepper, "__min_nms"));
 				__min_nms.setChangeCallback(this, onValueChange);
+				__min_nms.setMinMax(0, 59);
 			}
 		}
 		

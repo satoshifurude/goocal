@@ -6,6 +6,8 @@ import com.jxl.shuriken.events.ShurikenEvent;
 
 import com.jxl.goocal.views.createevent.Step1;
 import com.jxl.goocal.views.createevent.Step2;
+import com.jxl.goocal.views.createevent.Step3;
+import com.jxl.goocal.views.createevent.Step4;
 import com.jxl.goocal.views.GCHeading;
 
 class com.jxl.goocal.views.CreateEvent extends UIComponent
@@ -14,11 +16,13 @@ class com.jxl.goocal.views.CreateEvent extends UIComponent
 	
 	// 1 based, not 0 based
 	private var __currentStep:Number = 1;
-	private var __maxSteps:Number = 2;
+	private var __maxSteps:Number = 4;
 	
 	private var __title_lbl:GCHeading;
 	private var __step1:Step1;
 	private var __step2:Step2;
+	private var __step3:Step3;
+	private var __step4:Step4;
 	private var __cancel_pb:Button;
 	private var __back_pb:Button;
 	private var __next_pb:Button; // doubles as save button
@@ -49,8 +53,26 @@ class com.jxl.goocal.views.CreateEvent extends UIComponent
 		
 		__title_lbl.text = "Create Event Step " + __currentStep;
 		
-		if(__step1 != null) __step1.removeMovieClip(); delete __step1;
-		if(__step2 != null) __step2.removeMovieClip(); delete __step2;
+		if(__step1 != null)
+		{
+			__step1.removeMovieClip();
+			delete __step1;
+		}
+		if(__step2 != null)
+		{
+			__step2.removeMovieClip();
+			delete __step2;
+		}
+		if(__step3 != null)
+		{
+			__step3.removeMovieClip();
+			delete __step3;
+		}
+		if(__step4 != null)
+		{
+			__step4.removeMovieClip();
+			delete __step4;
+		}
 		
 		switch(__currentStep)
 		{
@@ -75,6 +97,15 @@ class com.jxl.goocal.views.CreateEvent extends UIComponent
 					__back_pb.label = "Back";
 				}
 				break;
+				
+			case 3:
+				if(__step3 == null) __step3 = Step3(createComponent(Step3, "__step3"));
+				break;
+				
+			case 4:
+				if(__step4 == null) __step4 = Step4(createComponent(Step4, "__step4"));
+				break;
+				
 			
 		}
 		
@@ -90,10 +121,23 @@ class com.jxl.goocal.views.CreateEvent extends UIComponent
 			__step1.move(0, __title_lbl.y + __title_lbl.height);
 			__step1.setSize(__width, __step1.height);
 		}
+		
 		if(__step2 != null)
 		{
 			__step2.move(0, __title_lbl.y + __title_lbl.height);
 			__step2.setSize(__width, __step2.height);
+		}
+		
+		if(__step3 != null)
+		{
+			__step3.move(0, __title_lbl.y + __title_lbl.height);
+			__step3.setSize(__width, __step3.height);
+		}
+		
+		if(__step4 != null)
+		{
+			__step4.move(0, __title_lbl.y + __title_lbl.height);
+			__step4.setSize(__width, __step4.height);
 		}
 		
 		__cancel_pb.setSize(50, 16);

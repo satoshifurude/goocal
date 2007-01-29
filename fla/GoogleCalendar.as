@@ -428,6 +428,8 @@ class GoogleCalendar extends UIComponent
 	{
 		destroyViews();
 		
+		gotoAndStop("hide");
+		
 		if(__createEvent == null)
 		{
 			__createEvent = CreateEvent(createComponent(CreateEvent, "__createEvent"));

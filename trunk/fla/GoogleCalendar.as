@@ -434,17 +434,67 @@ class GoogleCalendar extends UIComponent
 		{
 			__createEvent = CreateEvent(createComponent(CreateEvent, "__createEvent"));
 			__createEvent.move(0, 0);
+			__createEvent.setCancelCallback(this, onCancelCreateEvent);
+			__createEvent.setSaveCallback(this, onSaveCreateEvent);
+			
+			var toDate:Date = DateUtils.clone(ModelLocator.getInstance().currentDate);
+			toDate.setHours(toDate.getHours() + 1);
+			// KLUDGE: 'Does not repeat' is a magic string
+			__createEvent.setupEvent(ModelLocator.getInstance().currentDate,
+									 toDate,
+									 "",
+									 "",
+									 ModelLocator.getInstance().calendars,
+									 "",
+									 "Does not repeat");
 		}
+	}
+	
+	private function onCancelCreateEvent(event:Event):Void
+	{
+		destroyViews();
+		// HACK: !!! Not following ARP, bad bad bad
+		if(ModelLocator.getInstance().currentDate != null) ModelLocator.getInstance().currentDate = new Date();
+		onGotEventsForDateSelected(true);
+	}
+	
+	private function onSaveCreateEvent(event:Event):Void
+	{
+		
 	}
 	
 	private function destroyViews():Void
 	{
-		if(__login_mc != null) __login_mc.removeMovieClip(); delete __login_mc;
-		if(__calendarList != null) __calendarList.removeMovieClip(); delete __calendarList;
-		if(__dayView != null) __dayView.removeMovieClip(); delete __dayView;
-		if(__monthView != null) __monthView.removeMovieClip(); delete __monthView;
-		if(__entryView != null) __entryView.removeMovieClip(); delete __entryView;
-		if(__createEvent != null) __createEvent.removeMovieClip(); delete __createEvent;
+		if(__login_mc != null)
+		{
+			__login_mc.removeMovieClip();
+			delete __login_mc;
+		}
+		if(__calendarList != null)
+		{
+			__calendarList.removeMovieClip();
+			delete __calendarList;
+		}
+		if(__dayView != null)
+		{
+			__dayView.removeMovieClip();
+			delete __dayView;
+		}
+		if(__monthView != null)
+		{
+			__monthView.removeMovieClip();
+			delete __monthView;
+		}
+		if(__entryView != null)
+		{
+			__entryView.removeMovieClip();
+			delete __entryView;
+		}
+		if(__createEvent != null)
+		{
+			__createEvent.removeMovieClip();
+			delete __createEvent;
+		}
 	}
 	
 	

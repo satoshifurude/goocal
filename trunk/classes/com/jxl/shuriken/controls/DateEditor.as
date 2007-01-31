@@ -23,6 +23,7 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 	private var __currentDate:Date;
 	private var __currentDateDirty:Boolean						= false;
 	private var __fieldType:Number 								= 3;
+	private var __currentChild:Number;
 	
 	private var __year_lbl:Label;
 	private var __year_nms:NumericStepper;
@@ -39,7 +40,7 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 	public function set fieldType(p_val:Number):Void
 	{
 		__fieldType = p_val;
-		invalidateDraw();
+		callLater(this, createChildren);
 	}
 	
 	public function get currentDate():Date { return __currentDate; }
@@ -78,6 +79,15 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 			}
 		}
 		
+		_visible = false;
+		__currentChild = 0;
+		callLater(this, buildNext);
+	}
+	
+	private function buildNext():Void
+	{
+		__currentChild++;
+		
 		if(__fieldType != FIELD_DAY_HOUR_MIN)
 		{
 		
@@ -87,6 +97,12 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 				__year_lbl.text = "Year";
 			}
 			
+			if(__currentChild == 1)
+			{
+				callLater(this, buildNext);
+				return;
+			}
+			
 			if(__year_nms == null)
 			{
 				__year_nms = NumericStepper(createComponent(NumericStepper, "__year_nms"));
@@ -94,12 +110,28 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 				__year_nms.setMinMax(1000, 9999);
 			}
 			
-			if(__fieldType == FIELD_YEAR) return;
+			if(__fieldType == FIELD_YEAR)
+			{
+				doneBuilding();
+				return;
+			}
+			
+			if(__currentChild == 2)
+			{
+				callLater(this, buildNext);
+				return;
+			}
 			
 			if(__month_lbl == null)
 			{
 				__month_lbl = Label(createComponent(Label, "__month_lbl"));
 				__month_lbl.text = "Month";
+			}
+			
+			if(__currentChild == 3)
+			{
+				callLater(this, buildNext);
+				return;
 			}
 			
 			if(__month_nms == null)
@@ -109,12 +141,28 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 				__month_nms.setMinMax(1, 12);
 			}
 			
-			if(__fieldType == FIELD_YEAR_MONTH) return;
+			if(__fieldType == FIELD_YEAR_MONTH)
+			{
+				doneBuilding();
+				return;
+			}
+			
+			if(__currentChild == 4)
+			{
+				callLater(this, buildNext);
+				return;
+			}
 			
 			if(__day_lbl == null)
 			{
 				__day_lbl = Label(createComponent(Label, "__day_lbl"));
 				__day_lbl.text = "Day";
+			}
+			
+			if(__currentChild == 5)
+			{
+				callLater(this, buildNext);
+				return;
 			}
 			
 			if(__day_nms == null)
@@ -126,12 +174,28 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 				__day_nms.setMinMax(1, 31);
 			}
 			
-			if(__fieldType == FIELD_YEAR_MONTH_DAY) return;
+			if(__fieldType == FIELD_YEAR_MONTH_DAY)
+			{
+				doneBuilding();
+				return;
+			}
+			
+			if(__currentChild == 6)
+			{
+				callLater(this, buildNext);
+				return;
+			}
 			
 			if(__hour_lbl == null)
 			{
 				__hour_lbl = Label(createComponent(Label, "__hour_lbl"));
 				__hour_lbl.text = "Hour";
+			}
+			
+			if(__currentChild == 7)
+			{
+				callLater(this, buildNext);
+				return;
 			}
 			
 			if(__hour_nms == null)
@@ -141,12 +205,28 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 				__hour_nms.setMinMax(0, 23);
 			}
 			
-			if(__fieldType == FIELD_YEAR_MONTH_DAY_HOUR) return;
+			if(__fieldType == FIELD_YEAR_MONTH_DAY_HOUR)
+			{
+				doneBuilding();
+				return;
+			}
+			
+			if(__currentChild == 8)
+			{
+				callLater(this, buildNext);
+				return;
+			}
 			
 			if(__min_lbl == null)
 			{
 				__min_lbl = Label(createComponent(Label, "__min_lbl"));
 				__min_lbl.text = "Minute";
+			}
+			
+			if(__currentChild == 9)
+			{
+				callLater(this, buildNext);
+				return;
 			}
 			
 			if(__min_nms == null)
@@ -155,6 +235,8 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 				__min_nms.setChangeCallback(this, onValueChange);
 				__min_nms.setMinMax(0, 59);
 			}
+			
+			doneBuilding();
 		}
 		else
 		{
@@ -165,6 +247,12 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 				__day_lbl.text = "Day";
 			}
 			
+			if(__currentChild == 1)
+			{
+				callLater(this, buildNext);
+				return;
+			}
+			
 			if(__day_nms == null)
 			{
 				__day_nms = NumericStepper(createComponent(NumericStepper, "__day_nms"));
@@ -174,10 +262,22 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 				__day_nms.setMinMax(1, 31);
 			}
 			
+			if(__currentChild == 2)
+			{
+				callLater(this, buildNext);
+				return;
+			}
+			
 			if(__hour_lbl == null)
 			{
 				__hour_lbl = Label(createComponent(Label, "__hour_lbl"));
 				__hour_lbl.text = "Hour";
+			}
+			
+			if(__currentChild == 3)
+			{
+				callLater(this, buildNext);
+				return;
 			}
 			
 			if(__hour_nms == null)
@@ -187,10 +287,22 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 				__hour_nms.setMinMax(0, 23);
 			}
 			
+			if(__currentChild == 4)
+			{
+				callLater(this, buildNext);
+				return;
+			}
+			
 			if(__min_lbl == null)
 			{
 				__min_lbl = Label(createComponent(Label, "__min_lbl"));
 				__min_lbl.text = "Minute";
+			}
+			
+			if(__currentChild == 5)
+			{
+				callLater(this, buildNext);
+				return;
 			}
 			
 			if(__min_nms == null)
@@ -199,21 +311,21 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 				__min_nms.setChangeCallback(this, onValueChange);
 				__min_nms.setMinMax(0, 59);
 			}
+			
+			doneBuilding();
 		}
-		
-		
 	}
 	
-	private function onInitialized():Void
+	private function doneBuilding():Void
 	{
-		super.onInitialized();
-		
+		delete __currentChild;
 		if(__currentDate == null)
 		{
 			__currentDate = new Date();
 			__currentDateDirty = true;
 			commitProperties();
 		}
+		invalidateSize();
 	}
 	
 	private function commitProperties():Void
@@ -234,6 +346,10 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 	
 	private function size():Void
 	{
+		if(__currentChild != null) return;
+		
+		_visible = true;
+		
 		super.size();
 		
 		var margin:Number = 2;

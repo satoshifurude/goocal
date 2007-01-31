@@ -20,12 +20,9 @@ class com.jxl.goocal.views.createevent.Step1 extends UIComponent
 	
 	public function set fromDate(pVal:Date):Void
 	{
-		if(pVal != __fromDate)
-		{
-			__fromDate = pVal;
-			__fromDateDirty = true;
-			invalidateProperties();
-		}
+		__fromDate = pVal;
+		__fromDateDirty = true;
+		invalidateProperties();
 	}
 	
 	public function Step1()

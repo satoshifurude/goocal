@@ -49,6 +49,8 @@ class com.jxl.goocal.views.createevent.Step4 extends UIComponent
 		invalidateProperties();
 	}
 	
+	public function get calendar():Object { return __calendar; }
+	
 	public function Step4()
 	{
 	}
@@ -114,6 +116,25 @@ class com.jxl.goocal.views.createevent.Step4 extends UIComponent
 		}
 	}
 	
+	private function size():Void
+	{
+		super.size();
+		
+		var margin:Number = 2;
+		
+		__calendar_lbl.move(0, 0);
+		__calendar_lbl.setSize(60, 16);
+		
+		__calendars_cb.move(margin, __calendar_lbl.y + __calendar_lbl.height + margin);
+		__calendars_cb.setSize(__width - (margin * 2), __calendars_cb.height);
+		
+		__description_lbl.move(__calendar_lbl.x, __calendars_cb.y + __calendars_cb.height + margin);
+		__description_lbl.setSize(__width, __description_lbl.height);
+		
+		__description_txt.move(__calendars_cb.x, __description_lbl.y + __description_lbl.height + margin);
+		__description_txt.setSize(__calendars_cb.width, __height - __description_txt.y);
+	}
+	
 	private function onTextChanged(event:ShurikenEvent):Void
 	{
 		__description = __description_txt.text;
@@ -124,5 +145,10 @@ class com.jxl.goocal.views.createevent.Step4 extends UIComponent
 	{
 		__calendar = event.item;
 		__changeCallback.dispatch(new Event(EVENT_CALENDAR_CHANGE, this));
+	}
+	
+	public function setChangeCallback(scope:Object, func:Function):Void
+	{
+		__changeCallback = new Callback(scope, func);
 	}
 }

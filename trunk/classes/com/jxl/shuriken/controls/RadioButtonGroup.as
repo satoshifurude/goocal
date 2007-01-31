@@ -2,9 +2,11 @@
 
 import com.jxl.shuriken.core.UIComponent;
 import com.jxl.shuriken.containers.List;
+import com.jxl.shuriken.controls.SimpleButton;
 import com.jxl.shuriken.controls.RadioButton;
 import com.jxl.shuriken.vo.RadioButtonVO;
 import com.jxl.shuriken.events.ShurikenEvent;
+import com.jxl.shuriken.events.Callback;
 
 class com.jxl.shuriken.controls.RadioButtonGroup extends List
 {
@@ -36,7 +38,7 @@ class com.jxl.shuriken.controls.RadioButtonGroup extends List
 	{
 		super.setupChild(p_child);
 		
-		if(p_child instanceof SimpleButton) p_child.setReleaseCallback(this, onRadioButtonRelease);
+		if(p_child instanceof SimpleButton) SimpleButton(p_child).setReleaseCallback(this, onRadioButtonRelease);
 	}
 	
 	private function onRadioButtonRelease(p_event:ShurikenEvent):Void
@@ -62,7 +64,7 @@ class com.jxl.shuriken.controls.RadioButtonGroup extends List
 	
 	public function setClickCallback(scope:Object, func:Function):Void
 	{
-		__clickCallback.dispatch(scope, func);
+		__clickCallback = new Callback(scope, func);
 	}
 	
 	

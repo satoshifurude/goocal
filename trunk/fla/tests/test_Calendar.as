@@ -1,7 +1,5 @@
 ﻿import com.jxl.shuriken.controls.calendarclasses.CalendarBase;
 import com.jxl.shuriken.controls.calendarclasses.CalendarDay;
-import com.jxl.shuriken.core.UITextField;
-import com.jxl.shuriken.controls.Label;
 import com.jxl.shuriken.utils.DateUtils;
 import com.jxl.shuriken.controls.SimpleButton;
 import com.jxl.shuriken.events.ShurikenEvent;
@@ -17,7 +15,7 @@ function doneBuilding()
 	txt.removeMovieClip();
 	lbl.removeMovieClip();
 	
-	createTextField("debuglbl", 22, 0, 0, 176, 208);
+	createTextField("debuglbl", getNextHighestDepth(), 0, 0, 176, 208);
 	debuglbl.background = true;
 	debuglbl.backgroundColor = 0xFFFFFF;
 	debuglbl.border = true;
@@ -44,7 +42,7 @@ function init()
 	Stage.scaleMode = "noScale";
 	Stage.align = "TL";
 	_quality = "LOW";
-	fscommand2("FullScreen", true);
+	//fscommand2("FullScreen", true);
 	
 	ASProf.profile("com.jxl.shuriken.controls.calendarclasses.CalendarBase.prototype.createChildAt");
 	ASProf.profile("com.jxl.shuriken.controls.calendarclasses.CalendarBase.prototype.drawNext");
@@ -53,13 +51,15 @@ function init()
 	
 	ASProf.begin("main");
 	
-	attachMovie(CalendarBase.SYMBOL_NAME, "mc", 0);
-	attachMovie(Label.SYMBOL_NAME, "txt", 1);
-	txt.move(0, 116);
+	attachMovie(CalendarBase.SYMBOL_NAME, "mc", getNextHighestDepth());
+	
+	createTextField("txt", getNextHighestDepth(), 0, 0, 100, 100);
+	txt._y = 116;
 	txt.text = DateUtils.getMonthName(mc.today) + " " + mc.currentDate.getFullYear();
 	
-	attachMovie(Label.SYMBOL_NAME, "lbl", 2);
-	lbl.move(85, 116);
+	createTextField("lbl", getNextHighestDepth(), 0, 0, 100, 100);
+	lbl._x = 85;
+	lbl._y = 116;
 	lbl.text = "jessewarden.com";
 	
 	/*
@@ -76,6 +76,7 @@ function init()
 	//trace("mc.width: " + mc.width);
 	//trace("mc.getWidth(): " + mc.getWidth());
 	
+	createTextField("debug_txt", getNextHighestDepth(), 0, 100, 176, 208);
 	debug_txt.border = true;
 	debug_txt.borderColor = 0x000000;
 	

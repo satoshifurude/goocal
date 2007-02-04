@@ -1,5 +1,4 @@
 ﻿import com.jxl.shuriken.core.UIComponent;
-import com.jxl.shuriken.controls.Label;
 import com.jxl.shuriken.events.Event;
 import com.jxl.shuriken.events.ShurikenEvent;
 import com.jxl.shuriken.controls.ComboBox;
@@ -25,7 +24,7 @@ class com.jxl.goocal.views.createevent.Step5 extends UIComponent
 												"Monthly",
 												"Yearly"];
 	
-	private var __repeats_lbl:Label;
+	private var __repeats_lbl:TextField;
 	private var __repeats_cb:ComboBox;
 	
 	private var __repeat_lu:LoopUtils;
@@ -36,17 +35,23 @@ class com.jxl.goocal.views.createevent.Step5 extends UIComponent
 	public function set repeats(p_val:String):Void
 	{
 		__repeats = p_val;
-		__repeatsDirty = true;
-		invalidateProperties();
+		if(__repeat_lu != null)
+		{
+			__repeat_lu.destroy();
+			delete __repeat_lu;
+		}
+		__repeat_lu = new LoopUtils(this);
+		__repeat_lu.forLoop(0,
+							__repeat_array.length,
+							1,
+							this,
+							onIfSelectedRepeat,
+							onIfSelectedRepeatDone);
 	}
 	
 	public function Step5()
 	{
-	}
-	
-	public function init():Void
-	{
-		super.init();
+		super();
 		
 		focusEnabled		= true;
 		tabEnabled			= false;
@@ -59,7 +64,7 @@ class com.jxl.goocal.views.createevent.Step5 extends UIComponent
 		
 		if(__repeats_lbl == null)
 		{
-			__repeats_lbl = Label(createComponent(Label, "__repeats_lbl"));
+			__repeats_lbl = createLabel("__repeats_lbl");
 			__repeats_lbl.text = "Repeats";
 		}
 		
@@ -67,27 +72,9 @@ class com.jxl.goocal.views.createevent.Step5 extends UIComponent
 		{
 			__repeats_cb = ComboBox(createComponent(ComboBox, "__repeats_cb"));
 			__repeats_cb.dataProvider = new Collection(__repeat_array);
-			__repeats_cb.showScrollButtons = true;
 			__repeats_cb.setItemSelectionChangedCallback(this, onRepeatItemClicked);
 			__repeats_cb.selectedIndex = 0;
 			__repeats_cb.direction = ComboBox.DIRECTION_BELOW;
-		}
-	}
-	
-	private function commitProperties():Void
-	{
-		super.commitProperties();
-		
-		if(__repeatsDirty == true)
-		{
-			__repeatsDirty = false;
-			__repeat_lu = new LoopUtils(this);
-			__repeat_lu.forLoop(0,
-								__repeat_array.length,
-								1,
-								this,
-								onIfSelectedRepeat,
-								onIfSelectedRepeatDone);
 		}
 	}
 	
@@ -108,18 +95,18 @@ class com.jxl.goocal.views.createevent.Step5 extends UIComponent
 		delete __repeat_lu;
 	}
 	
-	private function size():Void
+	private function redraw():Void
 	{
-		super.size();
+		super.redraw();
 		
 		var margin:Number = 2;
 		var m2:Number = margin * 2;
 		
 		__repeats_lbl.move(0, 0);
-		__repeats_lbl.setSize(__width, __repeats_lbl.height);
+		__repeats_lbl.setSize(__width, __repeats_lbl._height);
 		
 		__repeats_cb.setSize(__width - m2, __repeats_cb.height);
-		__repeats_cb.move(__repeats_lbl.x + margin, __repeats_lbl.y + __repeats_lbl.height + margin);
+		__repeats_cb.move(__repeats_lbl._x + margin, __repeats_lbl._y + __repeats_lbl._height + margin);
 	}
 	
 	private function onRepeatItemClicked(p_event:ShurikenEvent):Void

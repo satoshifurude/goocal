@@ -5,17 +5,22 @@ class com.jxl.goocal.views.GCUpArrowButton extends Button
 {
 	public static var SYMBOL_NAME:String = "com.jxl.goocal.views.GCUpArrowButton";
 	
-	private var __icon:String = "GCUpArrowButtonGraphic";
-	private var __iconDirty:Boolean = true;
 	private var __alignIcon:String = ALIGN_ICON_CENTER;
 	
 	public function GCUpArrowButton()
 	{
 	}
 	
-	private function size():Void
+	private function createChildren():Void
 	{
-		super.size();
+		super.createChildren();
+		
+		icon = "GCUpArrowButtonGraphic";
+	}
+	
+	private function redraw():Void
+	{
+		super.redraw();
 		
 		clear();
 		lineStyle(0, 0x808080);

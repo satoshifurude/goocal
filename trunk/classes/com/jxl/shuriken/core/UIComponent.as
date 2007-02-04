@@ -4,12 +4,23 @@ import com.jxl.shuriken.events.ShurikenEvent;
 class com.jxl.shuriken.core.UIComponent extends MovieClip
 {
 	
+	// TextField Decoration
+	// This adds some helpful methods and properties to TextField's prototype.
+	// Don't want them?  Comment out or delete this line of code.
+	private static var textfield_mixin = com.jxl.shuriken.core.TextFieldDecorator.decorateTextField();
+	
 	public static var SYMBOL_NAME:String = "com.jxl.shuriken.core.UIComponent";
 	
 	// Abstract variable; set it to whatever you want.
 	public var data:Object;
+	public var defaultTextFormat:TextFormat;
 	
-	private var __calledOnLoad:Boolean;
+	public var isConstructing:Boolean;
+	
+	private var __width:Number;
+	private var __height:Number;
+	private var __boundingBox_mc:MovieClip;
+	private var __arrayMethodTable:Array;
 	
 	public function get width():Number
 	{
@@ -31,23 +42,17 @@ class com.jxl.shuriken.core.UIComponent extends MovieClip
 		return _y;
 	}
 	
-	public function get visible():Boolean
-	{
-		return _visible;
-	}
-	
-	public function set visible(val:Boolean):Void
-	{
-		_visible = val;
-	}
-	
 	public function UIComponent()
 	{
-		constructObject();
-	}
-	
-	public function init():Void
-	{
+		// this gets called when being defined as the prototype
+		// don't do anything, just return.
+		if (_name == undefined)
+		{
+			return;
+		}
+		
+		isConstructing = true;
+		
 		__width 		= _width;
 		__height 		= _height;
 		
@@ -57,7 +62,9 @@ class com.jxl.shuriken.core.UIComponent extends MovieClip
 		__boundingBox_mc._visible = false;
 		__boundingBox_mc._width = __boundingBox_mc._height = 0;
 		
-		__calledOnLoad = false;
+		defaultTextFormat = new TextFormat();
+		defaultTextFormat.font = "_sans";
+		defaultTextFormat.size = 11;
 		
 		watch("enabled", enabledChanged);
 
@@ -67,6 +74,10 @@ class com.jxl.shuriken.core.UIComponent extends MovieClip
 		{
 			setEnabled(false);
 		}
+		
+		createChildren();
+		redraw();
+		isConstructing = false;
 	}
 	
 	public function move(p_x:Number, p_y:Number):Void
@@ -80,7 +91,7 @@ class com.jxl.shuriken.core.UIComponent extends MovieClip
 		__width 		= p_width;
 		__height 		= p_height;
 		
-		size();
+		redraw();
 	}
 	
 	private function enabledChanged(pID:String, pOldValue:Boolean, pNewValue:Boolean):Boolean
@@ -94,26 +105,11 @@ class com.jxl.shuriken.core.UIComponent extends MovieClip
 		invalidate();
 	}
 	
-	public function invalidateProperties():Void
-	{
-		callLater(this, commitProperties);
-	}
-	
-	public function invalidateDraw():Void
-	{
-		callLater(this, draw);
-	}
-	
-	public function invalidateSize():Void
-	{
-		callLater(this, size);
-	}
-	
 	// TODO: prevent the methods above from getting called since
 	// we're about to invalidate everything anyway
 	public function invalidate():Void
 	{
-		callLater(this, refresh);
+		callLater(this, redraw);
 	}
 	
 	// LIMITATION: you cannot add the same scope & function to a callLater
@@ -149,6 +145,7 @@ class com.jxl.shuriken.core.UIComponent extends MovieClip
 		
 		// make a copy of the methodtable so methods called can requeue themselves w/o putting
 		// us in an infinite loop
+		//[gb] This won't work! It is not a copy.
 		var __methodTable:Array = __arrayMethodTable;
 		// new doLater calls will be pushed here
 		__arrayMethodTable = [];
@@ -170,93 +167,8 @@ class com.jxl.shuriken.core.UIComponent extends MovieClip
 		delete onEnterFrame;
 	}
 	
-	// called 1 frame after movieclip loads
-	public function onLoad():Void
-	{	
-		if(__calledOnLoad == false)
-		{
-			__calledOnLoad = true;
-			onInitialized();
-		}
-	}
-	
-	// Abstract methods - override these
-	// Abstract
-	private function createChildren():Void
-	{
-	}
-	
-	// Abstract
-	// check your dirty flags, and call redraw / resize methods
-	public function commitProperties():Void
-	{
-	}
-	
-	// Abstract
-	// redraw your component
-	private function draw():Void
-	{
-	}
-	
-	// Abstract
-	// resize your component
-	private function size():Void
-	{
-		/*
-		clear();
-		lineStyle(0, 0x000000);
-		beginFill(0xCCCCCC);
-		lineTo(width, 0);
-		lineTo(width, height);
-		lineTo(0, height);
-		lineTo(0, 0);
-		endFill();
-		*/
-		//trace("-----------------");
-		//trace("UIComponent::size");
-		//dispatchEvent(new ShurikenEvent(ShurikenEvent.SIZE, this));
-	}
-	
-	// Abstract
-	// used for initializing authortime content
-	private function onInitialized():Void
-	{
-	}
-	
-	public function setFocus():Void
-	{
-		Selection.setFocus(this);
-	}
-	
-	public function getFocus():Object
-	{
-		return Selection.getFocus();
-	}
-	
-	// Internals
-	private function constructObject():Void
-	{
-		// this gets called when being defined as the prototype
-		// don't do anything, just return.
-		if (_name == undefined)
-		{
-			return;
-		}
-		
-		__isConstructing = true;
-		init();
-		createChildren();
-		refresh();
-		__isConstructing = false;
-	}
-	
-	// redraws everything; used in default invalidate
-	private function refresh():Void
-	{
-		commitProperties();
-		draw();
-		size();
-	}
+	private var createChildren:Function;
+	private var redraw:Function;
 	
 	public function createComponent(p_class:UIComponent, p_name:String):MovieClip
 	{
@@ -268,20 +180,10 @@ class com.jxl.shuriken.core.UIComponent extends MovieClip
 	
 	public function createLabel(p_name:String):TextField
 	{
-		createTextField(p_name, getNextHighestDepth(), 0, 0, Math.max(__width, 100), Math.max(__height, 100));
-		return this[p_name];
+		createTextField(p_name, getNextHighestDepth(), 0, 0, 100, 18);
+		var txt:TextField = this[p_name];
+		txt.setTextFormat(defaultTextFormat);
+		txt.setNewTextFormat(defaultTextFormat);
+		return txt;
 	}
-	
-	public function toString():String
-	{
-		return "[object com.jxl.shuriken.core.UIComponent]";
-	}
-	
-	private var __isConstructing:Boolean;
-	private var __width:Number;
-	private var __height:Number;
-	private var __boundingBox_mc:MovieClip;
-	private var __arrayMethodTable:Array;
-	
-	
 }

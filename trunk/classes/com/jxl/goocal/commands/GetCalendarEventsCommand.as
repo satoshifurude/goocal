@@ -1,15 +1,13 @@
 ﻿
-import mx.rpc.ResultEvent;
 import mx.rpc.FaultEvent;
 import mx.rpc.Responder;
+import mx.rpc.ResultEvent;
 
 import org.osflash.arp.CommandTemplate;
 
-import com.jxl.goocal.events.GetCalendarEventsEvent;
 import com.jxl.goocal.business.GetCalendarEventsDelegate;
-
+import com.jxl.goocal.events.GetCalendarEventsEvent;
 import com.jxl.goocal.model.ModelLocator;
-import com.jxl.goocal.vo.CalendarVO;
 
 class com.jxl.goocal.commands.GetCalendarEventsCommand extends CommandTemplate implements Responder
 {

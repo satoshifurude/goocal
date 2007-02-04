@@ -1,11 +1,6 @@
-﻿import mx.utils.Delegate;
-
-import com.jxl.shuriken.core.UIComponent;
+﻿import com.jxl.shuriken.core.UIComponent;
 import com.jxl.shuriken.controls.NumericStepper;
 import com.jxl.shuriken.events.ShurikenEvent;
-import com.jxl.shuriken.controls.Label;
-//import com.jxl.shuriken.controls.SimpleButton;
-//import com.jxl.shuriken.controls.Button;
 import com.jxl.shuriken.events.Event;
 import com.jxl.shuriken.utils.DrawUtils;
 
@@ -25,15 +20,15 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 	private var __fieldType:Number 								= 3;
 	private var __currentChild:Number;
 	
-	private var __year_lbl:Label;
+	private var __year_lbl:TextField;
 	private var __year_nms:NumericStepper;
-	private var __month_lbl:Label;
+	private var __month_lbl:TextField;
 	private var __month_nms:NumericStepper;
-	private var __day_lbl:Label;
+	private var __day_lbl:TextField;
 	private var __day_nms:NumericStepper;
-	private var __hour_lbl:Label;
+	private var __hour_lbl:TextField;
 	private var __hour_nms:NumericStepper;
-	private var __min_lbl:Label;
+	private var __min_lbl:TextField;
 	private var __min_nms:NumericStepper;
 	
 	public function get fieldType():Number { return __fieldType; }
@@ -47,8 +42,11 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 	public function set currentDate(p_val:Date):Void
 	{
 		__currentDate = p_val;
-		__currentDateDirty = true;
-		invalidateProperties();
+		__year_nms.value 		= __currentDate.getFullYear();
+		__month_nms.value 		= __currentDate.getMonth() + 1;
+		__day_nms.value 		= __currentDate.getDate();
+		__hour_nms.value 		= __currentDate.getHours();
+		__min_nms.value 		= __currentDate.getMinutes();
 	}
 	
 	public function DateEditor()
@@ -59,7 +57,7 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 	{
 		super.createChildren();
 		
-		if(__isConstructing == false)
+		if(isConstructing == false)
 		{
 			var clipArray:Array = ["__year_lbl",
 								   "__year_nms",
@@ -93,7 +91,7 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 		
 			if(__year_lbl == null)
 			{
-				__year_lbl = Label(createComponent(Label, "__year_lbl"));
+				__year_lbl = createLabel("__year_lbl");
 				__year_lbl.text = "Year";
 			}
 			
@@ -124,7 +122,7 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 			
 			if(__month_lbl == null)
 			{
-				__month_lbl = Label(createComponent(Label, "__month_lbl"));
+				__month_lbl = createLabel("__month_lbl");
 				__month_lbl.text = "Month";
 			}
 			
@@ -155,7 +153,7 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 			
 			if(__day_lbl == null)
 			{
-				__day_lbl = Label(createComponent(Label, "__day_lbl"));
+				__day_lbl = createLabel("__day_lbl");
 				__day_lbl.text = "Day";
 			}
 			
@@ -188,7 +186,7 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 			
 			if(__hour_lbl == null)
 			{
-				__hour_lbl = Label(createComponent(Label, "__hour_lbl"));
+				__hour_lbl = createLabel("__hour_lbl");
 				__hour_lbl.text = "Hour";
 			}
 			
@@ -219,7 +217,7 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 			
 			if(__min_lbl == null)
 			{
-				__min_lbl = Label(createComponent(Label, "__min_lbl"));
+				__min_lbl = createLabel("__min_lbl");
 				__min_lbl.text = "Minute";
 			}
 			
@@ -243,7 +241,7 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 			// KLUDGE: for now, assumes __fieldType is FIELD_DAY_HOUR_MIN
 			if(__day_lbl == null)
 			{
-				__day_lbl = Label(createComponent(Label, "__day_lbl"));
+				__day_lbl = createLabel("__day_lbl");
 				__day_lbl.text = "Day";
 			}
 			
@@ -270,7 +268,7 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 			
 			if(__hour_lbl == null)
 			{
-				__hour_lbl = Label(createComponent(Label, "__hour_lbl"));
+				__hour_lbl = createLabel("__hour_lbl");
 				__hour_lbl.text = "Hour";
 			}
 			
@@ -295,7 +293,7 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 			
 			if(__min_lbl == null)
 			{
-				__min_lbl = Label(createComponent(Label, "__min_lbl"));
+				__min_lbl = createLabel("__min_lbl");
 				__min_lbl.text = "Minute";
 			}
 			
@@ -321,59 +319,42 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 		delete __currentChild;
 		if(__currentDate == null)
 		{
-			__currentDate = new Date();
-			__currentDateDirty = true;
-			commitProperties();
+			currentDate = new Date();
 		}
-		invalidateSize();
+		invalidate();
 	}
 	
-	private function commitProperties():Void
-	{
-		super.commitProperties();
-		
-		if(__currentDateDirty == true)
-		{
-			__currentDateDirty = false;
-			
-			__year_nms.value 		= __currentDate.getFullYear();
-			__month_nms.value 		= __currentDate.getMonth() + 1;
-			__day_nms.value 		= __currentDate.getDate();
-			__hour_nms.value 		= __currentDate.getHours();
-			__min_nms.value 		= __currentDate.getMinutes();
-		}
-	}
 	
-	private function size():Void
+	private function redraw():Void
 	{
 		if(__currentChild != null) return;
 		
 		_visible = true;
 		
-		super.size();
+		super.redraw();
 		
 		var margin:Number = 2;
 	
 		__year_lbl.move(0, 0);
 		__year_lbl.setSize(40, 16);
-		__year_nms.move(__year_lbl.x, __year_lbl.y + __year_lbl.height + 2);
+		__year_nms.move(__year_lbl._x, __year_lbl._y + __year_lbl._height + 2);
 		__year_nms.setSize(40, __year_nms.height);
 		
-		__month_lbl.move(__year_lbl.x + __year_lbl.width + margin, __year_lbl.y);
+		__month_lbl.move(__year_lbl._x + __year_lbl._width + margin, __year_lbl._y);
 		__month_lbl.setSize(40, 16);
-		__month_nms.move(__month_lbl.x, __month_lbl.y + __month_lbl.height + 2);
+		__month_nms.move(__month_lbl._x, __month_lbl._y + __month_lbl._height + 2);
 		
-		__day_lbl.move(__month_lbl.x + __month_lbl.width + margin, __month_lbl.y);
+		__day_lbl.move(__month_lbl._x + __month_lbl._width + margin, __month_lbl._y);
 		__day_lbl.setSize(40, 16);
-		__day_nms.move(__day_lbl.x, __day_lbl.y + __day_lbl.height + margin);
+		__day_nms.move(__day_lbl._x, __day_lbl._y + __day_lbl._height + margin);
 		
-		__hour_lbl.move(__year_nms.x, __year_nms.y + __year_nms.height + margin);
+		__hour_lbl.move(__year_nms._x, __year_nms._y + __year_nms._height + margin);
 		__hour_lbl.setSize(40, 16);
-		__hour_nms.move(__hour_lbl.x, __hour_lbl.y + __hour_lbl.height + margin);
+		__hour_nms.move(__hour_lbl._x, __hour_lbl._y + __hour_lbl._height + margin);
 		
-		__min_lbl.move(__hour_lbl.x + __hour_lbl.width + margin, __hour_lbl.y);
+		__min_lbl.move(__hour_lbl._x + __hour_lbl._width + margin, __hour_lbl._y);
 		__min_lbl.setSize(40, 16);
-		__min_nms.move(__min_lbl.x, __min_lbl.y + __min_lbl.height + margin);
+		__min_nms.move(__min_lbl._x, __min_lbl._y + __min_lbl._height + margin);
 	}
 	
 	private function onValueChange(p_event:ShurikenEvent):Void

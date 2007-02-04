@@ -11,16 +11,12 @@ class com.jxl.shuriken.controls.NumericStepper extends UIComponent
 	public static var SYMBOL_NAME:String = "com.jxl.shuriken.controls.NumericStepper";
 	
 	private var __value:Number 							= 0;
-	private var __valueDirty:Boolean					= false;
 	// minimum has to be positive and less than the maximum
 	private var __minimum:Number 						= 0;
-	private var __minimumDirty:Boolean					= false;
 	// maximum has to be positive and more than the minimum
 	private var __maximum:Number 						= 10;
-	private var __maximumDirty:Boolean					= false;
 	// increments are only allowed to be positive
 	private var __incrementAmount:Number 				= 1;
-	private var __incrementAmountDirty:Boolean			= false;
 	private var __changeCallback:Callback;
 	
 	private var __valueField:TextField;
@@ -31,7 +27,7 @@ class com.jxl.shuriken.controls.NumericStepper extends UIComponent
 	public function set value(p_val:Number):Void
 	{
 		setValue(p_val);
-		invalidateProperties();
+		__valueField.text = String(__value);
 	}
 	
 	public function get minimum():Number { return __minimum; }
@@ -39,8 +35,6 @@ class com.jxl.shuriken.controls.NumericStepper extends UIComponent
 	{
 		if(p_val <= 0 || p_val >= __maximum) return;
 		__minimum = p_val;
-		__minimumDirty = true;
-		invalidateProperties();
 	}
 	
 	public function get maximum():Number { return __maximum; }
@@ -48,8 +42,6 @@ class com.jxl.shuriken.controls.NumericStepper extends UIComponent
 	{
 		if(p_val <= 0 || p_val <= __maximum) return;
 		__maximum = p_val;
-		__maximumDirty = true;
-		invalidateProperties();
 	}
 	
 	public function get incrementAmount():Number { return __incrementAmount; }
@@ -57,8 +49,6 @@ class com.jxl.shuriken.controls.NumericStepper extends UIComponent
 	{
 		if(p_val <= 0) return;
 		__incrementAmount = p_val;
-		__incrementAmountDirty = true;
-		invalidateProperties();
 	}
 	
 	public function NumericStepper()
@@ -70,9 +60,6 @@ class com.jxl.shuriken.controls.NumericStepper extends UIComponent
 	{
 		__minimum = min;
 		__maximum = max;
-		__minimumDirty = true;
-		__maximumDirty = true;
-		invalidateProperties();
 	}
 	
 	private function createChildren():Void
@@ -123,20 +110,9 @@ class com.jxl.shuriken.controls.NumericStepper extends UIComponent
 		}
 	}
 	
-	private function commitProperties():Void
+	private function redraw():Void
 	{
-		super.commitProperties();
-		
-		if(__valueDirty == true)
-		{
-			__valueDirty = false;
-			__valueField.text = String(__value);
-		}
-	}
-	
-	private function size():Void
-	{
-		super.size();
+		super.redraw();
 		
 		__valueField._x = __valueField._y = 0;
 		__valueField._width = __width - Math.max(__upArrow.width, __downArrow.width);
@@ -146,10 +122,10 @@ class com.jxl.shuriken.controls.NumericStepper extends UIComponent
 		__downArrow.move(__upArrow.x, __upArrow.y + __upArrow.height);
 		
 		// draws the buttons n' triangles
-		__upArrow.clear()
-		__upArrow.lineStyle(0, 0x333333)
+		__upArrow.clear();
+		__upArrow.lineStyle(0, 0x333333);
 		__upArrow.beginFill(0xCCCCCC);
-		DrawUtils.drawBox(__upArrow, 0, 0, __upArrow.width - 1, __upArrow.height)
+		DrawUtils.drawBox(__upArrow, 0, 0, __upArrow.width - 1, __upArrow.height);
 		var centerX:Number = __upArrow.width / 2;
 		var centerY:Number = __upArrow.height / 2;
 		var tW:Number = 5;
@@ -175,8 +151,8 @@ class com.jxl.shuriken.controls.NumericStepper extends UIComponent
 	private function setValue(p_val:Number, noEvent:Boolean):Void
 	{
 		var oldVal:Number = __value;
-		__value = p_val;
-		__valueDirty = true;
+		__valueField.text = String(__value);
+		
 		if(noEvent == true) return;
 		if(oldVal != __value)
 		{

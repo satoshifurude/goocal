@@ -31,5 +31,5 @@
 
 interface org.osflash.arp.core.ICommand
 {
-	function executeOperation():Void
+	function executeOperation():Void;
 }

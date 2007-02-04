@@ -20,22 +20,18 @@ class com.jxl.goocal.views.ChooseCalendar extends UIComponent
 	public function set calendars(p_val:Collection):Void
 	{
 		__calendars = p_val;
-		__calendarsDirty = true;
-		invalidateProperties();
+		__calendar_cb.dataProvider = p_val;
 	}
 	
 	public function get autoChoose():Boolean { return __autoChoose; }
 	public function set autoChoose(p_val:Boolean):Void
 	{
 		__autoChoose = p_val;
-		__autoChooseDirty = true;
-		invalidateProperties();
+		__autoChoose_ch.selected = p_val;
 	}
 	
 	private var __calendars:Collection;
-	private var __calendarsDirty:Boolean 			= false;
 	private var __autoChoose:Boolean				= false;
-	private var __autoChooseDirty:Boolean			= false;
 	private var __submitCallback:Callback;
 	
 	private var __calendar_cb:ComboBox;
@@ -47,33 +43,15 @@ class com.jxl.goocal.views.ChooseCalendar extends UIComponent
 	{
 	}
 	
-	private function onInitialized():Void
+	private function onLoad():Void
 	{
-		super.onInitialized();
+		super.onLoad();
 		
 		__submit_pb.setReleaseCallback(this, onSubmit);
 		__calendar_cb.direction = ComboBox.DIRECTION_BELOW;
 		
-		__calendarsDirty 		= true;
-		__autoChooseDirty 			= true;
-		commitProperties();
-	}
-	
-	private function commitProperties():Void
-	{
-		super.commitProperties();
-		
-		if(__calendarsDirty == true)
-		{
-			__calendarsDirty = false;
-			__calendar_cb.dataProvider = __calendars;
-		}
-		
-		if(__autoChooseDirty == true)
-		{
-			__autoChooseDirty = false;
-			__autoChoose_ch.selected = __autoChoose;
-		}
+		calendars = __calendars;
+		autoChoose = __autoChoose;
 	}
 	
 	private function onSubmit(p_event:ShurikenEvent):Void

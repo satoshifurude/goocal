@@ -17,7 +17,7 @@ class com.jxl.shuriken.core.Container extends UIComponent
 	{
 		__clipContent = val;
 		__clipContentDirty = true;
-		invalidateProperties();
+		invalidate();
 	}
 	
 	private var __numChildren:Number;
@@ -46,11 +46,7 @@ class com.jxl.shuriken.core.Container extends UIComponent
 	//Constructor
 	public function Container()
 	{
-	}
-	
-	public function init():Void
-	{
-		super.init();
+		super();
 		
 		__numChildren = 0;
 		__aChild = [];
@@ -64,36 +60,26 @@ class com.jxl.shuriken.core.Container extends UIComponent
 		__mcReservedDepth = createEmptyMovieClip("__mcReservedDepth", DEPTH_RESERVED);
 	}
 	
-	private function commitProperties():Void
+	private function redraw():Void
 	{
-		super.commitProperties();
+		super.redraw();
 		
-		if(__clipContentDirty == true)
+		__clipContentDirty = false;
+		__mcMask.removeMovieClip();
+		if(__clipContent == true)
 		{
-			__clipContentDirty = false;
 			__mcMask.removeMovieClip();
-			if(__clipContent == true)
-			{
-				__mcMask.removeMovieClip();
-				__mcMask = createEmptyMovieClip("__mcMask", DEPTH_MASK);
-				__mcMask.beginFill(0x00FF00, 50);
-				__mcMask.lineTo(width, 0);
-				__mcMask.lineTo(width, height);
-				__mcMask.lineTo(0, height);
-				__mcMask.lineTo(0, 0);
-				__mcMask.endFill();
-				setMask(__mcMask);
-				invalidateSize();
-			}
+			__mcMask = createEmptyMovieClip("__mcMask", DEPTH_MASK);
+			__mcMask.beginFill(0x00FF00, 50);
+			__mcMask.lineTo(__width, 0);
+			__mcMask.lineTo(__width, __height);
+			__mcMask.lineTo(0, __height);
+			__mcMask.lineTo(0, 0);
+			__mcMask.endFill();
+			setMask(__mcMask);
 		}
-	}
-	
-	private function size():Void
-	{
-		super.size();
 		
-		__mcMask._width = width;
-		__mcMask._height = height;
+		
 	}
 	
 	public function createChild(p_class:Function, 

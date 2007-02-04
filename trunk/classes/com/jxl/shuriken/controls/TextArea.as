@@ -1,11 +1,11 @@
 ﻿import mx.utils.Delegate;
 
-import com.jxl.shuriken.core.UITextField;
+import com.jxl.shuriken.core.UIComponent;
 import com.jxl.shuriken.controls.SimpleButton;
 import com.jxl.shuriken.events.ShurikenEvent;
 import com.jxl.shuriken.utils.DrawUtils;
 
-class com.jxl.shuriken.controls.TextArea extends UITextField
+class com.jxl.shuriken.controls.TextArea extends UIComponent
 {
 	public static var SYMBOL_NAME:String = "com.jxl.shuriken.controls.TextArea";
 	
@@ -17,24 +17,49 @@ class com.jxl.shuriken.controls.TextArea extends UITextField
 	public var scrollbarTrackSymbol:String = "ScrollbarTrack";
 	public var minThumbHeight:Number = 12;
 	
+	public function set text(val:String):Void
+	{
+		__txtLabel.html = false;
+		__txtLabel.text = val;
+		__txtLabel._visible = false;
+		//invalidate();
+		// KLUDGE: 2 frames..., not 1, but 2....
+		callLater(this, invalidate);
+	}
 	
-	private var __wordWrap:Boolean = true;
-	private var __multiline:Boolean = true;
+	public function set htmlText(val:String):Void
+	{
+		__txtLabel.html = true;
+		__txtLabel.htmlText = val;
+		__txtLabel._visible = false;
+		//invalidate();
+		// KLUDGE: 2 frames..., not 1, but 2....
+		callLater(this, invalidate);
+	}
 	
+	private var __txtLabel:TextField;
 	private var __track_mc:MovieClip;
 	private var __thumb_mc:MovieClip;
 	private var __upArrow_pb:SimpleButton;
 	private var __downArrow_pb:SimpleButton;
 	
+	public function get textField():TextField { return __txtLabel; }
 	
 	public function TextArea()
 	{
-		super();
 	}
 	
 	private function createChildren():Void
 	{
 		super.createChildren();
+		
+		if(__txtLabel == null)
+		{
+			__txtLabel = createLabel("__txtLabel");
+			__txtLabel.multiline = true;
+			__txtLabel.wordWrap = true;
+			__txtLabel.onChanged = Delegate.create(this, onChanged);
+		}
 		
 		if(__track_mc == null) __track_mc = attachMovie(scrollbarTrackSymbol, "__track_mc", getNextHighestDepth());
 		if(__thumb_mc == null) __thumb_mc = attachMovie(scrollbarThumbSymbol, "__thumb_mc", getNextHighestDepth());
@@ -51,15 +76,13 @@ class com.jxl.shuriken.controls.TextArea extends UITextField
 		}
 	}
 	
-	private function commitProperties():Void
+	private function redraw():Void
 	{
-		if(__textDirty == true || __htmlTextDirty == true) invalidateSize();
-		super.commitProperties();
-	}
-	
-	private function size():Void
-	{
-		super.size();
+		super.redraw();
+		
+		__txtLabel._visible = true;
+		
+		trace("__txtLabel.maxscroll: " + __txtLabel.maxscroll);
 		
 		if(__txtLabel.maxscroll > 1)
 		{
@@ -160,8 +183,7 @@ class com.jxl.shuriken.controls.TextArea extends UITextField
 	
 	private function onChanged():Void
 	{
-		super.onChanged();
-		invalidateSize();
+		invalidate();
 	}
 	
 	private function onUpArrowRelease(p_event:ShurikenEvent):Void
@@ -177,13 +199,13 @@ class com.jxl.shuriken.controls.TextArea extends UITextField
 	public function scrollUp():Void
 	{
 		__txtLabel.scroll -= SCROLL_SIZE;
-		invalidateSize();
+		invalidate();
 	}
 	
 	public function scrollDown():Void
 	{
 		__txtLabel.scroll += SCROLL_SIZE;
-		invalidateSize();
+		invalidate();
 	}
 	
 	

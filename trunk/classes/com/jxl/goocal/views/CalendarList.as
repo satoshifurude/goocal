@@ -4,7 +4,6 @@ import com.jxl.shuriken.core.UIComponent;
 import com.jxl.shuriken.events.ShurikenEvent;
 import com.jxl.shuriken.containers.List;
 import com.jxl.shuriken.containers.ButtonList;
-import com.jxl.shuriken.controls.Label;
 import com.jxl.shuriken.core.Collection;
 import com.jxl.goocal.views.GCLinkButton;
 
@@ -14,19 +13,14 @@ class com.jxl.goocal.views.CalendarList extends UIComponent
 	
 	public static var SYMBOL_NAME:String = "com.jxl.goocal.views.CalendarList";
 	
-	private var __title_lbl:Label;
+	private var __title_lbl:TextField;
 	private var __calendars_list:ButtonList;
 	private var __createNew_link:GCLinkButton;
 	
-	private var __calendars_collection:Collection;
-	private var __calendarsDirty:Boolean = false;
-	
-	public function get calendarsCollection():Collection { return __calendars_collection; }
+	public function get calendarsCollection():Collection { return __calendars_list.dataProvider; }
 	public function set calendarsCollection(p_val:Collection):Void
 	{
-		__calendars_collection = p_val;
-		__calendarsDirty = true;
-		invalidateProperties();
+		__calendars_list.dataProvider = p_val;
 	}
 	
 	public function CalendarList()
@@ -39,12 +33,15 @@ class com.jxl.goocal.views.CalendarList extends UIComponent
 		
 		if(__title_lbl == null)
 		{
-			__title_lbl = Label(createComponent(Label, "__title_lbl"));
+			__title_lbl = createLabel("__title_lbl");
+			var titleFMT:TextFormat = __title_lbl.getTextFormat();
+			titleFMT.font ="Courier New";
+			titleFMT.size = 16;
+			titleFMT.color = 0x333333;
+			titleFMT.bold = true;
+			__title_lbl.setTextFormat(titleFMT);
+			__title_lbl.setNewTextFormat(titleFMT);
 			__title_lbl.text = "Calendar List";
-			__title_lbl.font = "Courier New";
-			__title_lbl.textSize = 16;
-			__title_lbl.color = 0x333333;
-			__title_lbl.bold = true;
 		}
 		
 		//DebugWindow.debug("__title_lbl: " + __title_lbl);
@@ -74,23 +71,12 @@ class com.jxl.goocal.views.CalendarList extends UIComponent
 		//DebugWindow.debug("__createNew_link: " + __createNew_link);
 	}
 	
-	private function commitProperties():Void
+	private function redraw():Void
 	{
-		super.commitProperties();
+		super.redraw();
 		
-		if(__calendarsDirty == true)
-		{
-			__calendarsDirty = false;
-			__calendars_list.dataProvider = __calendars_collection;
-		}
-	}
-	
-	private function size():Void
-	{
-		super.size();
-		
-		__title_lbl.setSize(width, __title_lbl.height);
-		__calendars_list.move(0, __title_lbl.y + __title_lbl.height + 4);
+		__title_lbl.setSize(__width, __title_lbl._height);
+		__calendars_list.move(0, __title_lbl._y + __title_lbl._height + 4);
 		__createNew_link.move(0, __calendars_list.y + __calendars_list.height);
 	}
 	

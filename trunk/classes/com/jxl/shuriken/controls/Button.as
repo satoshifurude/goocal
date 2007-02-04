@@ -1,7 +1,6 @@
 ﻿import mx.utils.Delegate;
 
 import com.jxl.shuriken.controls.SimpleButton;
-import com.jxl.shuriken.core.UITextField;
 import com.jxl.shuriken.controls.Loader;
 import com.jxl.shuriken.events.ShurikenEvent;
 import com.jxl.shuriken.events.Callback;
@@ -23,12 +22,8 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 	public function get label():String { return __label; }
 	public function set label(pVal:String):Void
 	{
-		if(pVal != __label)
-		{
-			__label = pVal;
-			__labelDirty = true;
-			invalidateProperties();
-		}
+		__label = pVal;
+		__mcLabel.text = pVal;
 	}
 	
 	/**
@@ -44,8 +39,7 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 		if(value != __toggle)
 		{
 			__toggle = value;
-			__toggleDirty = true;
-			invalidateProperties();
+			invalidate();
 		}
 	}
 	
@@ -73,7 +67,7 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 				setState(DEFAULT_STATE);
 			}
 			__selectionChangeCallback.dispatch(new ShurikenEvent(ShurikenEvent.SELECTION_CHANGED, this));
-			invalidateDraw();
+			invalidate();
 		}
 		
 	}
@@ -85,8 +79,18 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 		if(pVal != __icon)
 		{
 			__icon = pVal;
-			__iconDirty = true;
-			invalidateProperties();
+			if(__icon != null && __icon != "")
+			{
+				if(__mcIcon == null) __mcIcon = Loader(attachMovie(Loader.symbolName, "__mcIcon", getNextHighestDepth()));
+				__mcIcon.scaleContent = false;
+				__mcIcon.load(pVal);
+				__mcIcon.setLoadInitCallback(this, onIconLoaded);
+			}
+			else
+			{
+				__mcIcon.removeMovieClip();
+				delete __mcIcon;
+			}
 		}
 	}
 	
@@ -105,8 +109,7 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 		if(pVal != __background)
 		{
 			__background = pVal;
-			__backgroundDirty = true;
-			invalidateProperties();
+			__mcLabel.background = pVal;
 		}
 		
 	}	
@@ -121,8 +124,7 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 	public function set backgroundColor(p_val:Number):Void
 	{
 		__backgroundColor = p_val;
-		__backgroundColorDirty = true;
-		invalidateProperties();
+		__mcLabel.backgroundColor = p_val;
 	}
 	
 	// ----------------------------------------------------------------------------------------
@@ -137,8 +139,7 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 		if(pVal != __bold)
 		{
 			__bold = pVal;
-			__boldDirty = true;
-			invalidateProperties();
+			__mcLabel.bold = pVal;
 		}
 		
 	}
@@ -155,8 +156,7 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 		if(pVal != __border)
 		{
 			__border = pVal;
-			__borderDirty = true;
-			invalidateProperties();
+			__mcLabel.border = pVal;
 		}
 		
 	}
@@ -173,8 +173,7 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 		if(pVal != __borderColor)
 		{
 			__borderColor = pVal;
-			__borderColorDirty = true;
-			invalidateProperties();
+			__mcLabel.borderColor = pVal;
 		}
 		
 	}
@@ -193,8 +192,7 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 		if(pVal != __embedFonts)
 		{
 			__embedFonts = pVal;
-			__embedFontsDirty = true;
-			invalidateProperties();
+			__mcLabel.embedFonts = pVal;
 		}
 	
 	}
@@ -211,8 +209,7 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 		if(pVal != __color)
 		{
 			__color = pVal;
-			__colorDirty = true;
-			invalidateProperties();
+			__mcLabel.color = pVal;
 		}
 		
 	}
@@ -229,8 +226,7 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 		if(pVal != __textSize)
 		{
 			__textSize = pVal;
-			__textSizeDirty = true;
-			invalidateProperties();
+			__mcLabel.textSize = pVal;
 		}
 		
 	}
@@ -247,8 +243,7 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 		if(pVal != __multiline)
 		{
 			__multiline = pVal;
-			__multilineDirty = true;
-			invalidateProperties();
+			__mcLabel.multiline = pVal;
 		}
 		
 	}
@@ -265,8 +260,7 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 		if(pVal != __wordWrap)
 		{
 			__wordWrap = pVal;
-			__wordWrapDirty = true;
-			invalidateProperties();
+			__mcLabel.wordWrap = pVal;
 		}
 		
 	}
@@ -283,8 +277,7 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 		if(pVal != __font)
 		{
 			__font = pVal;
-			__fontDirty = true;
-			invalidateProperties();
+			__mcLabel.font = pVal;
 		}
 	
 	}
@@ -302,8 +295,7 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 		if(pVal != __password)
 		{
 			__password = pVal;
-			__passwordDirty = true;
-			invalidateProperties();
+			__mcLabel.password = pVal;
 		}
 		
 	}
@@ -320,8 +312,7 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 		if(pVal != __selectable)
 		{
 			__selectable = pVal;
-			__selectableDirty = true;
-			invalidateProperties();
+			__mcLabel.selectable = pVal;
 		}
 		
 	}
@@ -338,8 +329,7 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 		if(pVal != __restrict)
 		{
 			__restrict = pVal;
-			__restrictDirty = true;
-			invalidateProperties();
+			__mcLabel.restrict = pVal;
 		}
 		
 	}
@@ -356,14 +346,13 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 		if(pVal != __maxChars)
 		{
 			__maxChars = pVal;
-			__maxCharsDirty = true;
-			invalidateProperties();
+			__mcLabel.maxChars = pVal;
 		}
 		
 	}
 	
 	// ----------------------------------------------------------------------------------------
-	[Inspectable(defaultValue=alignIconLeft, type="List", enumeration="alignIconLeft,alignIconCenter,alignIconRight") )]
+	[Inspectable(defaultValue=alignIconLeft, type="List", enumeration="alignIconLeft,alignIconCenter,alignIconRight")]
 	public function get alignIcon():String { return __alignIcon; }
 	
 	public function set alignIcon(pVal:String):Void
@@ -371,8 +360,7 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 		if(pVal != __alignIcon)
 		{
 			__alignIcon = pVal;
-			__alignIconDirty = true;
-			invalidateProperties();
+			invalidate();
 		}
 	}
 	
@@ -381,83 +369,41 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 	public function set underline(p_val:Boolean):Void
 	{
 		__underline = p_val;
-		__underlineDirty = true;
-		invalidateProperties();
+		__mcLabel.underline = p_val;
 	}
 	
 	public function get currentState():String { return __currentState; }
 	
 	private var __label:String;
-	private var __labelDirty:Boolean;
-	
 	private var __selected:Boolean						= false;
-	
-	private var __toggle:Boolean;
-	private var __toggleDirty:Boolean;
-	
+	private var __toggle:Boolean						= false;
 	private var __currentState:String 					= "default";
 	private var __lastState:String 						= "";
-	
 	private var __icon:String;
-	private var __iconDirty:Boolean;
-	
-	private var __backgroundDirty:Boolean 				= false;
 	private var __background:Boolean					= false;
-	
-	private var __backgroundColorDirty:Boolean			= false;
-	private var __backgroundColor:Number
-	
-	private var __boldDirty:Boolean 					= false;
+	private var __backgroundColor:Number;
 	private var __bold:Boolean							= false;
-
-	private var __borderDirty:Boolean 					= false;
-	private var __border:Boolean
-	
-	private var __borderColorDirty:Boolean				= false;
-	private var __borderColor:Number		
-	
-	private var __embedFontsDirty:Boolean 				= false;
+	private var __border:Boolean;
+	private var __borderColor:Number;		
 	private var __embedFonts:Boolean;
-	
-	private var __colorDirty:Boolean 					= false;
-	private var __color:Number
-	
-	private var __textSizeDirty:Boolean 				= false;
-	private var __textSize:Number	
-	
-	private var __multilineDirty:Boolean 				= false;
-	private var __multiline:Boolean	
-
-	private var __wordWrapDirty:Boolean 				= false;
-	private var __wordWrap:Boolean		
-
-	private var __fontDirty:Boolean 					= false;
-	private var __font:String
-	
-	private var __passwordDirty:Boolean 				= false;
-	private var __password:Boolean
-	
-	private var __selectableDirty:Boolean 				= false;
+	private var __color:Number;
+	private var __textSize:Number;	
+	private var __multiline:Boolean;	
+	private var __wordWrap:Boolean;		
+	private var __font:String;
+	private var __password:Boolean;
 	private var __selectable:Boolean					= false;
-
-	private var __restrictDirty:Boolean					= false;
-	private var __restrict:String		
-	
-	private var __maxCharsDirty:Boolean 				= false;
+	private var __restrict:String;		
 	private var __maxChars:Number;
-	
 	private var __alignIcon:String						= "alignIconLeft";
-	private var __alignIconDirty:Boolean 				= false;
-	
 	private var __underline:Boolean						= false;
-	private var __underlineDirty:Boolean				= false;
-	
+
 	private var __selectionChangeCallback:Callback;
 	
-	private var __mcLabel:UITextField;
+	private var __mcLabel:TextField;
 	private var __mcIcon:Loader;
 	
-	private function onRelease():Void
+	public function onRelease():Void
 	{
 		if (__toggle == true)
 		{
@@ -471,7 +417,7 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 	{
 		super.onRollOver();
 		setState(OVER_STATE);
-		invalidateDraw();
+		invalidate();
 	}
 	
 	public function onRollOut():Void
@@ -485,10 +431,10 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 		{
 			setState(DEFAULT_STATE);
 		}
-		invalidateDraw();
+		invalidate();
 	}
 	
-	public function get textField():UITextField
+	public function get textField():TextField
 	{
 		return __mcLabel;
 	}
@@ -498,11 +444,7 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 	//Constructor
 	public function Button()
 	{
-	}
-	
-	public function init():Void
-	{
-		super.init();		
+		super();
 		
 		focusEnabled		= true;
 		tabEnabled			= true;
@@ -513,162 +455,23 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 	{
 		super.createChildren();
 		
-		__mcLabel = UITextField(attachMovie(UITextField.SYMBOL_NAME, "__mcLabel", getNextHighestDepth()));
-		__mcLabel.align 		= UITextField.ALIGN_CENTER;
+		createTextField("__mcLabel", getNextHighestDepth(), 0, 0, 100, 100);
+		__mcLabel.align 		= TextField.ALIGN_CENTER;
 		__mcLabel.bold			= __bold;
 		__mcLabel.multiline 	= __multiline;
 		__mcLabel.wordWrap 		= __wordWrap;
+		defaultTextFormat.align = "center";
+		__mcLabel.setTextFormat(defaultTextFormat);
+		__mcLabel.setNewTextFormat(defaultTextFormat);
 	}
 	
-	private function commitProperties():Void
+	private function redraw():Void
 	{
-		super.commitProperties();
-		
-		if(__labelDirty == true)
-		{
-			__labelDirty = false;
-			__mcLabel.text = __label;
-		}
-		
-		if(__backgroundDirty == true)
-		{
-			__backgroundDirty = false;
-			__mcLabel.background = __background;
-		}
-		
-		//trace("---------------");
-		//trace("__backgroundColorDirty: " + __backgroundColorDirty);
-		//trace("__mcLabel.backgroundColor: " + __mcLabel.backgroundColor);
-		//trace("__mcLabel.background: " + __mcLabel.background);
-		//trace("__mcLabel: " + __mcLabel);
-		if(__backgroundColorDirty == true)
-		{
-			__backgroundColorDirty = false;
-			//trace("__mcLabel.backgroundColor: " + __mcLabel.backgroundColor);
-			__mcLabel.backgroundColor = __backgroundColor;
-		}
-		
-		if(__boldDirty == true)
-		{
-			__boldDirty = false;
-			__mcLabel.bold = __bold;
-		}
-		
-		if(__borderDirty == true)
-		{
-			__borderDirty = false;
-			__mcLabel.border = __border;
-		}	
-			
-		if(__borderColorDirty == true)
-		{
-			__borderColorDirty = false;
-			__mcLabel.borderColor = __borderColor;
-		}	
-		
-		if(__colorDirty == true)
-		{
-			__colorDirty = false;
-			__mcLabel.color = __color;
-		}			
-		
-		if(__embedFontsDirty == true)
-		{
-			__embedFontsDirty = false;
-			__mcLabel.embedFonts = __embedFonts;
-		}	
-			
-		if(__textSizeDirty == true)
-		{
-			__textSizeDirty = false;
-			__mcLabel.textSize = __textSize;
-		}
-		
-		if(__multilineDirty == true)
-		{
-			__multilineDirty = false;
-			__mcLabel.multiline = __multiline;
-		}	
-					
-		if(__wordWrapDirty == true)
-		{
-			__wordWrapDirty = false;
-			__mcLabel.wordWrap = __wordWrap;
-		}	
-		
-		if(__fontDirty == true)
-		{
-			__fontDirty = false;
-			__mcLabel.font = __font;
-		}	
-		
-		if(__passwordDirty == true)
-		{
-			__passwordDirty = false;
-			__mcLabel.password = __password;
-		}	
-
-		if(__selectableDirty == true)
-		{
-			__selectableDirty = false;
-			__mcLabel.selectable = __selectable;
-		}	
-		
-		if(__restrictDirty == true)
-		{
-			__restrictDirty = false;
-			__mcLabel.restrict = __restrict;
-		}	
-
-		if(__maxCharsDirty == true)
-		{
-			__maxCharsDirty = false;
-			__mcLabel.maxChars = __maxChars;
-		}
-		
-		if(__underlineDirty == true)
-		{
-			__underlineDirty = false;
-			__mcLabel.underline = __underline;
-		}
-		
-		if(__toggleDirty == true)
-		{
-			__toggleDirty = false;
-			invalidateDraw();
-		}
-		
-		if(__iconDirty == true)
-		{
-			__iconDirty = false;
-			if(__icon != null && __icon != "")
-			{
-				if(__mcIcon == null) __mcIcon = Loader(attachMovie(Loader.symbolName, "__mcIcon", getNextHighestDepth()));
-				__mcIcon.scaleContent = false;
-				__mcIcon.load(__icon);
-				__mcIcon.setLoadInitCallback(this, onIconLoaded);
-			}
-			else
-			{
-				__mcIcon.removeMovieClip();
-				delete __mcIcon;
-			}
-		}
-		
-		if(__alignIconDirty == true)
-		{
-			__alignIconDirty = false;
-			invalidateSize();
-		}
-	}
-
-	private function size():Void
-	{
-		super.size();
+		super.redraw();
 		
 		var iconExists:Boolean;
 		
-		var label_x:Number
+		var label_x:Number;
 		
 
 		if(__mcIcon == null)
@@ -706,7 +509,7 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 			if(__alignIcon == ALIGN_ICON_LEFT)
 			{	
 				__mcIcon.move(0, 0);
-				label_x =__mcIcon.width
+				label_x =__mcIcon.width;
 
 				
 			}
@@ -718,8 +521,8 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 			else if(__alignIcon == ALIGN_ICON_RIGHT)
 			{
 				__mcIcon.move(width - __mcIcon.width, 0);
-				__mcLabel.align = UITextField.ALIGN_RIGHT
-				label_x = __mcLabel.x
+				__mcLabel.align = TextField.ALIGN_RIGHT
+				label_x = __mcLabel.x;
 			}
 			
 			__mcLabel.move(label_x, (__height / 2) - (__mcIcon.height / 2));
@@ -742,7 +545,7 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 	
 	private function onIconLoaded(pEvent:Object):Void
 	{
-		invalidateSize();
+		invalidate();
 	}
 	
 	private function setState(pState:String):Void
@@ -751,19 +554,6 @@ class com.jxl.shuriken.controls.Button extends SimpleButton
 		//DebugWindow.debug("Button::setState, pState: " + pState);
 		__lastState = __currentState;
 		__currentState = pState;
-	}
-	
-	/*
-	public function setReleaseCallback(p_scope:Object, p_callback:Function):Void
-	{
-		__callbackScope 		= p_scope;
-		__releaseCallback 		= p_callback;
-	}
-	*/
-	
-	public function toString():String
-	{
-		return "[object com.jxl.shuriken.controls.Button]";
 	}
 	
 	public function setSelectionChangeCallback(scope:Object, func:Function):Void

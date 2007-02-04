@@ -28,12 +28,10 @@ class com.jxl.shuriken.controls.Loader extends UIComponent
 	public function set scaleContent(pbScale:Boolean):Void
 	{
 		__scaleContent = pbScale;
-		__scaleContentDirty = true;
-		invalidateProperties();
+		invalidate();
 	}
 	
 	private var __scaleContent:Boolean				= false;
-	private var __scaleContentDirty:Boolean			= false;
 	
 	private var __content:MovieClip;
 	private var __loadWatcher:MovieClip;
@@ -76,18 +74,7 @@ class com.jxl.shuriken.controls.Loader extends UIComponent
 		}
 		
 	}
-	
-	private function commitProperties():Void
-	{
-		super.commitProperties();
-		
-		if(__scaleContentDirty == true)
-		{
-			__scaleContentDirty = true;
-			invalidateSize();
-		}
-	}
-	
+
 	private function onLoadComplete(pmcTarget:MovieClip, pHTTPStatus:String):Void
 	{
 		__isLoading = false;
@@ -99,7 +86,7 @@ class com.jxl.shuriken.controls.Loader extends UIComponent
 	
 	private function onLoadInit(pmcTarget:MovieClip):Void
 	{		
-		callLater(this, _onLoadInit)
+		callLater(this, _onLoadInit);
 	}
 	
 	private function _onLoadInit(pmcTarget:MovieClip):Void

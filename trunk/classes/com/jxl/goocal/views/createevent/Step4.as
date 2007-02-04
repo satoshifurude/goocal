@@ -1,6 +1,4 @@
 ﻿import com.jxl.shuriken.core.UIComponent;
-import com.jxl.shuriken.core.UITextField;
-import com.jxl.shuriken.controls.Label;
 import com.jxl.shuriken.controls.ComboBox;
 import com.jxl.shuriken.utils.DateUtils;
 import com.jxl.shuriken.core.Collection;
@@ -17,23 +15,20 @@ class com.jxl.goocal.views.createevent.Step4 extends UIComponent
 	public static var EVENT_CALENDAR_CHANGE:String = "calendarChange";
 	
 	private var __calendars:Collection;
-	private var __calendarsDirty:Boolean					= false;
 	private var __calendar:Object;
 	private var __description:String						= "";
-	private var __descriptionDirty:Boolean					= false;
 	private var __changeCallback:Callback;
 	
-	private var __calendar_lbl:Label;
+	private var __calendar_lbl:TextField;
 	private var __calendars_cb:ComboBox;
-	private var __description_lbl:Label;
-	private var __description_txt:UITextField;
+	private var __description_lbl:TextField;
+	private var __description_txt:TextField;
 	
 	public function get calendars():Collection { return __calendars; }
 	public function set calendars(p_val:Collection):Void
 	{
 		__calendars = p_val;
-		__calendarsDirty = true;
-		invalidateProperties();
+		__calendars_cb.dataProvider = p_val;
 	}
 	
 	public function get selectedCalendar():Object
@@ -45,19 +40,14 @@ class com.jxl.goocal.views.createevent.Step4 extends UIComponent
 	public function set description(p_val:String):Void
 	{
 		__description = p_val;
-		__descriptionDirty = true;
-		invalidateProperties();
+		__description_txt.text = p_val;
 	}
 	
 	public function get calendar():Object { return __calendar; }
 	
 	public function Step4()
 	{
-	}
-	
-	public function init():Void
-	{
-		super.init();
+		super();
 		
 		focusEnabled		= true;
 		tabEnabled			= false;
@@ -70,27 +60,28 @@ class com.jxl.goocal.views.createevent.Step4 extends UIComponent
 		
 		if(__calendar_lbl == null)
 		{
-			__calendar_lbl = Label(createComponent(Label, "__calendar_lbl"));
+			__calendar_lbl = createLabel("__calendar_lbl");
 			__calendar_lbl.text = "Calendar";
 		}
 		
 		if(__calendars_cb == null)
 		{
 			__calendars_cb = ComboBox(createComponent(ComboBox, "__calendars_cb"));
+			__calendars_cb.direction = ComboBox.DIRECTION_BELOW;
 			__calendars_cb.dataProvider = __calendars;
 			__calendars_cb.setItemSelectionChangedCallback(this, onChooseCalendar);
 		}
 		
 		if(__description_lbl == null)
 		{
-			__description_lbl = Label(createComponent(Label, "__description_lbl"));
+			__description_lbl = createLabel("__description_lbl");
 			__description_lbl.text = "Description";
 		}
 		
 		if(__description_txt == null)
 		{
-			__description_txt = UITextField(createComponent(UITextField, "__description_txt"));
-			__description_txt.type = UITextField.TYPE_INPUT;
+			__description_txt = createLabel("__description_txt");
+			__description_txt.type = TextField.TYPE_INPUT;
 			__description_txt.border = true;
 			__description_txt.borderColor = 0x000000;
 			__description_txt.background = true;
@@ -99,40 +90,23 @@ class com.jxl.goocal.views.createevent.Step4 extends UIComponent
 		}
 	}
 	
-	private function commitProperties():Void
+	private function redraw():Void
 	{
-		super.commitProperties();
-		
-		if(__calendarsDirty == true)
-		{
-			__calendarsDirty = false;
-			__calendars_cb.dataProvider = __calendars;
-		}
-		
-		if(__descriptionDirty == true)
-		{
-			__descriptionDirty = false;
-			__description_txt.text = __description;
-		}
-	}
-	
-	private function size():Void
-	{
-		super.size();
+		super.redraw();
 		
 		var margin:Number = 2;
 		
 		__calendar_lbl.move(0, 0);
 		__calendar_lbl.setSize(60, 16);
 		
-		__calendars_cb.move(margin, __calendar_lbl.y + __calendar_lbl.height + margin);
+		__calendars_cb.move(margin, __calendar_lbl._y + __calendar_lbl._height + margin);
 		__calendars_cb.setSize(__width - (margin * 2), __calendars_cb.height);
 		
-		__description_lbl.move(__calendar_lbl.x, __calendars_cb.y + __calendars_cb.height + margin);
-		__description_lbl.setSize(__width, __description_lbl.height);
+		__description_lbl.move(__calendar_lbl._x, __calendars_cb.y + __calendars_cb.height + margin);
+		__description_lbl.setSize(__width, __description_lbl._height);
 		
-		__description_txt.move(__calendars_cb.x, __description_lbl.y + __description_lbl.height + margin);
-		__description_txt.setSize(__calendars_cb.width, __height - __description_txt.y);
+		__description_txt.move(__calendars_cb.x, __description_lbl._y + __description_lbl._height + margin);
+		__description_txt.setSize(__calendars_cb.width, __height - __description_txt._y);
 	}
 	
 	private function onTextChanged(event:ShurikenEvent):Void

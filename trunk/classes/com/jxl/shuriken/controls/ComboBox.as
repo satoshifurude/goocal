@@ -4,10 +4,8 @@ import mx.utils.Delegate;
 
 import com.jxl.shuriken.core.Collection;
 import com.jxl.shuriken.core.UIComponent;
-import com.jxl.shuriken.core.UITextField;
 import com.jxl.shuriken.containers.List;
 import com.jxl.shuriken.containers.ScrollableList;
-import com.jxl.shuriken.containers.ButtonBar;
 import com.jxl.shuriken.controls.SimpleButton;
 import com.jxl.shuriken.controls.Button;
 import com.jxl.shuriken.controls.LinkButton;
@@ -31,7 +29,6 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 	public function set scrollSpeed(pScrollSpeed:Number):Void
 	{
 		__scrollSpeed = pScrollSpeed;
-		invalidateProperties();
 	}
 
 	
@@ -40,8 +37,7 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 	public function set childClass(p_class:Function):Void
 	{	
 		__childClass = p_class;
-		__childClassDirty = true;
-		invalidateProperties();
+		__mcList.childClass = p_class;
 	}
 	
 	public function get childSetValueFunction():Function { return __childSetValueFunction; }
@@ -49,8 +45,7 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 	public function set childSetValueFunction(pFunc:Function):Void
 	{
 		__childSetValueFunction = pFunc;
-		__childSetValueFunctionDirty = true;
-		invalidateProperties();
+		__mcList.childSetValueFunction = pFunc;
 	}
 	
 	public function get childSetValueScope():Object { return __childSetValueScope; }
@@ -58,14 +53,11 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 	public function set childSetValueScope(pScope:Object):Void
 	{
 		__childSetValueScope = pScope;
-		__childSetValueScopeDirty = true;
-		invalidateProperties();
+		__mcList.childSetValueScope = pScope;
 	}
 	
 	private var __childSetValueScope:Object;
-	private var __childSetValueScopeDirty:Boolean 			= false;
 	private var __childSetValueFunction:Function;
-	private var __childSetValueFunctionDirty:Boolean 		= false;
 	
 	
 	public function get dataProvider():Collection
@@ -76,15 +68,15 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 	public function set dataProvider(p_val:Collection):Void
 	{
 		__dataProvider = p_val;
-		__dataProviderDirty = true;
 		if(__dataProvider != null)
 		{
 			if(__dataProvider.getLength() < __visibleRowCount)
-			{	__visibleRowCount = __dataProvider.getLength();
-				__visibleRowCountDirty = true;
+			{	
+				__visibleRowCount = __dataProvider.getLength();
 			}
 		}
-		invalidateProperties();
+		__mcList.dataProvider = p_val;
+		invalidate();
 	}
 	
 	[Inspectable(type="List", enumeration="above,below", defaultValue="above", name="Direction")]
@@ -93,8 +85,7 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 	public function set direction(p_val:String):Void
 	{
 		__direction = p_val;
-		__directionDirty = true;
-		invalidateProperties();
+		invalidate();
 	}
 	
 	private var __rowHeight:Number=3;
@@ -118,8 +109,7 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 	public function set showScrollButtons(p_val:Boolean):Void
 	{
 		__showScrollButtons = p_val;
-		__showScrollButtonsDirty = true;
-		invalidateProperties();
+		__mcList.showButtons = __showScrollButtons;
 	}
 	
 	[Inspectable(type="Number", defaultValue=5, name="Row Count")]
@@ -130,8 +120,7 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 		if (pVal != __visibleRowCount)
 		{
 			__visibleRowCount = pVal;
-			__visibleRowCountDirty = true;
-			invalidateProperties();
+			invalidate();
 		}
 	}
 	
@@ -142,18 +131,16 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 		if(pVal != __icon)
 		{
 			__icon = pVal;
-			__iconDirty = true;
-			invalidateProperties();
+			__mcHitState.icon = pVal;
 		}
 	}
 	
-	[Inspectable(type="String", defaultValue="") name="label" ]
+	[Inspectable(type="String", defaultValue="", name="label")]
 	public function get label():String { return __label; }
 	public function set label(pVal:String):Void
 	{
 		__label = pVal;
-		__labelDirty = true;
-		invalidateProperties();
+		__mcHitState.label = pVal;
 	}
 	
 	[Inspectable(defaultValue=null, type="Number", name="Column Width")]
@@ -164,8 +151,7 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 		if(pVal != __columnWidth)
 		{
 			__columnWidth = pVal;
-			__columnWidthDirty = true;
-			invalidateProperties();
+			__mcList.columnWidth = pVal;
 		}
 	}
 	
@@ -174,7 +160,7 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 		return __mcHitState;
 	}
 	
-	public function get textField():UITextField
+	public function get textField():TextField
 	{
 		return __mcHitState.textField;
 	}
@@ -189,8 +175,6 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 		if(pVal != __closeWhenSelected)
 		{
 			__closeWhenSelected = pVal;
-			__closeWhenSelectedDirty = true;
-			invalidateProperties();
 		}
 	}
 	
@@ -204,55 +188,44 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 		if(pVal != __MaskOverlap)
 		{
 			__MaskOverlap = pVal;
-			__MaskOverlapDirty = true;
-			invalidateProperties();
+			invalidate();
 		}	
 	}
 	
-	public function get selectedIndex():Number { return __selectedIndex }	
+	public function get selectedIndex():Number { return __selectedIndex; }	
 	
 	public function set selectedIndex(p_val:Number):Void
 	{
 		__selectedIndex = p_val;
-		__selectedIndexDirty = true;
-		invalidateProperties();
+		__mcList.selectedIndex = p_val;
 	}	
 	
 	public function get prompt():String { return __prompt; }
 	public function set prompt(p_val:String):Void
 	{
 		__prompt = p_val;
-		__promptDirty = true;
-		invalidateProperties();
+		if(__label == "" || __label == null)
+		{
+			__label = __prompt;
+			__mcHitState.label = __label;
+		}
 	}
 		
 	private var __childClass:Function						= Button;
-	private var __childClassDirty:Boolean					= false;
 	private var __dataProvider:Collection;
-	private var __dataProviderDirty:Boolean					= false;
 	private var __direction:String							= "above";
-	private var __directionDirty:Boolean					= false;
 	private var __isOpen:Boolean							= false;
 	private var __tweenScroll:Tween;
 	private var __showScrollButtons:Boolean					= true;
-	private var __showScrollButtonsDirty:Boolean;
 	private var __visibleRowCount:Number 					= 5;
-	private var __visibleRowCountDirty:Boolean				= false;
 	private var __icon:String;
-	private var __iconDirty:Boolean							= false;
 	private var __label:String								= "";
-	private var __labelDirty:Boolean						= false;
 	private var __prompt:String 							= "";
-	private var __promptDirty:Boolean						= false;
 	private var __columnWidth:Number 						= 100;
-	private var __columnWidthDirty:Boolean 					= false;
 	private var __closeWhenSelected:Boolean 				= true;
-	private var __closeWhenSelectedDirty:Boolean 			= false;
 	private var __selectedIndex:Number;
-	private var __selectedIndexDirty:Boolean				= false;
 	
 	private var __MaskOverlap:Number 						= 3;
-	private var __MaskOverlapDirty:Boolean = false;
 		
 	private var __scrollSpeed:Number 						= 500;
 	
@@ -261,7 +234,7 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 
 	private var openPosition:Number;
 	
-	private var __mcLabel:UITextField;
+	private var __mcLabel:TextField;
 	private var __mcHitState:Button;
 	private var __mcList:ScrollableList;
 	private var __mcListMask:MovieClip;
@@ -269,16 +242,11 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 
 	public function ComboBox()
 	{
-	}
-	
-	public function init():Void
-	{
-		super.init();
+		super();
 		
 		focusEnabled		= true;
 		tabEnabled			= false;
 		tabChildren			= true;
-		
 	}
 	
 	private function createChildren():Void
@@ -291,7 +259,7 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 		com.jxl.shuriken.utils.DrawUtils.drawMask(__mcListMask, 0, 0, 100, 100);
 		__mcList.setMask(__mcListMask);
 		__mcList.tabChildren = false;
-		__mcList.visible = false;
+		__mcList._visible = false;
 		
 		setupHitState();
 	}
@@ -315,105 +283,14 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 	
 	private function setupLabel():Void
 	{
-		__mcLabel = UITextField(attachMovie(UITextField.SYMBOL_NAME, "__mcLabel", getNextHighestDepth()));
+		createTextField("__mcLabel", getNextHighestDepth(), 0, 0, 100, 100);
 		__mcLabel.multiline 	= false;
 		__mcLabel.wordWrap 	= false;
 	}
 	
-	private function commitProperties():Void
+	private function redraw():Void
 	{
-		super.commitProperties();
-		
-		if(__childSetValueFunctionDirty == true)
-		{
-			__childSetValueFunctionDirty = false;	
-			__mcList.childSetValueFunction = __childSetValueFunction;
-		}
-		
-		if(__childSetValueScopeDirty == true)
-		{
-			__childSetValueScopeDirty = false;
-			__mcList.childSetValueScope = __childSetValueScope;
-		}
-		
-		if(__dataProviderDirty == true)
-		{
-			__dataProviderDirty = false;		
-			__mcList.dataProvider = __dataProvider;
-			invalidateSize();
-		}
-		
-		if(__directionDirty == true)
-		{
-			__directionDirty = false;
-			invalidateSize();
-		}
-		
-		if (__showScrollButtonsDirty == true)
-		{
-			__showScrollButtonsDirty = false;
-			__mcList.showButtons = __showScrollButtons;
-			invalidateSize();
-		}
-		
-		if (__visibleRowCountDirty == true)
-		{
-			__visibleRowCountDirty = false;
-			invalidateSize();
-		}
-		
-		if(__iconDirty == true)
-		{
-			__iconDirty = false;
-			__mcHitState.icon = __icon;
-		}
-		
-		if(__labelDirty == true)
-		{
-			__labelDirty = false;
-			__mcHitState.label = __label;
-		}
-		
-		if(__columnWidthDirty == true)
-		{
-			__columnWidthDirty = false;
-			__mcList.columnWidth = __columnWidth;
-		}
-		
-	
-		if(__MaskOverlapDirty == true)
-		{
-			__MaskOverlapDirty = false;
-			invalidateSize()
-		}
-		
-		if(__childClassDirty == true)
-		{
-			__childClassDirty = false;
-			__mcList.childClass = __childClass;
-		}
-		
-		if(__selectedIndexDirty == true)
-		{
-			__selectedIndexDirty = false;
-			__mcList.selectedIndex = __selectedIndex;
-		}
-		
-		if(__promptDirty == true)
-		{
-			__promptDirty = false;
-			if(__label == "" || __label == null)
-			{
-				__label = __prompt;
-				__mcHitState.label = __label;
-			}
-		}
-
-	}
-	
-	private function size():Void
-	{
-		super.size();
+		super.redraw();
 			
 		__mcLabel.setSize(width, height);						
 		__mcHitState.setSize(width, height);
@@ -498,7 +375,7 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 		if (!__isOpen)
 		{
 			__mcList.tabChildren = false;
-			__mcList.visible = false;
+			__mcList._visible = false;
 		}
 	}
 	
@@ -563,7 +440,7 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 		__tweenScroll.easingEquation = Strong.easeOut;
 		__tweenScroll.setTweenHandlers("onTweenVScrollUpdate", "onTweenVScrollOpenEnd");
 		
-		__mcList.visible = true;
+		__mcList._visible = true;
 	}
 	
 	

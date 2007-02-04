@@ -5,17 +5,22 @@ class com.jxl.goocal.views.GCDownArrowButton extends Button
 {
 	public static var SYMBOL_NAME:String = "com.jxl.goocal.views.GCDownArrowButton";
 	
-	private var __icon:String = "GCDownArrowButtonGraphic";
-	private var __iconDirty:Boolean = true;
 	private var __alignIcon:String = ALIGN_ICON_CENTER;
 	
 	public function GCDownArrowButton()
 	{
 	}
 	
-	private function size():Void
+	private function createChildren():Void
 	{
-		super.size();
+		super.createChildren();
+		
+		icon = "GCDownArrowButtonGraphic";
+	}
+	
+	private function redraw():Void
+	{
+		super.redraw();
 		
 		clear();
 		lineStyle(0, 0x808080);

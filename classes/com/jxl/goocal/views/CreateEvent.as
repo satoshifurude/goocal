@@ -12,7 +12,6 @@ import com.jxl.goocal.views.createevent.Step2;
 import com.jxl.goocal.views.createevent.Step3;
 import com.jxl.goocal.views.createevent.Step4;
 import com.jxl.goocal.views.createevent.Step5;
-import com.jxl.goocal.views.GCHeading;
 
 class com.jxl.goocal.views.CreateEvent extends UIComponent
 {
@@ -25,7 +24,7 @@ class com.jxl.goocal.views.CreateEvent extends UIComponent
 	private var __what:String;
 	private var __where:String;
 	private var __calendar:String;
-	private var __calendars:Collection
+	private var __calendars:Collection;
 	private var __description:String;
 	private var __repeats:String;
 	
@@ -35,7 +34,7 @@ class com.jxl.goocal.views.CreateEvent extends UIComponent
 	private var __cancelCallback:Callback;
 	private var __okCallback:Callback;
 	
-	private var __title_lbl:GCHeading;
+	private var __title_lbl:TextField;
 	private var __step1:Step1;
 	private var __step2:Step2;
 	private var __step3:Step3;
@@ -65,7 +64,7 @@ class com.jxl.goocal.views.CreateEvent extends UIComponent
 		
 		if(__title_lbl == null)
 		{
-			__title_lbl = GCHeading(createComponent(GCHeading, "__title_lbl"));
+			__title_lbl = createLabel("__title_lbl");
 		}
 		
 		if(__cancel_pb == null)
@@ -76,9 +75,9 @@ class com.jxl.goocal.views.CreateEvent extends UIComponent
 		}
 	}
 	
-	private function draw():Void
+	private function redraw():Void
 	{
-		super.draw();
+		super.redraw();
 		
 		__title_lbl.text = "Create Event Step " + __currentStep;
 		
@@ -173,40 +172,35 @@ class com.jxl.goocal.views.CreateEvent extends UIComponent
 			
 		}
 		
-		size();
-	}
-	
-	private function size():Void
-	{
 		__title_lbl.setSize(__width, 16);
 		
 		if(__step1 != null)
 		{
-			__step1.move(0, __title_lbl.y + __title_lbl.height);
+			__step1.move(0, __title_lbl._y + __title_lbl._height);
 			__step1.setSize(__width, __step1.height);
 		}
 		
 		if(__step2 != null)
 		{
-			__step2.move(0, __title_lbl.y + __title_lbl.height);
+			__step2.move(0, __title_lbl._y + __title_lbl._height);
 			__step2.setSize(__width, __step2.height);
 		}
 		
 		if(__step3 != null)
 		{
-			__step3.move(0, __title_lbl.y + __title_lbl.height);
+			__step3.move(0, __title_lbl._y + __title_lbl._height);
 			__step3.setSize(__width, __step3.height);
 		}
 		
 		if(__step4 != null)
 		{
-			__step4.move(0, __title_lbl.y + __title_lbl.height);
+			__step4.move(0, __title_lbl._y + __title_lbl._height);
 			__step4.setSize(__width, __step4.height);
 		}
 		
 		if(__step5 != null)
 		{
-			__step5.move(0, __title_lbl.y + __title_lbl.height);
+			__step5.move(0, __title_lbl._y + __title_lbl._height);
 			__step5.setSize(__width, __step5.height);
 		}
 		
@@ -231,7 +225,7 @@ class com.jxl.goocal.views.CreateEvent extends UIComponent
 		if(__currentStep + 1 <= __maxSteps)
 		{
 			__currentStep++;
-			invalidateDraw();
+			invalidate();
 		}
 	}
 	
@@ -240,7 +234,7 @@ class com.jxl.goocal.views.CreateEvent extends UIComponent
 		if(__currentStep - 1 > 0)
 		{
 			__currentStep--;
-			invalidateDraw();
+			invalidate();
 		}
 	}
 	
@@ -266,7 +260,7 @@ class com.jxl.goocal.views.CreateEvent extends UIComponent
 		__description 		= description;
 		__repeats			= repeats;
 		
-		invalidateProperties();
+		invalidate();
 	}
 	
 	private function onChanged(event:Event):Void

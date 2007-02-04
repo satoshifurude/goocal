@@ -132,19 +132,19 @@ class org.osflash.arp.controls.GraphicButton
 		btn_mc.onPress = function() 
 		{
 			this.gotoAndStop("down");		
-		}
+		};
 		
 		// set onRollOver
 		btn_mc.onRollOver = function() 
 		{
 			this.gotoAndStop("over");
-		}
+		};
 		
 		// set onRollOut, onDragOut, etc.
 		btn_mc.onRollOut = btn_mc.onReleaseOutside = btn_mc.onDragOut = function() 
 		{
 			this.gotoAndStop("normal");	
-		}
+		};
 		
 		// set onRelease
 		btn_mc.onRelease = function() 
@@ -152,7 +152,7 @@ class org.osflash.arp.controls.GraphicButton
 			this.gotoAndStop("normal");
 			this.instanceRef.onRelease();			// call default handler
 			this.callbackFunc.apply( this.callbackObj, this.callbackArgs );	// call click handler
-		}
+		};
 		
 		// display the enabled state
 		btn_mc.gotoAndStop("normal");
@@ -273,7 +273,7 @@ class org.osflash.arp.controls.GraphicButton
 				
 				this.button_mc.onRelease();
 			}	
-		}
+		};
 	}
 	
 }

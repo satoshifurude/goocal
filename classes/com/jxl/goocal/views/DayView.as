@@ -3,7 +3,6 @@ import mx.utils.Delegate;
 
 import com.jxl.shuriken.core.UIComponent;
 
-import com.jxl.goocal.views.GCHeading;
 import com.jxl.goocal.views.EventList;
 import com.jxl.shuriken.core.Collection;
 import com.jxl.shuriken.events.ShurikenEvent;
@@ -22,13 +21,11 @@ class com.jxl.goocal.views.DayView extends UIComponent
 	public static var EVENT_CREATE_NEW:String = "createNew";
 	
 	private var __events:Collection;
-	private var __eventsDirty:Boolean 			= false;
 	private var __currentDate:Date;
-	private var __currentDateDirty:Boolean		= false;
 	private var __createNewCallback:Callback;
 	private var __monthViewCallback:Callback;
 	
-	private var __title_lbl:GCHeading;
+	private var __title_lbl:TextField;
 	private var __event_list:EventList;
 	private var __createNewEvent_link:GCLinkButton;
 	private var __backToMonthView_link:GCLinkButton;
@@ -37,16 +34,14 @@ class com.jxl.goocal.views.DayView extends UIComponent
 	public function set events(p_val:Collection):Void
 	{
 		__events = p_val;
-		__eventsDirty = true;
-		invalidateProperties();
+		__event_list.dataProvider = p_val;
 	}
 	
 	public function get currentDate():Date { return __currentDate; }
 	public function set currentDate(p_val:Date):Void
 	{
 		__currentDate = p_val;
-		__currentDateDirty = true;
-		invalidateProperties();
+		__title_lbl.text = DateUtils.format(p_val, DateUtils.FORMAT_TIME_MONTH_DAY_FULLYEAR);
 	}
 	
 	public function DayView()
@@ -60,9 +55,12 @@ class com.jxl.goocal.views.DayView extends UIComponent
 		
 		if(__title_lbl == null)
 		{
-			__title_lbl = GCHeading(createComponent(GCHeading, "__title_lbl"));
-			__title_lbl.textSize = 14;
-			__title_lbl.bold = true;
+			__title_lbl = createLabel("__title_lbl");
+			var titleFMT:TextFormat = __title_lbl.getTextFormat();
+			titleFMT.size = 14;
+			titleFMT.bold = true;
+			__title_lbl.setTextFormat(titleFMT);
+			__title_lbl.setNewTextFormat(titleFMT);
 		}
 		
 		if(__event_list == null)
@@ -86,39 +84,22 @@ class com.jxl.goocal.views.DayView extends UIComponent
 		
 	}
 	
-	private function commitProperties():Void
+	private function redraw():Void
 	{
-		super.commitProperties();
-		
-		if(__currentDateDirty == true)
-		{
-			__currentDateDirty = false;
-			__title_lbl.text = DateUtils.format(__currentDate, DateUtils.FORMAT_TIME_MONTH_DAY_FULLYEAR);
-		}
-		
-		if(__eventsDirty == true)
-		{
-			__eventsDirty = false;
-			__event_list.dataProvider = __events;
-		}
-	}
-	
-	private function size():Void
-	{
-		super.size();
+		super.redraw();
 		
 		var leftSide:Number = 0;
 		
 		__title_lbl.move(leftSide, 0);
-		__title_lbl.setSize(__width - __title_lbl.x, 20);
+		__title_lbl.setSize(__width - __title_lbl._x, 20);
 		
 		__backToMonthView_link.setSize(__width - leftSide, 20);
-		__backToMonthView_link.move(__title_lbl.x, __height - __backToMonthView_link.height);
+		__backToMonthView_link.move(__title_lbl._x, __height - __backToMonthView_link.height);
 		
 		__createNewEvent_link.setSize(__width - leftSide, 20);
 		__createNewEvent_link.move(__backToMonthView_link.x, __backToMonthView_link.y - __createNewEvent_link.height);
 		
-		__event_list.move(__title_lbl.x, __title_lbl.y + __title_lbl.height);
+		__event_list.move(__title_lbl._x, __title_lbl._y + __title_lbl._height);
 		__event_list.setSize(__width - leftSide, __height - __event_list.y - (__height - __createNewEvent_link.y));
 		
 		

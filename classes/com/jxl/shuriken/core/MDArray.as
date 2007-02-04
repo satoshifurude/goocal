@@ -75,7 +75,7 @@ class com.jxl.shuriken.core.MDArray
 	
 	public function getCell(r:Number, c:Number):Object
 	{
-		var cellValue = this[r][c]
+		var cellValue = this[r][c];
 		return cellValue;
 		//return __source[cell(r, c)];
 	}

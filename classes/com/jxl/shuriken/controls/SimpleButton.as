@@ -20,11 +20,7 @@ class com.jxl.shuriken.controls.SimpleButton extends UIComponent
 	
 	public function SimpleButton()
 	{
-	}
-	
-	public function init():Void
-	{
-		super.init();
+		super();
 		
 		if(__mouseListener == null)
 		{
@@ -34,10 +30,15 @@ class com.jxl.shuriken.controls.SimpleButton extends UIComponent
 		}
 	}
 	
-	private function size():Void
+	private function redraw():Void
 	{
-		super.size();
+		super.redraw();
 		
+		drawButton();
+	}
+	
+	private function drawButton():Void
+	{
 		clear();
 		lineStyle(0, 0x999999); // uncomment if debugging, draw's an outline for you
 		beginFill(0xCCCCCC); // change alpha to 90 when debugging
@@ -45,13 +46,13 @@ class com.jxl.shuriken.controls.SimpleButton extends UIComponent
 		endFill();
 	}
 	
-	private function onPress():Void
+	public function onPress():Void
 	{
 		__pressCallback.dispatch(new ShurikenEvent(ShurikenEvent.PRESS, this));
 		
 	}
 	
-	private function onRelease():Void
+	public function onRelease():Void
 	{
 		//DebugWindow.debugHeader();
 		//DebugWindow.debug("SimpleButton::onRelease");
@@ -59,17 +60,17 @@ class com.jxl.shuriken.controls.SimpleButton extends UIComponent
 		__releaseCallback.dispatch(new ShurikenEvent(ShurikenEvent.RELEASE, this));
 	}
 	
-	private function onReleaseOutside():Void
+	public function onReleaseOutside():Void
 	{
 		__releaseOutsideCallback.dispatch(new ShurikenEvent(ShurikenEvent.RELEASE_OUTSIDE, this));
 	}
 	
-	private function onRollOver():Void
+	public function onRollOver():Void
 	{
 		__rollOverCallback.dispatch(new ShurikenEvent(ShurikenEvent.ROLL_OVER, this));
 	}
 	
-	private function onRollOut():Void
+	public function onRollOut():Void
 	{
 		__rollOutCallback.dispatch(new ShurikenEvent(ShurikenEvent.ROLL_OUT, this));
 	}
@@ -87,11 +88,6 @@ class com.jxl.shuriken.controls.SimpleButton extends UIComponent
 		{
 			__mouseDownOutsideCallback.dispatch(new ShurikenEvent(ShurikenEvent.MOUSE_DOWN_OUTSIDE, this));
 		}
-	}
-	
-	public function toString():String
-	{
-		return "[object com.jxl.shuriken.controls.SimpleButton]";
 	}
 	
 	public function setPressCallback(scope:Object, func:Function):Void

@@ -7,6 +7,7 @@ import com.jxl.shuriken.core.Container;
 import com.jxl.shuriken.containers.List;
 import com.jxl.shuriken.containers.ButtonList;
 import com.jxl.shuriken.controls.SimpleButton;
+import com.jxl.shuriken.controls.Button;
 import com.jxl.shuriken.managers.TweenManager;
 import com.jxl.shuriken.utils.DrawUtils;
 import com.jxl.shuriken.events.ShurikenEvent;
@@ -30,8 +31,8 @@ class com.jxl.shuriken.containers.ScrollableList extends Container
 		if(pVal != __direction)
 		{
 			__direction = pVal;
-			__directionDirty = true;
-			invalidateProperties();
+			__mcList.direction = __direction;
+			invalidate();
 		}
 	}
 	
@@ -44,8 +45,7 @@ class com.jxl.shuriken.containers.ScrollableList extends Container
 	public function set childClass(pClass:Function):Void
 	{
 		__childClass = pClass;
-		__childClassDirty = true;
-		invalidateProperties();
+		__mcList.childClass = pClass;
 	}
 
 	public function get childSetValueScope():Object { return __childSetValueScope; }
@@ -53,8 +53,7 @@ class com.jxl.shuriken.containers.ScrollableList extends Container
 	public function set childSetValueScope(pScope:Object):Void
 	{
 		__childSetValueScope = pScope;
-		__childSetValueScopeDirty = true;
-		invalidateProperties();
+		__mcList.childSetValueScope = pScope;
 	}
 	
 	public function get childSetValueFunction():Function { return __childSetValueFunction; }
@@ -62,8 +61,7 @@ class com.jxl.shuriken.containers.ScrollableList extends Container
 	public function set childSetValueFunction(pFunc:Function):Void
 	{
 		__childSetValueFunction = pFunc;
-		__childSetValueFunctionDirty = true;
-		invalidateProperties();
+		__mcList.childSetValueFunction = pFunc;
 	}
 	
 	public function get columnWidth():Number { return __mcList.columnWidth; }
@@ -73,8 +71,7 @@ class com.jxl.shuriken.containers.ScrollableList extends Container
 		if(pVal != __columnWidth)
 		{
 			__columnWidth = pVal;
-			__columnWidthDirty = true;
-			invalidateProperties();
+			__mcList.columnWidth = pVal;		
 		}
 	}
 	
@@ -85,12 +82,11 @@ class com.jxl.shuriken.containers.ScrollableList extends Container
 		if(pVal != __rowHeight)
 		{
 			__rowHeight = pVal;
-			__rowHeightDirty = true;
-			invalidateProperties();
+			__mcList.rowHeight = pVal;
 		}
 	}
 	
-	[Inspectable(type="List", enumeration="left,center", defaultValue="left"]
+	[Inspectable(type="List", enumeration="left,center", defaultValue="left")]
 	public function get align():String
 	{
 		return __align;
@@ -99,8 +95,6 @@ class com.jxl.shuriken.containers.ScrollableList extends Container
 	public function set align(pAlign:String):Void
 	{
 		__align = pAlign;
-		__alignDirty = true;
-		invalidateProperties();
 	}
 	
 	[Inspectable(type="Number", defaultValue=0, name="Horizontal Margin")]
@@ -109,8 +103,6 @@ class com.jxl.shuriken.containers.ScrollableList extends Container
 	public function set childHorizontalMargin(pVal:Number):Void
 	{
 		__childHorizontalMargin = pVal;
-		__childHorizontalMarginDirty = true;
-		invalidateProperties();
 	}
 	
 	[Inspectable(type="Number", defaultValue=0, name="Vertical Margin")]
@@ -119,8 +111,6 @@ class com.jxl.shuriken.containers.ScrollableList extends Container
 	public function set childVerticalMargin(pVal:Number):Void
 	{	
 		__childVerticalMargin = pVal;
-		__childVerticalMarginDirty = true;
-		invalidateProperties();
 	}
 	
 	public function get autoSizeToChildren():Boolean { return __autoSizeToChildren; }
@@ -128,8 +118,6 @@ class com.jxl.shuriken.containers.ScrollableList extends Container
 	public function set autoSizeToChildren(pVal:Boolean):Void
 	{
 		__autoSizeToChildren = pVal;
-		__autoSizeToChildrenDirty = true;
-		invalidateProperties();
 	}
 	
 	public function get dataProvider():Collection
@@ -139,32 +127,33 @@ class com.jxl.shuriken.containers.ScrollableList extends Container
 	
 	public function set dataProvider(p_val:Collection):Void
 	{
+		//trace("------------------");
+		//trace("ScrollableList::dataProvider setter, p_val: " + p_val);
+		//trace("__mcList: " + __mcList);
 		__dataProvider = p_val;
-		__dataProviderDirty = true;
-		invalidateProperties();
+		__mcList.dataProvider = p_val;
+		
 	}
 	
-	public function get toggle():Boolean { return __toggle }	
+	public function get toggle():Boolean { return __toggle; }	
 	
 	public function set toggle(pBoolean:Boolean):Void
 	{
 		if(pBoolean != __toggle)
 		{
 			__toggle = pBoolean;
-			__toggleDirty = true;
-			invalidateProperties();
+			__mcList.toggle = pBoolean;
 		}
 	}
 	
-	public function get selectedIndex():Number { return __selectedIndex }	
+	public function get selectedIndex():Number { return __selectedIndex; }	
 	
 	public function set selectedIndex(pVal:Number):Void
 	{
 		if(pVal != __selectedIndex)
 		{
 			__selectedIndex = pVal;
-			__selectedIndexDirty = true;
-			invalidateProperties();
+			__mcList.selectedIndex = __selectedIndex;
 		}
 	}	
 	
@@ -178,8 +167,7 @@ class com.jxl.shuriken.containers.ScrollableList extends Container
 		if(pVal != __showButtons)
 		{
 			__showButtons = pVal;
-			__showButtonsDirty = true;
-			invalidateProperties();
+			invalidate();
 		}
 	}
 	
@@ -191,40 +179,26 @@ class com.jxl.shuriken.containers.ScrollableList extends Container
 		return lastPage;
 	}
 	
-	public function get pageCurrent():Number{return pageIndex+1; }
+	public function get pageCurrent():Number { return pageIndex + 1; }
 	
 	
 	private var __childSetValueScope:Object;
-	private var __childClass:Function						= SimpleButton;
-	private var __childClassDirty:Boolean					= false;
+	private var __childClass:Function						= Button;
 	private var __childSetValueFunction:Function;
-	private var __childSetValueFunctionDirty:Boolean		= false;
-	private var __childSetValueScopeDirty:Boolean			= false;
 	private var __dataProvider:Collection;
-	private var __dataProviderDirty:Boolean					= false;
 	private var __direction:String;
-	private var __directionDirty:Boolean					= false;
 	private var __horizontalPageSize:Number					= 0;
 	private var __verticalPageSize:Number					= 0;
 	private var __align:String								= "left";
-	private var __alignDirty:Boolean						= false;
 	private var __childHorizontalMargin:Number				= 0;
-	private var __childHorizontalMarginDirty:Boolean		= false;
 	private var __childVerticalMargin:Number				= 0;
-	private var __childVerticalMarginDirty:Boolean			= false;
 	private var __autoSizeToChildren:Boolean				= true;
-	private var __autoSizeToChildrenDirty:Boolean			= false;
 	private var __showButtons:Boolean 						= false;
-	private var __showButtonsDirty:Boolean 					= false;
 	private var __tweenScroll:Tween;
 	private var __columnWidth:Number						= 0;
-	private var __columnWidthDirty:Boolean 					= false;
 	private var __rowHeight:Number 							= 0;
-	private var __rowHeightDirty:Boolean					= false;
-	private var __toggle:Boolean 							= false
-	private var __toggleDirty 								= false;
-	private var __selectedIndex:Number 						= -1
-	private var __selectedIndexDirty 						= false;
+	private var __toggle:Boolean 							= false;
+	private var __selectedIndex:Number 						= -1;
 	
 	private var __mcList:ButtonList;
 	private var __mcScrollPrevious:SimpleButton;
@@ -235,6 +209,7 @@ class com.jxl.shuriken.containers.ScrollableList extends Container
 	
 	public function ScrollableList()
 	{
+		super();
 	}
 	
 	public function getPreferredHeight(visibleRowCount:Number):Number
@@ -285,6 +260,7 @@ class com.jxl.shuriken.containers.ScrollableList extends Container
 	{
 		__mcList = ButtonList(attachMovie(ButtonList.SYMBOL_NAME, "__mcList", getNextHighestDepth()));
 		__mcList.childClass = __childClass;
+		__mcList.onDoneBuilding = function(){ this._parent.invalidate(); };
 	}
 	
 	private function setupButtons():Void
@@ -298,90 +274,14 @@ class com.jxl.shuriken.containers.ScrollableList extends Container
 		__mcScrollNext.setSize(__width, 4);
 	}
 	
-	private function commitProperties():Void
-	{
-		if(__mcList.isBuilding == true) return;
-		
-		super.commitProperties();
-		
-		if(__childSetValueFunctionDirty == true)
-		{
-			__mcList.childSetValueFunction = __childSetValueFunction;
-			__childSetValueFunctionDirty = false;
-		}
-		
-		if(__childSetValueScopeDirty == true)
-		{
-			__childSetValueScopeDirty = false;
-			__mcList.childSetValueScope = __childSetValueScope;	
-		}
-		
-		if(__childClassDirty == true)
-		{
-			__childClassDirty = false;
-			__mcList.childClass = __childClass;
-		}
-		
-		if(__dataProviderDirty == true)
-		{			
-
-			__dataProviderDirty = false;
-			
-			__mcList.dataProvider = __dataProvider;
-			pageIndex = 0;
-		}
-		
-		if(__directionDirty == true)
-		{
-			__directionDirty = false;
-			__mcList.direction = __direction;
-			invalidateSize();
-		}
-		
-		if (__showButtonsDirty == true)
-		{
-			__showButtonsDirty = false;
-			invalidateSize();
-		}
-		
-		if(__columnWidthDirty == true)
-		{
-			__columnWidthDirty = false;
-			__mcList.columnWidth = __columnWidth;
-		}
-		
-		if(__rowHeightDirty == true)
-		{
-			__rowHeightDirty = false;
-			__mcList.rowHeight = __rowHeight;
-		}
-		
-		if (__toggleDirty == true){
-			__toggleDirty = false
-			__mcList.toggle = __toggle
-		}
-		
-		if (__selectedIndexDirty == true){
-			__selectedIndexDirty = false
-			__mcList.selectedIndex = __selectedIndex
-		}
-	}
-	
-	private function draw():Void
-	{
-		if(__mcList.isBuilding == true) return;
-		
-		super.draw();
-	}
-	
-	private function size():Void
+	private function redraw():Void
 	{
 		if(__mcList.isBuilding == true) return;
 		
 		//DebugWindow.debugHeader();
 		//DebugWindow.debug("ScrollableList::size, __width: " + __width + ", __columnWidth: " + __columnWidth);
 		
-		super.size();
+		super.redraw();
 		
 		if (__showButtons == true)
 		{	
@@ -390,7 +290,7 @@ class com.jxl.shuriken.containers.ScrollableList extends Container
 			if(__mcList.direction == List.DIRECTION_HORIZONTAL)
 			{
 				var listWidth:Number = width - __mcScrollPrevious.width - __mcScrollNext.width;
-				listWidth = Math.max(0, listWidth)
+				listWidth = Math.max(0, listWidth);
 				
 				__mcList.setSize(listWidth, height);
 				
@@ -410,10 +310,10 @@ class com.jxl.shuriken.containers.ScrollableList extends Container
 			__mcScrollPrevious.setSize(__width, __mcScrollPrevious.height);
 			__mcScrollNext.setSize(__width, __mcScrollNext.height);
 			
-			__mcScrollPrevious.clear()
-			__mcScrollPrevious.lineStyle(0, 0x333333)
+			__mcScrollPrevious.clear();
+			__mcScrollPrevious.lineStyle(0, 0x333333);
 			__mcScrollPrevious.beginFill(0xCCCCCC);
-			DrawUtils.drawBox(__mcScrollPrevious, 0, 0, __mcScrollPrevious.width - 1, __mcScrollPrevious.height)
+			DrawUtils.drawBox(__mcScrollPrevious, 0, 0, __mcScrollPrevious.width - 1, __mcScrollPrevious.height);
 			var centerX:Number = __width / 2;
 			var tW:Number = 6;
 			var tH:Number = 4;
@@ -424,20 +324,22 @@ class com.jxl.shuriken.containers.ScrollableList extends Container
 		
 			__mcScrollNext.clear();
 			__mcScrollNext.lineStyle(0, 0x333333);
+			//__mcScrollNext.lineStyle(0, 0xFF0000);
 			__mcScrollNext.beginFill(0xCCCCCC);
+			//__mcScrollNext.beginFill(0x0000FF);
 			DrawUtils.drawBox(__mcScrollNext, 0, 0, __mcScrollNext.width - 1, __mcScrollNext.height);
 			DrawUtils.drawTriangle(__mcScrollNext, centerX - (tW / 2), 0, tW, tH, 180);
 			__mcScrollNext.beginFill(0x333333);
 			DrawUtils.drawTriangle(__mcScrollNext, centerX - (tW / 2), 0, tW, tH, 180);
-			__mcScrollNext.endFill()
+			__mcScrollNext.endFill();
 			
-			__mcScrollPrevious.visible = true;
-			__mcScrollNext.visible = true;			
+			__mcScrollPrevious._visible = true;
+			__mcScrollNext._visible = true;			
 		}
 		else
 		{
-			__mcScrollPrevious.visible = false;
-			__mcScrollNext.visible = false;
+			__mcScrollPrevious._visible = false;
+			__mcScrollNext._visible = false;
 			
 			__mcScrollPrevious.move(0, 0);
 			__mcScrollNext.move(0, 0);
@@ -460,6 +362,11 @@ class com.jxl.shuriken.containers.ScrollableList extends Container
 		DrawUtils.drawDashLineBox(this, 0, 0, width, height, 3, 3);
 		endFill();
 		*/
+		
+		//trace("---------------");
+		//trace("ScrollableList::redraw");
+		//trace("__mcScrollNext.x: " + __mcScrollNext.x + ", y: " + __mcScrollNext.y);
+		//trace("__mcScrollNext.width: " + __mcScrollNext.width + ", height: " + __mcScrollNext.height);
 	}
 	
 	public function onScrollPrevious(event:Object):Void
@@ -468,7 +375,8 @@ class com.jxl.shuriken.containers.ScrollableList extends Container
 		var pageSize = (__mcList.direction == List.DIRECTION_HORIZONTAL) ? __mcList.horizontalPageSize : __mcList.verticalPageSize;	
 		var lastPage : Number = Math.ceil(__dataProvider.getLength() / pageSize);
 	
-		if(pageIndex - 1 > -1){
+		if(pageIndex - 1 > -1)
+		{
 			pageIndex--;
 			scrollToNewPosition();
 		}
@@ -495,7 +403,7 @@ class com.jxl.shuriken.containers.ScrollableList extends Container
 		{			
 			if(__mcList.horizontalPageSize == null || __mcList.horizontalPageSize == 0) return;
 			
-			var newIndex:Number = Math.min( pageIndex * __mcList.horizontalPageSize, (__dataProvider.getLength() - __mcList.horizontalPageSize))
+			var newIndex:Number = Math.min( pageIndex * __mcList.horizontalPageSize, (__dataProvider.getLength() - __mcList.horizontalPageSize));
 			
 			
 			
@@ -517,7 +425,7 @@ class com.jxl.shuriken.containers.ScrollableList extends Container
 		{
 			if(__mcList.verticalPageSize == null || __mcList.verticalPageSize == 0) return;
 			
-			var newIndex:Number = Math.min( pageIndex * __mcList.verticalPageSize, (__dataProvider.getLength() - __mcList.verticalPageSize))
+			var newIndex:Number = Math.min( pageIndex * __mcList.verticalPageSize, (__dataProvider.getLength() - __mcList.verticalPageSize));
 			
 			if(newIndex + __mcList.verticalPageSize > __dataProvider.getLength())
 			{

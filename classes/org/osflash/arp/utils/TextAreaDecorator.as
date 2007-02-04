@@ -71,7 +71,7 @@ import mx.controls.TextArea;
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-class org.osflash.arparp.utils.TextAreaDecorator
+class org.osflash.arp.utils.TextAreaDecorator
 {
 	//
 	// Properties

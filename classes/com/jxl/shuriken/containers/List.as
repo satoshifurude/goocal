@@ -2,7 +2,6 @@
 
 import com.jxl.shuriken.core.UIComponent;
 import com.jxl.shuriken.core.Container;
-import com.jxl.shuriken.controls.Label;
 import com.jxl.shuriken.controls.SimpleButton;
 import com.jxl.shuriken.controls.Button;
 import com.jxl.shuriken.utils.DrawUtils;
@@ -27,8 +26,7 @@ class com.jxl.shuriken.containers.List extends Container
 	public function set direction(pVal:String):Void
 	{
 		__direction = pVal;
-		__directionDirty = true;
-		invalidateProperties();
+		callLater(this, draw);
 	}
 	
 	public function get horizontalPageSize():Number { return __horizontalPageSize; }
@@ -40,7 +38,7 @@ class com.jxl.shuriken.containers.List extends Container
 	public function set childClass(p_class:Function):Void
 	{
 		__childClass = p_class;
-		invalidateDraw();
+		callLater(this, draw);
 	}
 	
 	public function get childSetValueFunction():Function { return __childSetValueFunction; }
@@ -48,8 +46,7 @@ class com.jxl.shuriken.containers.List extends Container
 	public function set childSetValueFunction(pFunc:Function):Void
 	{
 		__childSetValueFunction = pFunc;
-		__childSetValueFunctionDirty = true;
-		invalidateProperties();
+		refreshSetValues();
 	}
 	
 	public function get childSetValueScope():Object { return __childSetValueScope; }
@@ -57,8 +54,7 @@ class com.jxl.shuriken.containers.List extends Container
 	public function set childSetValueScope(pScope:Object):Void
 	{
 		__childSetValueScope = pScope;
-		__childSetValueScopeDirty = true;
-		invalidateProperties();
+		refreshSetValues();
 	}
 	
 	[Inspectable(defaultValue=null, type="Number", name="Column Width")]
@@ -70,8 +66,7 @@ class com.jxl.shuriken.containers.List extends Container
 		calculateHorizontalPageSize();
 		__columnWidthDirty = true;
 		__autoSizeToChildren = false;
-		__autoSizeToChildrenDirty = true;
-		invalidateProperties();
+		invalidate();
 		__colWChangeCallback.dispatch(new ShurikenEvent(ShurikenEvent.COLUMN_WIDTH_CHANGED, this));
 	}
 	
@@ -84,15 +79,13 @@ class com.jxl.shuriken.containers.List extends Container
 		calculateVerticalPageSize();
 		__rowHeightDirty = true;
 		__autoSizeToChildren = false;
-		__autoSizeToChildrenDirty = true;
-		invalidateProperties();
+		invalidate();
 		__rowHChangeCallback.dispatch(new ShurikenEvent(ShurikenEvent.ROW_HEIGHT_CHANGED, this));
-		size();
 	}
 	
 	
 	
-	[Inspectable(type="List", enumeration="left,center", defaultValue="left"]
+	[Inspectable(type="List", enumeration="left,center", defaultValue="left")]
 	public function get align():String
 	{
 		return __align;
@@ -101,8 +94,7 @@ class com.jxl.shuriken.containers.List extends Container
 	public function set align(pAlign:String):Void
 	{
 		__align = pAlign;
-		__alignDirty = true;
-		invalidateProperties();
+		invalidate();
 	}
 	
 	[Inspectable(type="Number", defaultValue=0, name="Horizontal Margin")]
@@ -111,8 +103,7 @@ class com.jxl.shuriken.containers.List extends Container
 	public function set childHorizontalMargin(pVal:Number):Void
 	{
 		__childHorizontalMargin = pVal;
-		__childHorizontalMarginDirty = true;
-		invalidateProperties();
+		invalidate();
 	}
 	
 	[Inspectable(type="Number", defaultValue=0, name="Vertical Margin")]
@@ -121,8 +112,7 @@ class com.jxl.shuriken.containers.List extends Container
 	public function set childVerticalMargin(pVal:Number):Void
 	{	
 		__childVerticalMargin = pVal;
-		__childVerticalMarginDirty = true;
-		invalidateProperties();
+		invalidate();
 	}
 	
 	public function get autoSizeToChildren():Boolean { return __autoSizeToChildren; }
@@ -130,16 +120,15 @@ class com.jxl.shuriken.containers.List extends Container
 	public function set autoSizeToChildren(pVal:Boolean):Void
 	{
 		__autoSizeToChildren = pVal;
-		__autoSizeToChildrenDirty = true;
-		invalidateProperties();
+		callLater(this, draw);
 	}
 	
 	public function get dataProvider():Collection { return __dataProvider; }
 	
 	public function set dataProvider(p_val:Collection):Void
 	{
-		//DebugWindow.debugHeader();
-		//DebugWindow.debug("List::dataProvider::setter, p_val: " + p_val);
+		//trace("------------------");
+		//trace("List::dataProvider::setter, p_val: " + p_val);
 		__isBuilding = true;
 		if(__dataProvider != null)
 		{
@@ -148,14 +137,13 @@ class com.jxl.shuriken.containers.List extends Container
 		}
 		__dataProvider = p_val;
 		__dataProvider.setChangeCallback(this, onCollectionChanged);
-		__dataProviderDirty = true;
-		invalidateProperties();
+		callLater(this, draw);
 	}
 	
 	public function get isBuilding():Boolean { return __isBuilding; }
 	
-	private var __isBuilding:Boolean							= false;
-	private var __childClass:Function							= Label;
+	private var __isBuilding:Boolean;
+	private var __childClass:Function;
 	private var __childSetValueFunction:Function				= refreshSetValue;
 	private var __childSetValueScope:Object;
 	
@@ -175,14 +163,6 @@ class com.jxl.shuriken.containers.List extends Container
 	private var __direction:String								= "vertical";
 	private var __autoSizeToChildren:Boolean					= true;
 	
-	private var __childSetValueFunctionDirty:Boolean;
-	private var __childSetValueScopeDirty:Boolean;
-	private var __alignDirty:Boolean;
-	private var __childHorizontalMarginDirty:Boolean;
-	private var __childVerticalMarginDirty:Boolean;
-	private var __directionDirty:Boolean;
-	private var __autoSizeToChildrenDirty:Boolean;
-	
 	private var __highestChildDepth:Number;
 	
 	private var __dataProvider:Collection;
@@ -193,13 +173,14 @@ class com.jxl.shuriken.containers.List extends Container
 	
 	public function List()
 	{
-	}
-	
-	public function init():Void
-	{
-		super.init();
+		super();
 		
 		__childSetValueScope = this;
+		__childClass = Button;
+		
+		//DebugWindow.debugHeader();
+		//DebugWindow.debug("List::constructor");
+		//DebugWindow.debug("__childClass: " + __childClass);
 	}
 	
 	// Overriding
@@ -227,15 +208,14 @@ class com.jxl.shuriken.containers.List extends Container
 	// Should be set via outside class, by default is to look for data setter
 	public function refreshSetValue(p_child:UIComponent, p_index:Number, p_item:Object):Void
 	{
-		//trace("refreshSetValue, p_child: " + p_child + ", p_index: " + p_index + ", p_item: " + p_item);
-		if(p_child instanceof Label)
+		trace("-------------");
+		trace("List::refreshSetValue, p_child: " + p_child + ", p_index: " + p_index + ", p_item: " + p_item);
+		trace("p_child: " + p_child);
+		trace("p_child.toString(): " + p_child.toString());
+		trace("__childClass: " + __childClass);
+		if(p_child instanceof Button)
 		{
-		//	trace("label");
-			Label(p_child).text = p_item.toString();
-		}
-		else if(p_child instanceof Button)
-		{
-			//trace("button");
+			trace("button");
 			// FIXME: Dependency; could possibly re-factor to ensure
 			// this class isn't included in the SWF if the developer
 			// doesn't want it to be
@@ -243,11 +223,11 @@ class com.jxl.shuriken.containers.List extends Container
 		}
 		else if(p_child instanceof SimpleButton)
 		{
-			//trace("simple button");
+			trace("simple button");
 		}
 		else if(p_child instanceof UIComponent)
 		{
-			//trace("UIComponent");
+			trace("UIComponent");
 			p_child.data = p_item.toString();
 		}
 	}
@@ -261,60 +241,6 @@ class com.jxl.shuriken.containers.List extends Container
 		event.child = p_child;
 		event.list = this;
 		__setupChildCallback.dispatch(event);
-	}
-	
-	private function commitProperties():Void
-	{
-		super.commitProperties();
-		
-		if(__childSetValueFunctionDirty == true || __childSetValueScopeDirty == true)
-		{
-			__childSetValueFunctionDirty = false;
-			__childSetValueScopeDirty = false;
-			refreshSetValues();
-		}
-		
-		if(__columnWidthDirty == true)
-		{
-			__columnWidthDirty = false;
-			invalidateSize();
-		}
-		
-		if(__alignDirty == true)
-		{
-			__alignDirty = false;
-			invalidateSize();
-		}
-		
-		if(__childHorizontalMarginDirty == true)
-		{
-			__childHorizontalMarginDirty = false;
-			invalidateSize();
-		}
-		
-		if(__childVerticalMarginDirty == true)
-		{
-			__childVerticalMarginDirty = false;
-			invalidateSize();
-		}
-		
-		if(__directionDirty == true)
-		{
-			__directionDirty = false;
-			invalidateDraw();
-		}
-		
-		if(__autoSizeToChildrenDirty == true)
-		{
-			__autoSizeToChildrenDirty = false;
-			invalidateDraw();
-		}
-		
-		if(__dataProviderDirty == true)
-		{
-			__dataProviderDirty = false;
-			invalidateDraw();
-		}
 	}
 	
 	public function getPreferredHeight(p_visibleRowCount:Number):Number
@@ -333,17 +259,17 @@ class com.jxl.shuriken.containers.List extends Container
 	
 	private function draw():Void
 	{
-		//DebugWindow.debugHeader();
-		//DebugWindow.debug("List::draw");
+		//trace("-------------------");
+		//trace("List::draw");
 		
 		removeAllChildren();
 		var len:Number = __dataProvider.getLength();
 		
 		//DebugWindow.debug("__dataProvider: " + __dataProvider);
 		//DebugWindow.debug("__dataProvider.getLength: " + __dataProvider.getLength);
-		//DebugWindow.debug("len: " + len);
+		//trace("len: " + len);
 		
-		if (len < 1 || len == undefined) return
+		if (len < 1 || len == undefined) return;
 
 		// we do the first one out of the loop.  That way, if the developer
 		// hasn't set a column width (columnWidth), we'll just grab the first child
@@ -352,9 +278,14 @@ class com.jxl.shuriken.containers.List extends Container
 		var item:Object = __dataProvider.getItemAt(i);
 		var child:UIComponent = createChildAt(i, __childClass);
 		
-		//trace("__childClass: " + __childClass);
-		//trace("child: " + child);
+		//DebugWindow.debug("__childClass: " + __childClass);
+		//DebugWindow.debug("child: " + child);
 		
+		//trace("__childSetValueFunction: " + __childSetValueFunction);
+		//trace("__childSetValueScope: " + __childSetValueScope);
+		//trace("child: " + child);
+		//trace("i: " + i);
+		//trace("item: " + item);
 		__childSetValueFunction.call(__childSetValueScope, child, i, item);
 		
 		if(__autoSizeToChildren == true)
@@ -392,6 +323,10 @@ class com.jxl.shuriken.containers.List extends Container
 			__currentDrawIndex = 0;
 			callLater(this, drawNext);
 		}
+		else
+		{
+			invalidate();
+		}
 	}
 	
 	private function drawNext():Void
@@ -410,15 +345,16 @@ class com.jxl.shuriken.containers.List extends Container
 		}
 		else
 		{
-			callLater(this, size);
+			invalidate();
 		}
 	}
 	
-	private function size():Void
+	private function redraw():Void
 	{
-		//DebugWindow.debugHeader();
-		//DebugWindow.debug("List::size, __width: " + __width + ", __columnWidth: " + __columnWidth);
-		super.size();
+		
+		//trace("----------------");
+		//trace("List::size, __width: " + __width + ", __columnWidth: " + __columnWidth);
+		super.redraw();
 		
 		var howManyChildren:Number = numChildren;
 		
@@ -450,19 +386,24 @@ class com.jxl.shuriken.containers.List extends Container
 		}
 		else
 		{
+			//trace("howManyChildren: " + howManyChildren);
 			var origY:Number = 0;
 			for(var i:Number = 0; i<howManyChildren; i++)
 			{			
 				var child:UIComponent = getChildAt(i);
 				child.move(0, origY);
-				//DebugWindow.debug("w: " + __columnWidth + ", h: " + __rowHeight);
+				//trace("origY: " + origY);
+				//trace("w: " + __columnWidth + ", h: " + __rowHeight);
 				child.setSize(__columnWidth, __rowHeight);
 				origY += __rowHeight + __childVerticalMargin;				
 			}
 		}
 		
-		__isBuilding = false;
-		callLater(this, onDoneBuilding);
+		if(__isBuilding == true)
+		{
+			delete __isBuilding;
+			callLater(this, onDoneBuilding);
+		}
 	}
 	
 	public function onDoneBuilding():Void
@@ -502,52 +443,6 @@ class com.jxl.shuriken.containers.List extends Container
 			__verticalPageSize++;
 	}
 	
-	// Collection implementation
-	public function addItem(p_item:Object):Void
-	{
-		__dataProvider.addItem(p_item);
-	}
-	
-	public function addItemAt(p_item:Object, p_index:Number):Void
-	{
-		__dataProvider.addItemAt(p_item, p_index);	
-	}
-	
-	public function getItemAt(p_index:Number):Object
-	{
-		return __dataProvider.getItemAt(p_index);
-	}
-	
-	public function getItemIndex(p_item:Object):Number
-	{
-		return __dataProvider.getItemIndex(p_item);	
-	}
-	
-	public function itemUpdated(p_item:Object, p_propName:String, p_oldVal:Object, p_newVal:Object ):Void
-	{
-		__dataProvider.itemUpdated(p_item, p_propName, p_oldVal, p_newVal);
-	}
-
-	public function removeAll():Void
-	{
-		__dataProvider.removeAll();
-	}
-	
-	public function removeItemAt(p_index:Number):Object
-	{
-		return __dataProvider.removeItemAt(p_index);
-	}
-	
-	public function setItemAt(p_item:Object, p_index:Number):Object
-	{
-		return __dataProvider.setItemAt(p_item, p_index);
-	}
-	
-	public function getLength():Number
-	{
-		return __dataProvider.getLength();
-	}
-	
 	private function onCollectionChanged(p_event:ShurikenEvent):Void
 	{
 		//trace("-----------------");
@@ -559,7 +454,7 @@ class com.jxl.shuriken.containers.List extends Container
 		{
 			case ShurikenEvent.REMOVE:
 				removeChildAt(p_event.index);
-				size();
+				redraw();
 				break;
 			
 			case ShurikenEvent.ADD:
@@ -572,7 +467,7 @@ class com.jxl.shuriken.containers.List extends Container
 											 addedChild, 
 											 p_event.index, 
 											 newItem);
-				size();
+				redraw();
 				//trace("newItem: " + newItem);
 				//trace("addedChild: " + addedChild);
 				break;

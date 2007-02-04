@@ -16,14 +16,14 @@ class com.jxl.shuriken.controls.RadioButtonGroup extends List
 	private var __lastSelectedChild:RadioButton;
 	private var __clickCallback:Callback;
 	
-	public function init():Void
+	public function RadioButtonGroup()
 	{
-		super.init();
+		super();
 		
 		__childClass 					= RadioButton;
 		__childSetValueScope 			= this;
 		__childSetValueFunction 		= onSetRadioButtonValue;
-		__direction 					= DIRECTION_VERTICAL;
+		__direction 					= DIRECTION_VERTICAL;	
 	}
 	
 	private function onSetRadioButtonValue(p_child:RadioButton, p_index:Number, p_item:Object):Void

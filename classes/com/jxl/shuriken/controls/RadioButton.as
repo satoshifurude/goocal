@@ -7,9 +7,9 @@ class com.jxl.shuriken.controls.RadioButton extends Button
 	private var __mcRadioButtonOutline:MovieClip;
 	private var __mcRadioButtonCenter:MovieClip;
 	
-	public function init():Void
+	public function RadioButton()
 	{
-		super.init();
+		super();
 		
 		__toggle = true;
 	}

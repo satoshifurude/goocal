@@ -6,7 +6,6 @@ import com.jxl.shuriken.controls.calendarclasses.CalendarDay;
 import com.jxl.shuriken.core.MDArray;
 import com.jxl.shuriken.utils.DateUtils;
 import com.jxl.shuriken.core.UIComponent;
-import com.jxl.shuriken.core.UITextField;
 import com.jxl.shuriken.controls.Button;
 import com.jxl.shuriken.utils.LoopUtils;
 import com.jxl.shuriken.events.Callback;
@@ -16,22 +15,18 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 	public static var SYMBOL_NAME:String = "com.jxl.shuriken.controls.calendarclasses.CalendarBase";
 	
 	private var __currentDate:Date;
-	private var __currentDateDirty:Boolean 			= true;
 	private var __selectedDate:Date;
-	private var __selectedDateDirty:Boolean			= false;
 	private var __date_mdarray:MDArray;
 	private var __color_mdarray:MDArray;
 	private var __child_mdarray:MDArray;
-	private var __childClass:Function 				= CalendarDay;
+	private var __childClass:Function;
 	private var __weekendColor:Number 				= 0x99BBDD;
 	private var __weekdayColor:Number 				= 0xAACCEE;
 	private var __nextMonthWeekendColor:Number 		= 0xE8EEF7;
 	private var __nextMonthWeekdayColor:Number		= 0xFFFFFF;
 	private var __finishedDrawing:Boolean			= false;
 	private var __lastDaySelected:CalendarDay;
-	private var __enabledDirty:Boolean				= false;
 	private var __itemClickCallback:Callback;
-	private var __dayClickedDelegate:Function;
 	
 	private var __loop_mc:MovieClip;
 	private var __status_mc:MovieClip;
@@ -42,16 +37,9 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 	private var __todayCopy:Date;
 	private var __intoNextMonthFlag:Boolean;
 	
-	// 
 	private var __draw_lu:LoopUtils;
-	
-	//
 	private var __size_lu:LoopUtils;
-	
-	//
 	private var __refresh_lu:LoopUtils;
-	
-	//
 	private var __colors_lu:LoopUtils;
 	
 	
@@ -60,128 +48,106 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 	public function get currentDate():Date { return __currentDate; }
 	public function set currentDate(p_val:Date):Void
 	{
+		//trace("------------------");
+		//trace("CalendarBase::currentDate setter, p_val: " + p_val);
 		__currentDate = p_val;
-		__currentDateDirty = true;
-		invalidateProperties();
+		//startTime = getTimer();
+		// TODO: fix this; for now, wax it
+		deselectLastSelected();
+		delete __lastDaySelected;
+		
+		//if(enabled == true) enabled = false;
+		
+		abortAllLoops();
+		
+		var rows:Number = 6;
+		var cols:Number = 7;
+		
+		__lastMonth = DateUtils.clone(__currentDate);
+		DateUtils.getLastMonth(__lastMonth);
+		DateUtils.setEndOfMonth(__lastMonth);
+		DateUtils.setFirstDayOfWeek(__lastMonth);
+		
+		__todayCopy = DateUtils.clone(__currentDate);
+		DateUtils.setBeginningOfMonth(__todayCopy);
+		
+		__date_mdarray = new MDArray(rows, cols);
+		__color_mdarray = new MDArray(rows, cols);
+		
+		__intoNextMonthFlag = false;
+		
+		if(__dateBuilder_lu != null)
+		{
+			__dateBuilder_lu.stopProcessing();
+		}
+		else
+		{
+			__dateBuilder_lu = new LoopUtils(getLoopMC());
+		}
+		//trace("----------------------");
+		//trace("Date Builder loop...");
+		showStatus();
+		__status_mc.gotoAndStop("dates");
+		//trace("__status_mc: " + __status_mc);
+		__dateBuilder_lu.gridLoop(0,
+									1,
+									0,
+									0,
+									rows,
+									cols,
+									1,
+									1,
+									this,
+									onDateBuilderLoop,
+									onDateBuilderLoopDone);
 	}
 	
 	public function get selectedDate():Date { return __selectedDate; }
 	public function set selectedDate(p_val:Date):Void
 	{
 		__selectedDate = p_val;
-		__selectedDateDirty = true;
-		invalidateProperties();
+		if(__finishedDrawing == true)
+		{
+			if(__selectedDate != null)
+			{
+				callLater(this, refreshSetValues);
+			}
+			else
+			{
+				deselectLastSelected();
+			}
+		}
 	}
 	
 	public function CalendarBase()
 	{
 		super();
 		
+		__childClass						= CalendarDay;
 		__childSetValueFunction 			= refreshSetValue;
-		__childSetValueScope				= this; 
+		__childSetValueScope				= this;
+		__autoSizeToChildren 				= true;
 	}
 	
+	public function onLoad():Void
+	{
+		if(__currentDate == null) 			currentDate = new Date();
+	}
+	
+	/*
 	private function setEnabled(p_enabled:Boolean):Void
 	{
-		__enabledDirty = true;
-		invalidateProperties();
-	}
-	
-	public function init():Void
-	{
-		super.init();
-		
-		if(__currentDate == null) 		__currentDate = new Date();
-		__autoSizeToChildren 			= true;
-		__dayClickedDelegate			= function():Void
-											{
-												this._parent.onListItemClicked(new ShurikenEvent(ShurikenEvent.SELECTION_CHANGED, this));;
-											}
-	}
-	
-	private function commitProperties():Void
-	{
-		//DebugWindow("------------------");
-		//DebugWindow("CalendarBase::commitProperties");
-		//DebugWindow("__currentDateDirty: " + __currentDateDirty);
-		//DebugWindow("__selectedDateDirty: " + __selectedDateDirty);
-		
-		super.commitProperties();
-		
-		if(__enabledDirty == true)
+		if(p_enabled == true)
 		{
-			if(enabled == true)
-			{
-				tabChildren = true;
-			}
-			else
-			{
-				Selection.setFocus(null);
-				tabChildren = false;
-			}
+			tabChildren = true;
 		}
-		
-		if(__currentDateDirty == false)
+		else
 		{
-			if(__selectedDateDirty == true)
-			{
-				__selectedDateDirty = false;
-				startTime = getTimer();
-				setSelectedDate();
-			}
-		}
-		
-		if(__currentDateDirty == true)
-		{
-			__currentDateDirty = false;
-			// TODO: fix this; for now, wax it
-			deselectLastSelected();
-			delete __lastDaySelected;
-			
-			if(enabled == true) enabled = false;
-			
-			abortAllLoops();
-			
-			var rows:Number = 6;
-			var cols:Number = 7;
-			
-			__lastMonth = DateUtils.clone(__currentDate);
-			DateUtils.getLastMonth(__lastMonth);
-			DateUtils.setEndOfMonth(__lastMonth);
-			DateUtils.setFirstDayOfWeek(__lastMonth);
-			
-			__todayCopy = DateUtils.clone(__currentDate);
-			DateUtils.setBeginningOfMonth(__todayCopy);
-			
-			__date_mdarray = new MDArray(rows, cols);
-			__color_mdarray = new MDArray(rows, cols);
-			
-			__intoNextMonthFlag = false;
-			
-			if(__dateBuilder_lu != null)
-			{
-				__dateBuilder_lu.stopProcessing();
-			}
-			else
-			{
-				__dateBuilder_lu = new LoopUtils(getLoopMC());
-			}
-			//DebugWindow("----------------------");
-			//DebugWindow("Date Builder loop...");
-			showStatus();
-			__dateBuilder_lu.gridLoop(0,
-										1,
-										0,
-										0,
-										rows,
-										cols,
-										1,
-										1,
-										this,
-										onDateBuilderLoop,
-										onDateBuilderLoopDone);
+			Selection.setFocus(null);
+			tabChildren = false;
 		}
 	}
+	*/
 	
 	private function getLoopMC():MovieClip
 	{
@@ -220,8 +186,9 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 		var r:Number = p_currentRow;
 		var c:Number = p_currentCol;
 		
-		//DebugWindow("----------------------");
-		//DebugWindow("onDateBuilderLoop r: " + r + ", c: " + c);
+		//trace("----------------------");
+		//trace("onDateBuilderLoop r: " + r + ", c: " + c);
+		//trace("__status_mc: " + __status_mc);
 		
 		if(r == 0)
 		{
@@ -342,20 +309,22 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 		delete __lastMonth;
 		delete __todayCopy;
 		delete __intoNextMonthFlag;
-		if(__selectedDateDirty == true)
-		{
-			__selectedDateDirty = false;
-			setSelectedDate();
-		}
 		
-		invalidateDraw();
+		//setSelectedDate();
+		//invalidate();
+
+		//[gb] do we need this?
+		//selectedDate = selectedDate;
+		//invalidate();
+		
+		callLater(this, draw);
 	}
 	
 	private function draw():Void
 	{
 		if(__dateBuilder_lu) return;
 		
-		startTime = getTimer();
+		//startTime = getTimer();
 		if(__finishedDrawing == true)
 		{
 			callLater(this, refreshSetValues);
@@ -371,6 +340,7 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 		__child_mdarray = new MDArray(__date_mdarray.rows, __date_mdarray.cols);
 		var i:Number = 0;
 		var child:UIComponent = createChildAt(i, __childClass);
+		child._visible = false;
 		child.data = {r: 0, c: 0};
 		Button(child).setSelectionChangeCallback(this, onDaySelectionChanged);
 		__child_mdarray.setCell(0, 0, child);
@@ -415,8 +385,9 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 	private function drawNext(p_val:Number, p_currentRow:Number, p_currentCol:Number):Void
 	{
 		var child:UIComponent = createChildAt(++p_val, __childClass);
+		child._visible = false;
 		child.data = {r: p_currentRow, c: p_currentCol};
-		Button(child).setSelectionChangeCallback(this, onDaySelectionChanged);
+		CalendarDay(child).setSelectionChangeCallback(this, onDaySelectionChanged);
 		__child_mdarray.setCell(p_currentRow, p_currentCol, child);
 		setupChild(child);
 	}
@@ -429,14 +400,16 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 		__draw_lu.destroy();
 		delete __draw_lu;
 		__finishedDrawing = true;
-		callLater(this, size);
+		callLater(this, redraw);
 	}
 	
-	private function size():Void
+	private function redraw():Void
 	{
+		if(__finishedDrawing == false) return;
+		
 		if(__draw_lu || __dateBuilder_lu) return;
 		
-		super.size();
+		super.redraw();
 		
 		__status_mc.gotoAndStop("sizing");
 		
@@ -475,8 +448,9 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 	
 	private function finishedSizing():Void
 	{
-		//DebugWindow.debug("----------------------");
-		//DebugWindow.debug("Size done.");
+		//trace("----------------------");
+		//trace("CalendarBase::finishedSizing");
+		//trace("Size done.");
 		__size_lu.destroy();
 		delete __size_lu;
 		__status_mc.gotoAndStop("done");
@@ -502,9 +476,7 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 	{
 		if(__size_lu) return;
 		
-		if(enabled == true) enabled = false;
-		
-		__status_mc.gotoAndStop("values");
+		//if(enabled == true) enabled = false;
 		
 		if(__refresh_lu != null)
 		{
@@ -535,6 +507,7 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 		var item = __date_mdarray.getCell(p_currentRow, p_currentCol);
 		var theDate:Date = item;
 		var child:UIComponent = getChildAt(p_val);
+		child._visible = true;
 		__childSetValueFunction.call(__childSetValueScope, child, p_val, theDate);
 	}
 	
@@ -545,7 +518,7 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 		__refresh_lu.destroy();
 		delete __refresh_lu;
 		//callLater(this, refreshColors);
-		if(enabled == false) enabled = true;
+		//if(enabled == false) enabled = true;
 		if(__finishedDrawing == true)
 		{
 			var ct:Number = getTimer();
@@ -597,6 +570,7 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 			CalendarDay(p_child).backgroundColor = bgColor;
 		}
 		
+		CalendarDay(p_child).invalidate();
 	}
 	
 	/*
@@ -655,6 +629,9 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 	
 	private function onDaySelectionChanged(p_event:ShurikenEvent):Void
 	{
+		DebugWindow.debugHeader();
+		DebugWindow.debug("CalendarBase::onDaySelectionChanged");
+		
 		if(__dateBuilder_lu || __draw_lu || __size_lu || __refresh_lu || __colors_lu) return;
 		setCalendarDaySelected(CalendarDay(p_event.target));
 	}
@@ -679,18 +656,21 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 	
 	private function setCalendarDaySelected(p_tar:CalendarDay):Void
 	{
+		//trace("--------------");
+		//trace("CalendarBase::setCalendarDaySelected");
 		//DebugWindow.debug("p_tar: " + p_tar);
 		//DebugWindow.debug("__lastDaySelected: " + __lastDaySelected);
 		
 		deselectLastSelected();
 		
 		var obj:Object = p_tar.data;
-		// HACK: casting hack; AS2 fails at life
+		// HACK: casting hack
 		var theDate = __date_mdarray.getCell(obj.r, obj.c);
-		//DebugWindow.debug("You selected " + theDate);
+		DebugWindow.debug("You selected " + theDate);
 		__selectedDate = theDate;
 		__lastDaySelected = p_tar;
 		
+		//trace("p_tar.selected: " + p_tar.selected);
 		if(p_tar.selected == false)
 		{
 			//p_tar.removeEventListener(ShurikenEvent.SELECTION_CHANGED, __daySelectionChanged);
@@ -809,6 +789,8 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 	
 	private function hideStatus():Void
 	{
+		//trace("----------------");
+		//trace("CalendarBase::hideStatus");
 		if(__status_mc != null)
 		{
 			__status_mc.removeMovieClip();
@@ -821,14 +803,14 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 	{
 		//CalendarDay(p_child).addEventListener(ShurikenEvent.RELEASE, __dayClickedDelegate);
 		//CalendarDay(p_child).buttonRelease = __dayClickedDelegate;
-		CalendarDay(p_child).onRelease = __dayClickedDelegate;
+		CalendarDay(p_child).setReleaseCallback(this, onListItemClicked);
 	}
 	
 	// override; ButtonList is using base dataProvider; we aren't
 	private function onListItemClicked(p_event:ShurikenEvent):Void
 	{
-		//DebugWindow.debugHeader();
-		//DebugWindow.debug("ButtonList::onListItemClicked");
+		//trace("---------------");
+		//trace("CalendarBase::onListItemClicked");
 		var index:Number = getChildIndex(UIComponent(p_event.target));
 		//var item:Object = __dataProvider.getItemAt(index);
 		var o:Object = UIComponent(p_event.target).data;
@@ -839,9 +821,9 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 		event.item = item;
 		event.index = index;
 		
-		//DebugWindow.debug("child: " + event.child);
-		//DebugWindow.debug("item: " + event.item);
-		//DebugWindow.debug("index: " + event.index);
+		//trace("child: " + event.child);
+		//trace("item: " + event.item);
+		//trace("index: " + event.index);
 		
 		__itemClickCallback.dispatch(event);
 	}

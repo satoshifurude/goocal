@@ -13,7 +13,7 @@
 */
 
 
-import org.osflash.arp.ValueObjects;
+//import org.osflash.arp.ValueObjects;
 //import org.osflash.arp.ServiceLocator;
 //import org.osflash.arp.Controller;
 
@@ -29,7 +29,7 @@ class org.osflash.arp.ApplicationTemplate extends MovieClip
 	
 	// privates
 	private var scopeRef:MovieClip; // optional for MTASC
-	private var valueObjects:ValueObjects;
+	//private var valueObjects:ValueObjects;
 	//private var serviceLocator:ServiceLocator;
 	//private var controller:Controller;
 	//private var dependUIObject:UIObject; // ensure's class is compiled
@@ -95,8 +95,8 @@ class org.osflash.arp.ApplicationTemplate extends MovieClip
 			Stage.align = "TL";
 			
 			// setup our ValueObjects to map Java & AS classes
-			valueObjects = ValueObjects.getInstance();
-			valueObjects.registerValueObjects();
+			//valueObjects = ValueObjects.getInstance();
+			//valueObjects.registerValueObjects();
 			
 			// setup our ServiceLocator
 			//serviceLocator = ServiceLocator.getInstance();

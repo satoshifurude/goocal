@@ -81,9 +81,9 @@ class com.jxl.goocal.views.MonthView extends UIComponent
 		
 	}
 	
-	private function size():Void
+	private function redraw():Void
 	{
-		super.size();
+		super.redraw();
 		
 		__cal.move(0, 0);
 		__createNew_link.move(2, __cal.y + __cal.height + 2);
@@ -125,7 +125,7 @@ class com.jxl.goocal.views.MonthView extends UIComponent
 	private function onNonIdle():Void
 	{
 		createChildren();
-		invalidateSize();
+		invalidate();
 	}
 
 	public function setDateSelectedCallback(scope:Object, func:Function):Void

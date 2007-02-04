@@ -1,5 +1,4 @@
 ﻿import com.jxl.shuriken.controls.Button;
-import com.jxl.shuriken.core.UITextField;
 
 class com.jxl.shuriken.controls.CheckBox extends Button
 {
@@ -14,18 +13,12 @@ class com.jxl.shuriken.controls.CheckBox extends Button
 		super();
 		
 		Key.addListener(this);
-	}
-	
-	public function init():Void
-	{
-		super.init();
 		
 		__toggle 		= true;
 		
 		focusEnabled 	= true;
 		tabEnabled 		= true;
 		tabChildren 	= false;
-		
 	}
 	
 	private function createChildren():Void
@@ -33,7 +26,7 @@ class com.jxl.shuriken.controls.CheckBox extends Button
 		super.createChildren();
 		
 		// overwrite properties
-		__mcLabel.align 		= UITextField.ALIGN_LEFT;
+		__mcLabel.align 		= TextField.ALIGN_LEFT;
 		__mcLabel.bold			= false;
 		__mcLabel.multiline 	= true;
 		__mcLabel.wordWrap 		= true;
@@ -44,8 +37,10 @@ class com.jxl.shuriken.controls.CheckBox extends Button
 		__mcCheckBoxCenter = attachMovie("CheckBoxCenter", "__mcCheckBoxCenter", getNextHighestDepth());
 	}
 	
-	// Overwrite; do not call super
-	private function draw():Void
+	// overwriting
+	private var drawButton:Function;
+	
+	private function redraw():Void
 	{
 		//DebugWindow.debugHeader();
 		//DebugWindow.debug("CheckBox::draw, __currentState: " + __currentState);
@@ -64,11 +59,7 @@ class com.jxl.shuriken.controls.CheckBox extends Button
 			case OVER_STATE:
 				break;
 		}
-	}
-	
-	// Overwrite; do not call super
-	private function size():Void
-	{
+		
 		__mcCheckBoxOutline._x = 0;
 		__mcCheckBoxOutline._y = 0;
 		var centerBiggerThanOutline:Boolean;
@@ -133,17 +124,5 @@ class com.jxl.shuriken.controls.CheckBox extends Button
 		}
 		
 	}
-	/*
-	private function onKeyDown():Void
-	{
-		switch(Key.getCode())
-		{
-			case Key.ENTER:
-				onPress();
-				onRelease();
-				break;
-		}
-	}
-	*/
 	
 }

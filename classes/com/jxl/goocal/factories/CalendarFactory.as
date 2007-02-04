@@ -331,14 +331,14 @@ class com.jxl.goocal.factories.CalendarFactory extends FactoryTemplate
 		xml_str += "	xmlns:gd='http://schemas.google.com/g/2005'>";
 		xml_str += "<category scheme='http://schemas.google.com/g/2005#kind'";
 		xml_str += "	term='http://schemas.google.com/g/2005#event'></category>";
-		xml_str += "	<title type='text'>"
+		xml_str += "	<title type='text'>";
 		xml_str += p_entryVO.title;
 		xml_str += "	</title>";
-		xml_str += "	<content type='text'>"
+		xml_str += "	<content type='text'>";
 		xml_str += p_entryVO.description;
 		xml_str += "	</content>";
 		xml_str += "	<author>";
-		xml_str += "		<name>"
+		xml_str += "		<name>";
 		xml_str += EntryVO(p_entryVO).authorVO.name;
 		xml_str += "		</name>";
 		xml_str += "		<email>";

@@ -41,7 +41,7 @@ dynamic class org.osflash.arp.fix.proto.TextFormat.FixGetTextExtent
 		{
 			super();
 			delete this.getTextExtent;
-		}
+		};
 		
 		TextFormat.prototype = new TextFormat2();
 		TextFormat.prototype.getTextExtent2 = TextFormat.prototype.getTextExtent;
@@ -66,7 +66,7 @@ dynamic class org.osflash.arp.fix.proto.TextFormat.FixGetTextExtent
 			
 			// return dimensions object
 			return textExtent;
-		}
+		};
 		ASSetPropFlags(_global,"TextFormat,TextFormat2",131);
 	}
 }

@@ -1,7 +1,4 @@
-﻿import mx.utils.Delegate;
-
-import com.jxl.shuriken.core.UIComponent;
-import com.jxl.shuriken.controls.Label;
+﻿import com.jxl.shuriken.core.UIComponent;
 import com.jxl.shuriken.controls.DateEditor;
 import com.jxl.shuriken.events.ShurikenEvent;
 
@@ -11,27 +8,24 @@ class com.jxl.goocal.views.createevent.Step1 extends UIComponent
 	public static var SYMBOL_NAME:String = "com.jxl.goocal.views.createevent.Step1";
 	
 	private var __fromDate:Date;
-	private var __fromDateDirty:Boolean 	= false;
 	
-	private var __from_lbl:Label;
+	private var __from_lbl:TextField;
 	private var __from_de:DateEditor;
 	
 	public function get fromDate():Date { return __fromDate; }
 	
 	public function set fromDate(pVal:Date):Void
 	{
-		__fromDate = pVal;
-		__fromDateDirty = true;
-		invalidateProperties();
+		if(pVal != __fromDate)
+		{
+			__fromDate = pVal;
+			__from_de.currentDate = __fromDate;
+		}
 	}
 	
 	public function Step1()
 	{
-	}
-	
-	public function init():Void
-	{
-		super.init();
+		super();
 		
 		focusEnabled		= true;
 		tabEnabled			= false;
@@ -44,7 +38,7 @@ class com.jxl.goocal.views.createevent.Step1 extends UIComponent
 		
 		if(__from_lbl == null)
 		{
-			__from_lbl = Label(createComponent(Label, "__from_lbl"));
+			__from_lbl = createLabel("__from_lbl");
 			__from_lbl.text = "From";
 		}
 		
@@ -55,20 +49,9 @@ class com.jxl.goocal.views.createevent.Step1 extends UIComponent
 		}
 	}
 	
-	private function commitProperties():Void
+	private function redraw():Void
 	{
-		super.commitProperties();
-		
-		if(__fromDateDirty == true)
-		{
-			__fromDateDirty = false;
-			__from_de.currentDate = __fromDate;
-		}
-	}
-	
-	private function size():Void
-	{
-		super.size();
+		super.redraw();
 		
 		var margin:Number = 2;
 		var m2:Number = margin * 2;
@@ -76,7 +59,7 @@ class com.jxl.goocal.views.createevent.Step1 extends UIComponent
 		__from_lbl.move(0, 0);
 		__from_lbl.setSize(40, __from_lbl.height);
 		
-		__from_de.move(__from_lbl.x + __from_lbl.width + margin, __from_lbl.y);
+		__from_de.move(__from_lbl._x + __from_lbl._width + margin, __from_lbl._y);
 		__from_de.setSize(__width, 40);
 	}
 }

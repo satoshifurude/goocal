@@ -16,9 +16,9 @@ class com.jxl.goocal.views.EventList extends ScrollableList
 	
 	public static var SYMBOL_NAME:String = "com.jxl.goocal.views.EventList";
 	
-	private var __childClass:Function 					= EventItem;
+	private var __childClass:Function;
 	private var __childClassDirty:Boolean = true;
-	private var __childSetValueFunction:Function		= refreshEventItem;
+	private var __childSetValueFunction:Function;
 	private var __childSetValueFunctionDirty:Boolean = true;
 	private var __mcScrollPrevious:GCUpArrowButton;
 	private var __mcScrollNext:GCDownArrowButton;
@@ -27,13 +27,11 @@ class com.jxl.goocal.views.EventList extends ScrollableList
 			
 	public function EventList()
 	{
-	}
-	
-	public function init():Void
-	{
-		super.init();
+		super();
 		
-		__childSetValueScope = this;
+		childSetValueScope 			= this;
+		childSetValueFunction 		= refreshEventItem;
+		childClass					= EventItem;
 	}
 	
 	private function setupList():Void
@@ -58,21 +56,25 @@ class com.jxl.goocal.views.EventList extends ScrollableList
 		super.setSize(p_width, p_height);
 	}
 	
-	private function size():Void
+	private function redraw():Void
 	{
 		//DebugWindow.debugHeader();
 		//DebugWindow.debug("EventList::size, __width: " + __width + ", __columnWidth: " + __columnWidth);
 		
 		__columnWidth = __width;
 		__mcList.setColumnWidthNoRedraw(__columnWidth);
-		super.size();
+		super.redraw();
 		
-		__mcScrollPrevious.setSize(width, __mcScrollPrevious.height);
-		__mcScrollNext.setSize(width, __mcScrollNext.height);
+		__mcScrollPrevious.setSize(__width, __mcScrollPrevious.height);
+		__mcScrollNext.setSize(__width, __mcScrollNext.height);
+		
+		trace("__mcScrollNext.x: " + __mcScrollNext.x + ", y: " + __mcScrollNext.y);
 	}
 	
 	private function refreshEventItem(p_child:UIComponent, p_index:Number, p_item:Object):Void
 	{
+		trace("---------------");
+		trace("EventList::refreshEventItem");
 		var vo:EntryVO = EntryVO(p_item);
 		EventItem(p_child).eventTime = vo.toHourString();
 		EventItem(p_child).eventName = vo.title;

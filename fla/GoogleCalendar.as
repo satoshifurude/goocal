@@ -5,7 +5,6 @@ import com.jxl.shuriken.core.Collection;
 import com.jxl.shuriken.events.ShurikenEvent;
 import com.jxl.shuriken.core.UIComponent;
 import com.jxl.shuriken.events.Event;
-import com.jxl.shuriken.controls.Label;
 import com.jxl.shuriken.utils.DateUtils;
 
 import com.jxl.goocal.views.LoginForm;
@@ -47,7 +46,7 @@ class GoogleCalendar extends UIComponent
 	
 	private var __activity_mc:MovieClip;
 	private var __login_mc:LoginForm;
-	private var __loggingIn_lbl:Label;
+	private var __loggingIn_lbl:TextField;
 	private var __calendarList:CalendarList;
 	private var __dayView:DayView;
 	private var __monthView:MonthView;
@@ -59,11 +58,7 @@ class GoogleCalendar extends UIComponent
 	
 	public function GoogleCalendar()
 	{
-	}
-	
-	public function init():Void
-	{
-		super.init();
+		super();
 		
 		__width = 176;
 		__height = 208;
@@ -199,7 +194,7 @@ class GoogleCalendar extends UIComponent
 		
 		var event:GetCalendarEventsEvent = new GetCalendarEventsEvent(GetCalendarEventsEvent.GET_EVENTS,
 																	  this,
-																	  showTodayView);
+																	  showDayView);
 		event.calendarName = ModelLocator.getInstance().selectedCalendar;
 		var today:Date = new Date();
 		event.startDate = today;
@@ -207,12 +202,12 @@ class GoogleCalendar extends UIComponent
 		CommandRegistry.getInstance().dispatchEvent(event);
 	}
 	
-	private function showTodayView(p_boolOrMsg:Object):Void
+	private function showDayView(p_boolOrMsg):Void
 	{
 		//DebugWindow.debugHeader();
-		//DebugWindow.debug("GoogleCalendar::showTodayView, p_boolOrMsg: " + p_boolOrMsg);
+		//DebugWindow.debug("GoogleCalendar::showDayView, p_boolOrMsg: " + p_boolOrMsg);
 		
-		if(p_boolOrMsg == true)
+		if(p_boolOrMsg == true || p_boolOrMsg instanceof Date)
 		{
 			hideActivity(true);
 			
@@ -225,11 +220,13 @@ class GoogleCalendar extends UIComponent
 				__dayView.move(0, 40);
 				__dayView.setSize(__width, __height - 40);
 				var today:Date = new Date();
-				__dayView.currentDate = today;
 				
 				var currentEvents:Collection = new Collection();
 				var events:Array = ModelLocator.getInstance().entries_array;
 				var i:Number = events.length;
+				trace("--------------");
+				trace("GoogleCalendar::showDayView");
+				trace("len: " + i);
 				while(i--)
 				{
 					var entryVO:EntryVO = events[i];
@@ -244,42 +241,20 @@ class GoogleCalendar extends UIComponent
 				//DebugWindow.debug("currentEvents.getLength(): " + currentEvents.getLength());
 				if(currentEvents.getLength() > 0) __dayView.events = currentEvents;
 			}
+			
+			if(p_boolOrMsg instanceof Date)
+			{
+				__dayView.currentDate = p_boolOrMsg;
+			}
+			else
+			{
+				__dayView.currentDate = today;
+			}
 		}
 		else
 		{
 			showActivity(String(p_boolOrMsg));
 		}
-	}
-	
-	private function showDayView(p_date:Date):Void
-	{
-		if(__dayView == null)
-		{
-			__dayView = DayView(createComponent(DayView, "__dayView"));
-			__dayView.setMonthViewCallback(this, showMonthView);
-			__dayView.setItemClickCallback(this, onDayEventClicked);
-			__dayView.move(0, 40);
-			__dayView.setSize(__width, __height - 40);
-			
-			var currentEvents:Collection = new Collection();
-			var events:Array = ModelLocator.getInstance().entries_array;
-			var i:Number = events.length;
-			while(i--)
-			{
-				var entryVO:EntryVO = events[i];
-				//DebugWindow.debug(entryVO.toVerboseString());
-				var whenVO:WhenVO = entryVO.whenVO;
-				var aMatch:Boolean = DateUtils.isEqualByDate(p_date,
-															 whenVO.startTime);
-				//if(aMatch == true) currentEvents.addItem(entryVO);
-				currentEvents.addItem(entryVO);
-			}
-			//DebugWindow.debug("currentEvents: " + currentEvents);
-			//DebugWindow.debug("currentEvents.getLength(): " + currentEvents.getLength());
-			if(currentEvents.getLength() > 0) __dayView.events = currentEvents;
-		}
-		
-		__dayView.currentDate = p_date;
 	}
 	
 	private function onDayEventClicked(p_event:ShurikenEvent):Void
@@ -338,7 +313,7 @@ class GoogleCalendar extends UIComponent
 		if(__activity_mc == null)
 		{
 			__activity_mc = attachMovie(SYMBOL_ACTIVITY, "__activity_mc", getNextHighestDepth());
-			__activity_mc._x = __width - __activity_mc._width
+			__activity_mc._x = __width - __activity_mc._width;
 			__activity_mc._y = 0;
 		}
 		
@@ -346,9 +321,13 @@ class GoogleCalendar extends UIComponent
 		{
 			if(__loggingIn_lbl == null)
 			{
-				attachMovie(Label.SYMBOL_NAME, "__loggingIn_lbl", getNextHighestDepth());
-				__loggingIn_lbl.textSize = 16;
-				__loggingIn_lbl.color = 0x339933;
+				__loggingIn_lbl = createLabel("__loggingIn_lbl");
+				var fmt:TextFormat = __loggingIn_lbl.getTextFormat();
+				fmt.size = 16;
+				fmt.color = 0x339933;
+				fmt.font = "_sans";
+				__loggingIn_lbl.setTextFormat(fmt);
+				__loggingIn_lbl.setNewTextFormat(fmt);
 				__loggingIn_lbl.setSize(176, 26);
 				__loggingIn_lbl.move(0, (__height / 2) - (__loggingIn_lbl._height / 2));
 			}
@@ -369,7 +348,7 @@ class GoogleCalendar extends UIComponent
 		{
 			if(__loggingIn_lbl != null)
 			{
-				__loggingIn_lbl.removeMovieClip();
+				__loggingIn_lbl.removeTextField();
 				delete __loggingIn_lbl;
 			}
 		}
@@ -377,6 +356,8 @@ class GoogleCalendar extends UIComponent
 	
 	private function onDateClicked(p_event:Event):Void
 	{
+		trace("----------------");
+		trace("GoogleCalendar::onDateClicked");
 		// first, set the current date to what was selected on the calendar
 		var event:SetCurrentDateEvent = new SetCurrentDateEvent(SetCurrentDateEvent.SET_CURRENT_DATE,
 																this,

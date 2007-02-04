@@ -1,6 +1,4 @@
-﻿import mx.utils.Delegate;
-
-import com.jxl.shuriken.containers.List;
+﻿import com.jxl.shuriken.containers.List;
 import com.jxl.shuriken.controls.SimpleButton;
 import com.jxl.shuriken.controls.Button;
 import com.jxl.shuriken.core.UIComponent;
@@ -16,8 +14,7 @@ class com.jxl.shuriken.containers.ButtonList extends List
 	public function set toggle(pVal:Boolean):Void
 	{
 		__toggle = pVal;
-		__toggleDirty = true;
-		invalidateProperties();
+		invalidate();
 	}
 	
 	public function get selectedIndex():Number { return __selectedIndex; }
@@ -25,26 +22,42 @@ class com.jxl.shuriken.containers.ButtonList extends List
 	public function set selectedIndex(pVal:Number):Void{
 		
 		__selectedIndex = pVal;
-		__selectedIndexDirty = true;
-		invalidateProperties();
+		if(__toggle == true)
+		{
+			setSelectedIndex(__selectedIndex);
+		}
 	}
 	
-	public function get selectedItem():Object { return __selectedItem; }
+	public function get selectedItem():Object 
+	{ 
+		return __selectedItem; 
+	}
 	
 	public function set selectedItem(pVal:Object):Void
 	{	
 		__selectedItem = pVal;
-		__selectedItemDirty = true;
-		invalidateProperties();
+		var i:Number = __dataProvider.getLength();
+		while(i--)
+		{
+			var o:Object = __dataProvider[i];
+			if(o == pVal)
+			{	
+				selectedIndex = i;
+				return;
+			}
+		}
 	}
 	
-	public function get selectedChild():Button { return __selectedChild; }
+	public function get selectedChild():Button { 
+		return __selectedChild; 
+	}
 
 	public function set selectedChild(pVal:Button):Void
 	{
 		__selectedChild = pVal;
-		__selectedChildDirty = true;
-		invalidateProperties();
+		
+		var index:Number = getChildIndex(pVal);
+		if(index != null && isNaN(index) == false) setSelectedIndex(index);
 	}
 	
 	public function lastSelectedItem():Button
@@ -55,52 +68,13 @@ class com.jxl.shuriken.containers.ButtonList extends List
 	
 	private var __childClass:Function 				= Button;
 	private var __toggle:Boolean					= true;
-	private var __toggleDirty:Boolean				= false;
 	private var __lastSelected:Button;
 	private var __selectedIndex:Number				= -1;
-	private var __selectedIndexDirty:Boolean 		= false;
 	private var __selectedItem:Object;
-	private var __selectedItemDirty:Boolean			= false;
 	private var __selectedChild:Button;
-	private var __selectedChildDirty:Boolean		= false;
 	private var __itemSelectionChanged:Callback;
 	private var __itemClickCallback:Callback;
 	private var __itemRollOverCallback:Callback;
-	
-	private function commitProperties():Void
-	{
-		super.commitProperties();
-		
-
-		if(__toggleDirty == true)
-		{
-			__toggleDirty = false;
-			invalidateDraw();
-		}
-		
-		if(__selectedIndexDirty == true)
-		{
-			__selectedIndexDirty = false;
-			if(__toggle == true)
-			{
-				//setSelectedIndex(__selectedIndex, true);
-				setSelectedIndex(__selectedIndex);
-			}
-		}
-		
-		if(__selectedItemDirty == true)
-		{
-			__selectedItemDirty = false;
-			setSelectedItem(__selectedItem);
-		}
-		
-		if(__selectedChildDirty == true)
-		{
-			__selectedChildDirty = false;
-			setSelectedChild(__selectedChild);
-		}
-		
-	}
 	
 	// Called by draw
 	private function setupChild(p_child:UIComponent):Void
@@ -169,7 +143,7 @@ class com.jxl.shuriken.containers.ButtonList extends List
 		
 		__selectedChild = __lastSelected;
 		
-		if(noEvent != true && __isConstructing == false)
+		if(noEvent != true && isConstructing == false)
 		{
 			var event:ShurikenEvent = new ShurikenEvent(ShurikenEvent.ITEM_SELECTION_CHANGED, this);
 			event.lastSelected = lastSelectedChild;
@@ -179,30 +153,6 @@ class com.jxl.shuriken.containers.ButtonList extends List
 			__itemSelectionChanged.dispatch(event);
 		}
 		
-	}
-	
-	private function setSelectedItem(p_item:Object):Void
-	{
-		//DebugWindow.debugHeader();
-		//DebugWindow.debug("ButtonList::setSelectedItem");
-		var i:Number = __dataProvider.getLength();
-		while(i--)
-		{
-			var o:Object = __dataProvider[i];
-			if(o == p_item)
-			{	
-				setSelectedIndex(i);
-				return;
-			}
-		}
-	}
-	
-	private function setSelectedChild(p_child:Button):Void
-	{
-		//DebugWindow.debugHeader();
-		//DebugWindow.debug("ButtonList::setSelectedChild");
-		var index:Number = getChildIndex(p_child);
-		if(index != null && isNaN(index) == false) setSelectedIndex(index);
 	}
 	
 	// Event listeners

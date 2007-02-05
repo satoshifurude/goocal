@@ -1,0 +1,23 @@
+
+Flash Lite 2 Component Framework in ActionScript 2
+
+*What?*
+
+Shuriken is an {{{ActionScript 2}}} component framework created to enable developers to create applications for mobile devices that support Flash Lite 2 (phones/mobiles, Chumby, Windows Mobile, etc.).
+
+*Why?*
+
+There is currently no component framework for Flash Lite 2.  The existing Flash MX 2004, Flash 8, and Flex 1.5 components do not work in Flash Lite 2.  While it is basically Flash Player 7, the devices it runs on cannot handle the CPU & memory requirements.
+
+*How?*
+
+Shuriken's goals are, in order of importance:
+
+  # work on the lowest common denominator; if it can run Flash Lite 2, the component framework should work.
+  # provide commonly required GUI components & utility classes while being easy for developers to extend.
+  # no styling or skinning code; developer / designer is responsible for decorating and/or changing base skin symbols.
+
+
+
+
+

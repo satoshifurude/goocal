@@ -1,4 +1,6 @@
-﻿import com.jxl.shuriken.core.UIComponent;
+﻿import mx.utils.Delegate;
+
+import com.jxl.shuriken.core.UIComponent;
 import com.jxl.shuriken.controls.ComboBox;
 import com.jxl.shuriken.utils.DateUtils;
 import com.jxl.shuriken.core.Collection;
@@ -15,7 +17,7 @@ class com.jxl.goocal.views.createevent.Step4 extends UIComponent
 	public static var EVENT_CALENDAR_CHANGE:String = "calendarChange";
 	
 	private var __calendars:Collection;
-	private var __calendar:Object;
+	private var __calendar:String;
 	private var __description:String						= "";
 	private var __changeCallback:Callback;
 	
@@ -43,7 +45,12 @@ class com.jxl.goocal.views.createevent.Step4 extends UIComponent
 		__description_txt.text = p_val;
 	}
 	
-	public function get calendar():Object { return __calendar; }
+	public function get calendar():String { return __calendar; }
+	public function set calendar(val:String):Void
+	{
+		__calendar = val;
+		__calendars_cb.selectedItem = __calendar;
+	}
 	
 	public function Step4()
 	{
@@ -57,20 +64,6 @@ class com.jxl.goocal.views.createevent.Step4 extends UIComponent
 	private function createChildren():Void
 	{
 		super.createChildren();
-		
-		if(__calendar_lbl == null)
-		{
-			__calendar_lbl = createLabel("__calendar_lbl");
-			__calendar_lbl.text = "Calendar";
-		}
-		
-		if(__calendars_cb == null)
-		{
-			__calendars_cb = ComboBox(createComponent(ComboBox, "__calendars_cb"));
-			__calendars_cb.direction = ComboBox.DIRECTION_BELOW;
-			__calendars_cb.dataProvider = __calendars;
-			__calendars_cb.setItemSelectionChangedCallback(this, onChooseCalendar);
-		}
 		
 		if(__description_lbl == null)
 		{
@@ -86,7 +79,23 @@ class com.jxl.goocal.views.createevent.Step4 extends UIComponent
 			__description_txt.borderColor = 0x000000;
 			__description_txt.background = true;
 			__description_txt.backgroundColor = 0xFFFFFF;
-			__description_txt.setChangeCallback(this, onTextChanged);
+			__description_txt.onChanged = Delegate.create(this, onDescChanged);
+		}
+		
+		if(__calendar_lbl == null)
+		{
+			__calendar_lbl = createLabel("__calendar_lbl");
+			__calendar_lbl.text = "Calendar";
+		}
+		
+		if(__calendars_cb == null)
+		{
+			__calendars_cb = ComboBox(createComponent(ComboBox, "__calendars_cb"));
+			__calendars_cb.direction = ComboBox.DIRECTION_BELOW;
+			__calendars_cb.dataProvider = __calendars;
+			__calendars_cb.setItemSelectionChangedCallback(this, onChooseCalendar);
+			__calendars_cb.prompt = "-- select calendar --";
+			if(__calendar != null && __calendar != "") __calendars_cb.selectedItem = __calendar;
 		}
 	}
 	
@@ -109,7 +118,7 @@ class com.jxl.goocal.views.createevent.Step4 extends UIComponent
 		__description_txt.setSize(__calendars_cb.width, __height - __description_txt._y);
 	}
 	
-	private function onTextChanged(event:ShurikenEvent):Void
+	private function onDescChanged():Void
 	{
 		__description = __description_txt.text;
 		__changeCallback.dispatch(new Event(EVENT_DESCRIPTION_CHANGE, this));
@@ -117,7 +126,7 @@ class com.jxl.goocal.views.createevent.Step4 extends UIComponent
 	
 	private function onChooseCalendar(event:ShurikenEvent):Void
 	{
-		__calendar = event.item;
+		__calendar = String(event.item);
 		__changeCallback.dispatch(new Event(EVENT_CALENDAR_CHANGE, this));
 	}
 	

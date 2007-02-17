@@ -150,8 +150,14 @@ class com.jxl.shuriken.controls.NumericStepper extends UIComponent
 	
 	private function setValue(p_val:Number, noEvent:Boolean):Void
 	{
+		//trace("---------------");
+		//trace("NumericStepper::setValue, p_val: " + p_val);
+		//trace("__value: " + __value);
 		var oldVal:Number = __value;
+		__value = p_val;
 		__valueField.text = String(__value);
+		//trace("__valueField: " + __valueField);
+		//trace("__valueField.text: " + __valueField.text);
 		
 		if(noEvent == true) return;
 		if(oldVal != __value)

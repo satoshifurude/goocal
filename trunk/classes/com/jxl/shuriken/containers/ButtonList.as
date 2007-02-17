@@ -19,12 +19,14 @@ class com.jxl.shuriken.containers.ButtonList extends List
 	
 	public function get selectedIndex():Number { return __selectedIndex; }
 	
-	public function set selectedIndex(pVal:Number):Void{
+	public function set selectedIndex(val:Number):Void{
 		
-		__selectedIndex = pVal;
+		__selectedIndex = val;
 		if(__toggle == true)
 		{
-			setSelectedIndex(__selectedIndex);
+			__selectedIndexDirty = true;
+			if(__isBuilding != true) callLater(this, commitProperties);
+			
 		}
 	}
 	
@@ -33,19 +35,12 @@ class com.jxl.shuriken.containers.ButtonList extends List
 		return __selectedItem; 
 	}
 	
-	public function set selectedItem(pVal:Object):Void
-	{	
-		__selectedItem = pVal;
-		var i:Number = __dataProvider.getLength();
-		while(i--)
-		{
-			var o:Object = __dataProvider[i];
-			if(o == pVal)
-			{	
-				selectedIndex = i;
-				return;
-			}
-		}
+	public function set selectedItem(val:Object):Void
+	{
+		__selectedItem = val;
+		if(__selectedItem == null || __selectedItem == "") return;
+		__selectedItemDirty = true;
+		if(__isBuilding != true) callLater(this, commitProperties);
 	}
 	
 	public function get selectedChild():Button { 
@@ -57,7 +52,10 @@ class com.jxl.shuriken.containers.ButtonList extends List
 		__selectedChild = pVal;
 		
 		var index:Number = getChildIndex(pVal);
-		if(index != null && isNaN(index) == false) setSelectedIndex(index);
+		if(index != null && isNaN(index) == false)
+		{
+			selectedIndex = index;
+		}
 	}
 	
 	public function lastSelectedItem():Button
@@ -68,13 +66,44 @@ class com.jxl.shuriken.containers.ButtonList extends List
 	
 	private var __childClass:Function 				= Button;
 	private var __toggle:Boolean					= true;
-	private var __lastSelected:Button;
-	private var __selectedIndex:Number				= -1;
+	private var __selectedIndex:Number;
 	private var __selectedItem:Object;
 	private var __selectedChild:Button;
+	private var __lastSelected:Button;
 	private var __itemSelectionChanged:Callback;
 	private var __itemClickCallback:Callback;
 	private var __itemRollOverCallback:Callback;
+	
+	private var __selectedIndexDirty:Boolean;
+	private var __selectedItemDirty:Boolean;
+	
+	private function commitProperties():Void
+	{
+		//trace("---------------");
+		//trace("ButtonList::commitProperties");
+		//trace("__selectedIndexDirty: " + __selectedIndexDirty);
+		//trace("__selectedItemDirty: " + __selectedItemDirty);
+		if(__selectedIndexDirty == true)
+		{
+			delete __selectedIndexDirty;
+			setSelectedIndex();
+		}
+		
+		if(__selectedItemDirty == true)
+		{
+			delete __selectedItemDirty;
+			setSelectedItem();
+		}
+	}
+	
+	public function onDoneBuilding():Void
+	{
+		//trace("---------------");
+		//trace("ButtonList::onDoneBuilding");
+		super.onDoneBuilding();
+		
+		commitProperties();
+	}
 	
 	// Called by draw
 	private function setupChild(p_child:UIComponent):Void
@@ -99,10 +128,10 @@ class com.jxl.shuriken.containers.ButtonList extends List
 		//simpleButton.addEventListener(ShurikenEvent.ROLL_OVER, Delegate.create(this, onListItemRollOver));
 		if(p_child instanceof Button == true)
 		{
+			
 			var button:Button = Button(p_child);
 			if(__toggle == true)
 			{
-				button.setSelectionChangeCallback(this, onListItemSelectionChanged);
 				button.toggle = true;
 				
 				if(__selectedIndex > -1)
@@ -111,9 +140,6 @@ class com.jxl.shuriken.containers.ButtonList extends List
 					if(__selectedIndex == index)
 					{
 						button.selected = true;
-						__lastSelected = button;
-						__selectedItem = __lastSelected;
-						__selectedChild = button;
 					}
 				}
 			}
@@ -123,36 +149,73 @@ class com.jxl.shuriken.containers.ButtonList extends List
 		
 	}
 	
-	private function setSelectedIndex(p_index:Number, noEvent:Boolean):Void
+	private function setSelectedIndex(noEvent:Boolean):Void
 	{
-		//DebugWindow.debugHeader();
-		//DebugWindow.debug("ButtonList::setSelectedIndex");
-		__selectedIndex = p_index;
+		//trace("--------------------");
+		//trace("ButtonList::setSelectedIndex");
 		
 		var lastSelectedChild:Button = __lastSelected;
 		
 		if(__lastSelected != null) __lastSelected.selected = false;
 		
-		__lastSelected = Button(getChildAt(p_index));
-		__lastSelected.setSelectionChangeCallback();
+		__lastSelected = Button(getChildAt(__selectedIndex));
 		__lastSelected.selected = true;
-		__lastSelected.setSelectionChangeCallback(this, onListItemSelectionChanged);
 		
-		var item = __dataProvider.getItemAt(p_index);
+		var item = __dataProvider.getItemAt(__selectedIndex);
 		__selectedItem = item;
 		
-		__selectedChild = __lastSelected;
+		//trace("__lastSelected: " + __lastSelected);
+		if(__lastSelected != null)
+		{
+			// every other time
+			__selectedChild = __lastSelected;
+		}
+		else
+		{
+			// first time through
+			__selectedChild = Button(getChildAt(__selectedIndex));
+			//trace("numChildren: " + numChildren);
+			//trace("__selectedIndex: " + __selectedIndex);
+			//trace("__selectedChild: " + __selectedChild);
+		}
+		
+		//trace("noEvent: " + noEvent);
+		//trace("isConstructing: " + isConstructing);
 		
 		if(noEvent != true && isConstructing == false)
 		{
+			//trace("dispatching item_selection_changed");
 			var event:ShurikenEvent = new ShurikenEvent(ShurikenEvent.ITEM_SELECTION_CHANGED, this);
 			event.lastSelected = lastSelectedChild;
-			event.selected = __lastSelected;
+			event.selected = __selectedChild;
 			event.item = item;
-			event.index = p_index;
+			event.index = __selectedIndex;
 			__itemSelectionChanged.dispatch(event);
 		}
 		
+	}
+	
+	private function setSelectedItem():Void
+	{
+		//trace("-------------------");
+		//trace("ButtonList::setSelectedItem");
+		//trace("__selectedItem: " + __selectedItem);
+		var i:Number = __dataProvider.getLength();
+		//trace("__dataProvider: " + __dataProvider);
+		//trace("i: " + i);
+		var c:Number = 0;
+		while(i--)
+		{
+			var o:Object = __dataProvider.getItemAt(c);
+			//trace(o + " vs. " + __selectedItem);
+			if(o == __selectedItem)
+			{	
+				//trace("found a match");
+				selectedIndex = c;
+				return;
+			}
+			c++;
+		}
 	}
 	
 	// Event listeners
@@ -167,7 +230,7 @@ class com.jxl.shuriken.containers.ButtonList extends List
 		//DebugWindow.debug("index: " + index);
 		var index:Number = getChildIndex(UIComponent(p_event.target));
 		var item:Object = __dataProvider.getItemAt(index);
-		setSelectedIndex(index);	
+		selectedIndex = index;
 		
 		var event:ShurikenEvent = new ShurikenEvent(ShurikenEvent.ITEM_CLICKED, this);
 		event.child = UIComponent(p_event.target);
@@ -190,13 +253,6 @@ class com.jxl.shuriken.containers.ButtonList extends List
 		event.item = item;
 		event.index = index;
 		__itemRollOverCallback.dispatch(event);
-	}
-	
-	private function onListItemSelectionChanged(p_event:ShurikenEvent):Void
-	{
-		//DebugWindow.debugHeader();
-		//DebugWindow.debug("ButtonList::onListItemSelectionChanged");
-		setSelectedIndex(getChildIndex(UIComponent(p_event.target)), true);
 	}
 	
 	public function setItemSelectionChangedCallback(scope:Object, func:Function):Void

@@ -28,6 +28,62 @@ class com.jxl.goocal.views.CreateEvent extends UIComponent
 	private var __description:String;
 	private var __repeats:String;
 	
+	public function get fromDate():Date { return __fromDate; }
+	public function set fromDate(val:Date):Void
+	{
+		__fromDate = val;
+		invalidate();
+	}
+	
+	public function get toDate():Date { return __toDate; }
+	public function set toDate(val:Date):Void
+	{
+		__toDate = val;
+		invalidate();
+	}
+	
+	public function get what():String { return __what; }
+	public function set what(val:String):Void
+	{
+		__what = val;
+		invalidate();
+	}
+	
+	public function get where():String { return __where; }
+	public function set where(val:String):Void
+	{
+		__where = val;
+		invalidate();
+	}
+	
+	public function get calendar():String { return __calendar; }
+	public function set calendar(val:String):Void
+	{
+		__calendar = val;
+		invalidate();
+	}
+	
+	public function get calendars():Collection { return __calendars; }
+	public function set calendars(val:Collection):Void
+	{
+		__calendars = val;
+		invalidate();
+	}
+	
+	public function get description():String { return __description; }
+	public function set description(val:String):Void
+	{
+		__description = val;
+		invalidate();
+	}
+	
+	public function get repeats():String { return __repeats; }
+	public function set repeats(val:String):Void
+	{
+		__repeats = val;
+		invalidate();
+	}
+	
 	// 1 based, not 0 based
 	private var __currentStep:Number = 1;
 	private var __maxSteps:Number = 5;
@@ -47,6 +103,11 @@ class com.jxl.goocal.views.CreateEvent extends UIComponent
 	public function CreateEvent()
 	{
 		super();
+	}
+	
+	private function createChildren():Void
+	{
+		super.createChildren();
 		
 		__fromDate 			= new Date();
 		__toDate 			= new Date();
@@ -56,11 +117,6 @@ class com.jxl.goocal.views.CreateEvent extends UIComponent
 		__calendars			= new Collection();
 		__description		= "";
 		__repeats			= "";
-	}
-	
-	private function createChildren():Void
-	{
-		super.createChildren();
 		
 		if(__title_lbl == null)
 		{
@@ -154,6 +210,7 @@ class com.jxl.goocal.views.CreateEvent extends UIComponent
 				if(__step4 == null)
 				{
 					__step4 = Step4(createComponent(Step4, "__step4"));
+					__step4.calendar = __calendar;
 					__step4.calendars = __calendars;
 					__step4.description = __description;
 					__step4.setChangeCallback(this, onChanged);

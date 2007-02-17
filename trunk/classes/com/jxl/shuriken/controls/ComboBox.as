@@ -192,13 +192,23 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 		}	
 	}
 	
-	public function get selectedIndex():Number { return __selectedIndex; }	
+	public function get selectedIndex():Number { return __mcList.selectedIndex; }	
 	
-	public function set selectedIndex(p_val:Number):Void
+	public function set selectedIndex(val:Number):Void
 	{
-		__selectedIndex = p_val;
-		__mcList.selectedIndex = p_val;
-	}	
+		__mcList.selectedIndex = val;
+	}
+	
+	public function get selectedItem():Object { return __mcList.selectedItem; }
+	public function set selectedItem(val:Object):Void
+	{
+		//trace("------------------");
+		//trace("ComboBox::selectedItem setter, val: " + val);
+		//trace("__mcList: " + __mcList);
+		//trace("__mcList.selectedItem: " + __mcList.selectedItem);
+		__mcList.selectedItem = val;
+		//trace("__mcList.selectedItem: " + __mcList.selectedItem);
+	}
 	
 	public function get prompt():String { return __prompt; }
 	public function set prompt(p_val:String):Void
@@ -223,7 +233,6 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 	private var __prompt:String 							= "";
 	private var __columnWidth:Number 						= 100;
 	private var __closeWhenSelected:Boolean 				= true;
-	private var __selectedIndex:Number;
 	
 	private var __MaskOverlap:Number 						= 3;
 		

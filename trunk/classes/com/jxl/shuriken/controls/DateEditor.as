@@ -47,6 +47,15 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 		__day_nms.value 		= __currentDate.getDate();
 		__hour_nms.value 		= __currentDate.getHours();
 		__min_nms.value 		= __currentDate.getMinutes();
+		
+		//trace("-----------------");
+		//trace("DateEditor::currentDate");
+		//trace("__currentDate.getFullYear(): " + __currentDate.getFullYear());
+		//trace("__year_nms.value: " + __year_nms.value);
+		//trace("__month_nms.value: " + __month_nms.value);
+		//trace("__day_nms.value: " + __day_nms.value);
+		//trace("__hour_nms.value: " + __hour_nms.value);
+		//trace("__min_nms.value: " + __min_nms.value);
 	}
 	
 	public function DateEditor()
@@ -320,6 +329,10 @@ class com.jxl.shuriken.controls.DateEditor extends UIComponent
 		if(__currentDate == null)
 		{
 			currentDate = new Date();
+		}
+		else
+		{
+			currentDate = currentDate;
 		}
 		invalidate();
 	}

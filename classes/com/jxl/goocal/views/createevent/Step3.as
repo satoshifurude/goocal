@@ -1,4 +1,6 @@
-﻿import com.jxl.shuriken.core.UIComponent;
+﻿import mx.utils.Delegate;
+
+import com.jxl.shuriken.core.UIComponent;
 import com.jxl.shuriken.events.ShurikenEvent;
 import com.jxl.shuriken.events.Event;
 import com.jxl.shuriken.events.Callback;
@@ -57,7 +59,7 @@ class com.jxl.goocal.views.createevent.Step3 extends UIComponent
 			__what_ti.borderColor = 0x000000;
 			__what_ti.background = true;
 			__what_ti.backgroundColor = 0xFFFFFF;
-			__what_ti.setChangeCallback(this, onTextChanged); 
+			__what_ti.onChanged = Delegate.create(this, onWhatChanged); 
 		}
 		
 		if(__where_lbl == null)
@@ -74,7 +76,7 @@ class com.jxl.goocal.views.createevent.Step3 extends UIComponent
 			__where_ti.borderColor = 0x000000;
 			__where_ti.background = true;
 			__where_ti.backgroundColor = 0xFFFFFF;
-			__where_ti.setChangeCallback(this, onTextChanged);
+			__where_ti.onChanged = Delegate.create(this, onWhereChanged);
 		}
 	}
 	
@@ -98,16 +100,14 @@ class com.jxl.goocal.views.createevent.Step3 extends UIComponent
 		__where_ti.setSize(__width - m2, __where_ti._height);
 	}
 	
-	private function onTextChanged(event:ShurikenEvent):Void
+	private function onWhatChanged():Void
 	{
-		if(event.target == __what_ti)
-		{
-			__changeCallback.dispatch(new Event(EVENT_WHAT_CHANGE, this));
-		}
-		else
-		{
-			__changeCallback.dispatch(new Event(EVENT_WHERE_CHANGE, this));
-		}
+		__changeCallback.dispatch(new Event(EVENT_WHAT_CHANGE, this));
+	}
+	
+	private function onWhereChanged():Void
+	{
+		__changeCallback.dispatch(new Event(EVENT_WHERE_CHANGE, this));
 	}
 	
 	public function setChangeCallback(scope:Object, func:Function):Void

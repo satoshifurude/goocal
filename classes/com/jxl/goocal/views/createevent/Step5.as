@@ -2,7 +2,6 @@
 import com.jxl.shuriken.events.Event;
 import com.jxl.shuriken.events.ShurikenEvent;
 import com.jxl.shuriken.controls.ComboBox;
-import com.jxl.shuriken.utils.LoopUtils;
 import com.jxl.shuriken.core.Collection;
 import com.jxl.shuriken.events.Callback;
 
@@ -27,26 +26,18 @@ class com.jxl.goocal.views.createevent.Step5 extends UIComponent
 	private var __repeats_lbl:TextField;
 	private var __repeats_cb:ComboBox;
 	
-	private var __repeat_lu:LoopUtils;
 	private var __changeCallback:Callback;
 	
 	public function get repeats():String { return __repeats; }
 	
-	public function set repeats(p_val:String):Void
+	public function set repeats(val:String):Void
 	{
-		__repeats = p_val;
-		if(__repeat_lu != null)
-		{
-			__repeat_lu.destroy();
-			delete __repeat_lu;
-		}
-		__repeat_lu = new LoopUtils(this);
-		__repeat_lu.forLoop(0,
-							__repeat_array.length,
-							1,
-							this,
-							onIfSelectedRepeat,
-							onIfSelectedRepeatDone);
+		//trace("-----------------");
+		//trace("Step5::repeats setter: " + val);
+		//trace("__repeats_cb: " + __repeats_cb);
+		//trace("__repeats_cb.selectedItem: " + __repeats_cb.selectedItem);
+		__repeats = val;
+		__repeats_cb.selectedItem = __repeats;
 	}
 	
 	public function Step5()
@@ -72,27 +63,11 @@ class com.jxl.goocal.views.createevent.Step5 extends UIComponent
 		{
 			__repeats_cb = ComboBox(createComponent(ComboBox, "__repeats_cb"));
 			__repeats_cb.dataProvider = new Collection(__repeat_array);
+			__repeats_cb.setItemClickedCallback(this, onRepeatItemClicked);
 			__repeats_cb.setItemSelectionChangedCallback(this, onRepeatItemClicked);
-			__repeats_cb.selectedIndex = 0;
+			//__repeats_cb.prompt = "Does not repeat (default)";
 			__repeats_cb.direction = ComboBox.DIRECTION_BELOW;
 		}
-	}
-	
-	private function onIfSelectedRepeat(p_index:Number):Void
-	{
-		var val:String = __repeat_array[p_index];
-		if(val.toLowerCase() == __repeats.toLowerCase())
-		{
-			__repeats_cb.selectedIndex = p_index;
-			onIfSelectedRepeatDone();
-		}
-	}
-	
-	private function onIfSelectedRepeatDone():Void
-	{
-		__repeat_lu.stopProcessing();
-		__repeat_lu.destroy();
-		delete __repeat_lu;
 	}
 	
 	private function redraw():Void
@@ -111,7 +86,10 @@ class com.jxl.goocal.views.createevent.Step5 extends UIComponent
 	
 	private function onRepeatItemClicked(p_event:ShurikenEvent):Void
 	{
+		//trace("--------------------");
+		//trace("Step5::onRepeatItemClicked");
 		__repeats = __repeat_array[__repeats_cb.selectedIndex];
+		//trace("__repeats: " + __repeats);
 		__changeCallback.dispatch(new Event(EVENT_REPEAT_CHANGE, this));
 	}
 	

@@ -93,10 +93,11 @@ class com.jxl.shuriken.core.Collection
 	{
 		if(scope == null)
 		{
+			__callback = null;
 			delete __callback;
 			return;
 		}
-		if(__callback != null) trace("WARNING: Someone is adding another callback to Collection; it only supports 1.");
+		//if(__callback != null) trace("WARNING: Someone is adding another callback to Collection; it only supports 1.");
 		__callback = new Callback(scope, func);
 	}
 	

@@ -3,7 +3,7 @@ import mx.transitions.easing.Strong;
 import mx.utils.Delegate;
 
 import com.jxl.shuriken.core.Collection;
-import com.jxl.shuriken.core.Container;
+import com.jxl.shuriken.core.UIComponent;
 import com.jxl.shuriken.containers.List;
 import com.jxl.shuriken.containers.ButtonList;
 import com.jxl.shuriken.controls.SimpleButton;
@@ -13,7 +13,7 @@ import com.jxl.shuriken.utils.DrawUtils;
 import com.jxl.shuriken.events.ShurikenEvent;
 
 [InspectableList("scrollSpeed", "direction", "showButtons")]
-class com.jxl.shuriken.containers.ScrollableList extends Container
+class com.jxl.shuriken.containers.ScrollableList extends UIComponent
 {
 	public static var SYMBOL_NAME:String = "com.jxl.shuriken.containers.ScrollableList";
 	
@@ -146,16 +146,24 @@ class com.jxl.shuriken.containers.ScrollableList extends Container
 		}
 	}
 	
-	public function get selectedIndex():Number { return __selectedIndex; }	
+	public function get selectedIndex():Number { return __mcList.selectedIndex; }	
 	
-	public function set selectedIndex(pVal:Number):Void
+	public function set selectedIndex(val:Number):Void
 	{
-		if(pVal != __selectedIndex)
-		{
-			__selectedIndex = pVal;
-			__mcList.selectedIndex = __selectedIndex;
-		}
-	}	
+		trace("-------------");
+		trace("ScrollableList::selectedIndex setter, val: " + val);
+		trace("__mcList: " + __mcList);
+		trace("__mcList.selectedIndex: " + __mcList.selectedIndex);
+		__mcList.selectedIndex = val;
+		trace("__mcList.selectedIndex: " + __mcList.selectedIndex);
+	}
+	
+	public function get selectedItem():Object { return __selectedItem; }
+	public function set selectedItem(val:Object):Void
+	{
+		__selectedItem = val;
+		__mcList.selectedItem = __selectedItem;
+	}
 	
 	
 	
@@ -181,6 +189,8 @@ class com.jxl.shuriken.containers.ScrollableList extends Container
 	
 	public function get pageCurrent():Number { return pageIndex + 1; }
 	
+	public function get buttonList():ButtonList { return __mcList; }
+	
 	
 	private var __childSetValueScope:Object;
 	private var __childClass:Function						= Button;
@@ -193,12 +203,12 @@ class com.jxl.shuriken.containers.ScrollableList extends Container
 	private var __childHorizontalMargin:Number				= 0;
 	private var __childVerticalMargin:Number				= 0;
 	private var __autoSizeToChildren:Boolean				= true;
-	private var __showButtons:Boolean 						= false;
+	private var __showButtons:Boolean 						= true;
 	private var __tweenScroll:Tween;
 	private var __columnWidth:Number						= 0;
 	private var __rowHeight:Number 							= 0;
 	private var __toggle:Boolean 							= false;
-	private var __selectedIndex:Number 						= -1;
+	private var __selectedItem:Object;
 	
 	private var __mcList:ButtonList;
 	private var __mcScrollPrevious:SimpleButton;
@@ -260,7 +270,12 @@ class com.jxl.shuriken.containers.ScrollableList extends Container
 	{
 		__mcList = ButtonList(attachMovie(ButtonList.SYMBOL_NAME, "__mcList", getNextHighestDepth()));
 		__mcList.childClass = __childClass;
-		__mcList.onDoneBuilding = function(){ this._parent.invalidate(); };
+		var f:Function = __mcList.onDoneBuilding;
+		__mcList.onDoneBuilding = function():Void
+		{
+			f.call(this);
+			this._parent.invalidate();
+		};
 	}
 	
 	private function setupButtons():Void

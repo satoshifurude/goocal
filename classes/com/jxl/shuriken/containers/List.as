@@ -142,7 +142,7 @@ class com.jxl.shuriken.containers.List extends Container
 	
 	public function get isBuilding():Boolean { return __isBuilding; }
 	
-	private var __isBuilding:Boolean;
+	private var __isBuilding:Boolean 							= true;
 	private var __childClass:Function;
 	private var __childSetValueFunction:Function				= refreshSetValue;
 	private var __childSetValueScope:Object;
@@ -170,6 +170,8 @@ class com.jxl.shuriken.containers.List extends Container
 	private var __colWChangeCallback:Callback;
 	private var __rowHChangeCallback:Callback;
 	private var __setupChildCallback:Callback;
+	
+	private var debugC:Number = 1;
 	
 	public function List()
 	{
@@ -208,14 +210,14 @@ class com.jxl.shuriken.containers.List extends Container
 	// Should be set via outside class, by default is to look for data setter
 	public function refreshSetValue(p_child:UIComponent, p_index:Number, p_item:Object):Void
 	{
-		trace("-------------");
-		trace("List::refreshSetValue, p_child: " + p_child + ", p_index: " + p_index + ", p_item: " + p_item);
-		trace("p_child: " + p_child);
-		trace("p_child.toString(): " + p_child.toString());
-		trace("__childClass: " + __childClass);
+		//trace("-------------");
+		//trace("List::refreshSetValue, p_child: " + p_child + ", p_index: " + p_index + ", p_item: " + p_item);
+		//trace("p_child: " + p_child);
+		//trace("p_child.toString(): " + p_child.toString());
+		//trace("__childClass: " + __childClass);
 		if(p_child instanceof Button)
 		{
-			trace("button");
+			//trace("button");
 			// FIXME: Dependency; could possibly re-factor to ensure
 			// this class isn't included in the SWF if the developer
 			// doesn't want it to be
@@ -223,11 +225,11 @@ class com.jxl.shuriken.containers.List extends Container
 		}
 		else if(p_child instanceof SimpleButton)
 		{
-			trace("simple button");
+			//trace("simple button");
 		}
 		else if(p_child instanceof UIComponent)
 		{
-			trace("UIComponent");
+			//trace("UIComponent");
 			p_child.data = p_item.toString();
 		}
 	}
@@ -345,6 +347,8 @@ class com.jxl.shuriken.containers.List extends Container
 		}
 		else
 		{
+			//trace("Done drawing all");
+			__currentDrawIndex = null;
 			invalidate();
 		}
 	}
@@ -352,11 +356,12 @@ class com.jxl.shuriken.containers.List extends Container
 	private function redraw():Void
 	{
 		
-		//trace("----------------");
-		//trace("List::size, __width: " + __width + ", __columnWidth: " + __columnWidth);
 		super.redraw();
 		
 		var howManyChildren:Number = numChildren;
+		//trace("----------------");
+		//trace("List::size, __width: " + __width + ", __columnWidth: " + __columnWidth);
+		//trace("howManyChildren: " + howManyChildren);
 		
 		if(__direction == DIRECTION_HORIZONTAL)
 		{
@@ -399,16 +404,17 @@ class com.jxl.shuriken.containers.List extends Container
 			}
 		}
 		
-		if(__isBuilding == true)
+		if(__currentDrawIndex == null)
 		{
-			delete __isBuilding;
-			callLater(this, onDoneBuilding);
+			if(__isBuilding == true)
+			{
+				__isBuilding = false;
+				callLater(this, onDoneBuilding);
+			}
 		}
 	}
 	
-	public function onDoneBuilding():Void
-	{
-	}
+	public var onDoneBuilding:Function;
 	
 	public function setColumnWidthNoRedraw(p_val:Number):Void
 	{

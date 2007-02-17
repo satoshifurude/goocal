@@ -146,6 +146,40 @@
 			return $buf;
 		}
 		
+		public function sendToHost2($host,$method,$path,$headers='',$data='',$useragent=0)
+		{
+			// Supply a default method of GET if the one passed was empty
+			if (empty($method)) {
+				$method = 'GET';
+			}
+			$method = strtoupper($method);
+			$fp = fsockopen($host, 80);
+			if ($method == 'GET' && strlen($data)>0) {
+				$path .= '?' . $data;
+			}
+			$this->dfputs($fp, "$method $path HTTP/1.0\r\n");
+			$this->dfputs($fp, "Host: $host\r\n");
+			
+			$this->dfputs($fp, "Content-length: " . strlen($data) . "\r\n");
+			$headerLen = count($headers);
+			for($h=0; $h<$headerLen; $h++)
+			{
+				$this->dfputs($fp, $headers[$h] . "\r\n");
+			}
+		
+			if ($useragent) {
+				$this->dfputs($fp, "User-Agent: MSIE\r\n");
+			}
+			$this->dfputs($fp, "Connection: close\r\n\r\n");
+			$this->dfputs($fp, $data);
+		
+			while (!feof($fp)) {
+				$buf .= fgets($fp,128);
+			}
+			fclose($fp);
+			return $buf;
+		}
+		
 		/* curlToHost -- experiments in curl
 		 * ~~~~~~~~~~
 		 * Params:
@@ -199,7 +233,8 @@
 		 **/
 		protected function dfputs($fp, $msg)
 		{
-			//echo $msg;
+			//JXLDebug::debugHeader();
+			//JXLDebug::debug($msg);
 			return fputs($fp, $msg);
 		}
 	}

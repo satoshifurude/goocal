@@ -11,6 +11,7 @@ class com.jxl.goocal.business.LoginDelegate
 	private var lv:LoadVars;
 	private var attempts:Number;
 	private var maxAttempts:Number = 3;
+	private var retryID:Number;
 	private var username:String;
 	private var password:String;
 	private var __progressScope:Object;
@@ -34,8 +35,7 @@ class com.jxl.goocal.business.LoginDelegate
 		//DebugWindow.debug("p_username: " + p_username);
 		lv.username = p_username;
 		lv.password = p_password;
-		var theURL:String = "http://www.jessewarden.com/goocal/php/com/jxl/goocal/controller/Application.php";
-		lv.sendAndLoad(theURL, lv, "POST");
+		lv.sendAndLoad(_global.phpURL, lv, "POST");
 	}
 	
 	private function onGetAuthCode(p_auth:String):Void
@@ -53,7 +53,9 @@ class com.jxl.goocal.business.LoginDelegate
 			if(attempts < maxAttempts)
 			{
 				__progressFunction.call(__progressScope, "Failed attempt " + attempts + ".  Trying again...");
-				login(username, password);
+				clearInterval(retryID);
+				retryID = setInterval(this, "loginAgain", 1000);
+				
 			}
 			else
 			{
@@ -62,6 +64,12 @@ class com.jxl.goocal.business.LoginDelegate
 				responder.onFault(fe);
 			}
 		}
+	}
+	
+	private function loginAgain():Void
+	{
+		clearInterval(retryID);
+		login(username, password);
 	}
 	
 	public function setProgressCallback(scope:Object, func:Function):Void

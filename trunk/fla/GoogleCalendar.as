@@ -6,6 +6,7 @@ import com.jxl.shuriken.events.ShurikenEvent;
 import com.jxl.shuriken.core.UIComponent;
 import com.jxl.shuriken.events.Event;
 import com.jxl.shuriken.utils.DateUtils;
+import com.jxl.shuriken.controls.LinkButton;
 
 import com.jxl.goocal.views.LoginForm;
 import com.jxl.goocal.views.CalendarList;
@@ -13,6 +14,9 @@ import com.jxl.goocal.views.DayView;
 import com.jxl.goocal.views.MonthView;
 import com.jxl.goocal.views.EntryView;
 import com.jxl.goocal.views.CreateEvent;
+import com.jxl.goocal.views.SettingsScreen;
+
+
 
 import com.jxl.goocal.controller.CommandRegistry;
 import com.jxl.goocal.events.LoginEvent;
@@ -27,6 +31,11 @@ import com.jxl.goocal.events.GetEntryEvent;
 import com.jxl.goocal.callbacks.SetCurrentDateCallback;
 import com.jxl.goocal.events.SetCurrentDateEvent;
 
+import com.jxl.goocal.events.CreateEventEvent;
+
+import com.jxl.goocal.events.CheckForUpdatesEvent;
+import com.jxl.goocal.callbacks.CheckForUpdatesCallback;
+
 import com.jxl.goocal.model.ModelLocator;
 
 import com.jxl.goocal.vo.CalendarVO;
@@ -38,7 +47,10 @@ class GoogleCalendar extends UIComponent
 {
 	public static var loop_mc:MovieClip;
 	
-	private var __debug:DebugWindow;
+	private static var VIEW_DAY:Number 			= 0;
+	private static var VIEW_MONTH:Number 		= 1;
+	
+	//private var __debug:DebugWindow;
 	
 	private var __loop_mc:MovieClip;
 	
@@ -52,9 +64,19 @@ class GoogleCalendar extends UIComponent
 	private var __monthView:MonthView;
 	private var __entryView:EntryView;
 	private var __createEvent:CreateEvent;
+	private var __settingsView:SettingsScreen;
+	private var __update_txt:TextField;
+	private var __or_txt:TextField;
+	private var __settings_lb:LinkButton;
+	
+	private var __eventDate:Date;
+	private var __soList:Object;
+	private var __upList:Object;
+	private var __lastView:Number;
 	
 	public var username:String;
 	public var password:String;
+	public var updateSOName:String = "GooCalUpdate";
 	
 	public function GoogleCalendar()
 	{
@@ -62,6 +84,8 @@ class GoogleCalendar extends UIComponent
 		
 		__width = 176;
 		__height = 208;
+		
+		_global.phpURL = "http://www.jessewarden.com/goocal/php/com/jxl/goocal/controller/FrontController.php";
 		
 		var lv:LoadVars = new LoadVars();
 		lv.owner = this;
@@ -109,7 +133,7 @@ class GoogleCalendar extends UIComponent
 				delete username;
 				delete password;
 			}
-			__login_mc.move(0, 56);
+			__login_mc.move(8, 56);
 		}
 	}
 	
@@ -136,14 +160,7 @@ class GoogleCalendar extends UIComponent
 		//DebugWindow.debug("p_callback.isLoggedIn: " + p_callback.isLoggedIn);
 		if(p_callback.isLoggedIn == LoginCallback.LOGGED_IN_SUCCESS)
 		{
-			gotoAndPlay("main");
-			showActivity("Getting Calendars...");
-			
-			var event:GetCalendarsEvent = new GetCalendarsEvent(GetCalendarsEvent.GET_CALENDARS, 
-																this, 
-																onGetCalendars);
-			CommandRegistry.getInstance().dispatchEvent(event);
-			
+			getCalendars();
 		}
 		else if(p_callback.isLoggedIn == LoginCallback.LOGGED_IN_FAILED_ATTEMPT)
 		{
@@ -157,6 +174,24 @@ class GoogleCalendar extends UIComponent
 			
 			hideActivity();
 		}
+	}
+	
+	private function getCalendars():Void
+	{
+		if(_currentframe == 1)
+		{
+			gotoAndPlay("main");
+		}
+		else
+		{
+			gotoAndStop("logo");
+		}
+		destroyViews();
+		showActivity("Getting Calendars...");
+		var event:GetCalendarsEvent = new GetCalendarsEvent(GetCalendarsEvent.GET_CALENDARS, 
+															this, 
+															onGetCalendars);
+		CommandRegistry.getInstance().dispatchEvent(event);
 	}
 	
 	private function onGetCalendars(p_result:Object):Void
@@ -219,6 +254,7 @@ class GoogleCalendar extends UIComponent
 				__dayView.setItemClickCallback(this, onDayEventClicked);
 				__dayView.move(0, 40);
 				__dayView.setSize(__width, __height - 40);
+				__lastView = VIEW_DAY;
 				var today:Date = new Date();
 				
 				var currentEvents:Collection = new Collection();
@@ -299,58 +335,19 @@ class GoogleCalendar extends UIComponent
 	private function showMonthView():Void
 	{
 		destroyViews();
+		gotoAndStop("hide");
 		
 		if(__monthView == null)
 		{
 			__monthView = MonthView(createComponent(MonthView, "__monthView"));
 			__monthView.setDateSelectedCallback(this, onDateClicked);
-			__monthView.move(0, 40);
+			__monthView.setSettingsCallback(this, showSettings);
+			__monthView.setCreateNewCallback(this, showCreateEvent);
+			__lastView = VIEW_MONTH;
 		}
-	}
-	
-	private function showActivity(p_msg:String):Void
-	{
-		if(__activity_mc == null)
+		else
 		{
-			__activity_mc = attachMovie(SYMBOL_ACTIVITY, "__activity_mc", getNextHighestDepth());
-			__activity_mc._x = __width - __activity_mc._width;
-			__activity_mc._y = 0;
-		}
-		
-		if(p_msg != null)
-		{
-			if(__loggingIn_lbl == null)
-			{
-				__loggingIn_lbl = createLabel("__loggingIn_lbl");
-				var fmt:TextFormat = __loggingIn_lbl.getTextFormat();
-				fmt.size = 16;
-				fmt.color = 0x339933;
-				fmt.font = "_sans";
-				__loggingIn_lbl.setTextFormat(fmt);
-				__loggingIn_lbl.setNewTextFormat(fmt);
-				__loggingIn_lbl.setSize(176, 26);
-				__loggingIn_lbl.move(0, (__height / 2) - (__loggingIn_lbl._height / 2));
-			}
-			
-			__loggingIn_lbl.text = p_msg;
-		}
-	}
-	
-	private function hideActivity(p_removeMsg:Boolean):Void
-	{
-		if(__activity_mc != null)
-		{
-			__activity_mc.removeMovieClip();
-			delete __activity_mc;
-		}
-		
-		if(p_removeMsg == true)
-		{
-			if(__loggingIn_lbl != null)
-			{
-				__loggingIn_lbl.removeTextField();
-				delete __loggingIn_lbl;
-			}
+			__monthView.onNonIdle();
 		}
 	}
 	
@@ -390,9 +387,9 @@ class GoogleCalendar extends UIComponent
 	// TODO: need callback for result vs. boolean & status
 	private function onGotEventsForDateSelected(p_boolOrMsg):Void
 	{
-		//DebugWindow.debugHeader();
-		//DebugWindow.debug("GoogleCalendar::onGotEventsForDateSelected");
-		//DebugWindow.debug("p_event: " + p_boolOrMsg);
+		//trace("-----------------");
+		//trace("GoogleCalendar::onGotEventsForDateSelected");
+		//trace("p_boolOrMsg: " + p_boolOrMsg);
 		if(p_boolOrMsg == true)
 		{
 			// third, show the date selected entries in in the DayView
@@ -418,30 +415,308 @@ class GoogleCalendar extends UIComponent
 			__createEvent.setCancelCallback(this, onCancelCreateEvent);
 			__createEvent.setSaveCallback(this, onSaveCreateEvent);
 			
-			var toDate:Date = DateUtils.clone(ModelLocator.getInstance().currentDate);
+			var fromDate:Date;
+			if(ModelLocator.getInstance().currentDate == null)
+			{
+				fromDate = new Date();
+			}
+			else
+			{
+				fromDate = ModelLocator.getInstance().currentDate;
+			}
+			
+			var toDate:Date = DateUtils.clone(fromDate);
 			toDate.setHours(toDate.getHours() + 1);
+			
 			// KLUDGE: 'Does not repeat' is a magic string
-			__createEvent.setupEvent(ModelLocator.getInstance().currentDate,
+			__createEvent.setupEvent(fromDate,
 									 toDate,
 									 "",
 									 "",
 									 ModelLocator.getInstance().calendars,
+									 ModelLocator.getInstance().selectedCalendar,
 									 "",
-									 "Does not repeat");
+									 "Does not repeat",
+									 "");
 		}
 	}
 	
 	private function onCancelCreateEvent(event:Event):Void
 	{
+		//trace("-----------------");
+		//trace("GoogleCalendar::onCancelCreateEvent");
 		destroyViews();
-		// HACK: !!! Not following ARP, bad bad bad
-		if(ModelLocator.getInstance().currentDate != null) ModelLocator.getInstance().currentDate = new Date();
-		onGotEventsForDateSelected(true);
+		if(__lastView == null || __lastView == VIEW_DAY)
+		{
+			delete __lastView;
+			// HACK: !!! Not following ARP, bad bad bad
+			if(ModelLocator.getInstance().currentDate == null)
+			{
+				ModelLocator.getInstance().currentDate = new Date();
+			}
+			onGotEventsForDateSelected(true);
+		}
+		else if(__lastView == VIEW_MONTH)
+		{
+			delete __lastView;
+			showMonthView();
+		}
 	}
 	
 	private function onSaveCreateEvent(event:Event):Void
 	{
+		var cee:CreateEventEvent = new CreateEventEvent(CreateEventEvent.CREATE_EVENT,
+														  this,
+														  onCreatedEvent);
+		cee.startDate 		= __createEvent.fromDate;
+		cee.endDate			= __createEvent.toDate;
+		cee.title			= __createEvent.what;
+		cee.description		= __createEvent.description;
+		cee.where			= __createEvent.where;
+		cee.calendar		= __createEvent.calendar;
 		
+		__eventDate = __createEvent.fromDate;
+		
+		destroyViews();
+		showActivity("Creating Event...");
+		
+		CommandRegistry.getInstance().dispatchEvent(cee);
+	}
+	
+	private function onCreatedEvent(success:Boolean):Void
+	{
+		if(success == true)
+		{
+			hideActivity();
+			showDayView(__eventDate);
+		}
+		else
+		{
+			showActivity("Failed to create event.");
+		}
+		
+		delete __eventDate;
+	}
+	
+	private function showSettings():Void
+	{
+		destroyViews();
+		
+		if(__settingsView == null)
+		{
+			__settingsView = SettingsScreen(createComponent(SettingsScreen, "__settingsView"));
+			__settingsView.setViewCalendarCallback(this, getCalendars);
+			__settingsView.setDeleteLoginCallback(this, onDeleteLogin);
+			__settingsView.setCheckUpdatesCallback(this, onCheckUpdates);
+			__settingsView.setBackToMonthViewCallback(this, showMonthView);
+			__settingsView.showSettingValues(ModelLocator.getInstance().selectedCalendar, 
+										 ModelLocator.getInstance().currentVersion,
+										 null);
+		}
+		
+		if(System.capabilities.isDebugger == false)
+		{
+			if(__upList == null) __upList = Delegate.create(this, onReadUpdateSO);
+			SharedObject.addEventListener(updateSOName, __upList);
+			var so:SharedObject = SharedObject.getLocal(updateSOName);
+		}
+		else
+		{
+			var so:SharedObject = SharedObject.getLocal(updateSOName);
+			onReadUpdateSO(so);
+		}
+	}
+	
+	private function onReadUpdateSO(so:SharedObject):Void
+	{
+		SharedObject.removeListener(updateSOName);
+		delete __upList;
+		__settingsView.showSettingValues(ModelLocator.getInstance().selectedCalendar, 
+										 ModelLocator.getInstance().currentVersion,
+										 __upList.data.update);
+	}
+	
+	private function onDeleteLogin(event:Event):Void
+	{
+		if(System.capabilities.isDebugger == false)
+		{
+			if(__soList == null) __soList = Delegate.create(this, onLoginSOReady);
+			SharedObject.addListener(LoginForm.prototype.soName, __soList);
+			var so:SharedObject = SharedObject.getLocal(LoginForm.prototype.soName);
+		}
+		else
+		{
+			var so:SharedObject = SharedObject.getLocal(LoginForm.prototype.soName);
+			onLoginSOReady(so);
+		}
+	}
+	
+	private function onLoginSOReady(so:SharedObject):Void
+	{
+		so.clear();
+		SharedObject.removeListener(LoginForm.prototype.soName);
+		delete __soList;
+	}
+	
+	private function onCheckUpdates(event:Event):Void
+	{
+		destroyViews();
+		showActivity("Checking for updates...");
+		if(System.capabilities.isDebugger == false)
+		{
+			if(__upList == null) __upList = Delegate.create(this, onUpdateSO);
+			SharedObject.addEventListener(updateSOName, __upList);
+			var so:SharedObject = SharedObject.getLocal(updateSOName);
+		}
+		else
+		{
+			var so:SharedObject = SharedObject.getLocal(updateSOName);
+			onUpdateSO(so);
+		}
+	}
+	
+	private function onUpdateSO(so:SharedObject):Void
+	{
+		so.data.update = new Date();
+		SharedObject.removeListener(updateSOName);
+		delete __upList;
+		
+		var ue:CheckForUpdatesEvent = new CheckForUpdatesEvent(CheckForUpdatesEvent.CHECK_FOR_UPDATES,
+															   this,
+															   onUpdatesChecked);
+		CommandRegistry.getInstance().dispatchEvent(ue);
+	}
+	
+	private function onUpdatesChecked(callback:CheckForUpdatesCallback):Void
+	{
+		hideActivity(true);
+		if(__update_txt == null)
+		{
+			__update_txt = createLabel("__update_txt");
+			__update_txt.multiline = true;
+			__update_txt.wordWrap = true;
+			__update_txt.setSize(__width, 60);
+			__update_txt.move(0, (__height / 2) - 40);
+		}
+		
+		var tf:TextFormat = __update_txt.getTextFormat();
+		tf.align = TextField.ALIGN_CENTER;
+		tf.bold = true;
+		tf.font = "Verdana";
+		tf.size = 12;
+		tf.color = 0x333333;
+		
+		if(callback.failed == false)
+		{
+			if(callback.newerVersionAvailable == false)
+			{
+				__update_txt.setNewTextFormat(tf);
+				__update_txt.setTextFormat(tf);
+				__update_txt.text = "No update available.\nYou have the\nlatest version.";
+			}
+			else
+			{
+				var str:String = "";
+				str += "<font align='center'><b>";
+				str += "An update is available!\nPlease visit:\n\n";
+				str += callback.updateURL;
+				str += "</b></font>";
+				__update_txt.html = true;
+				__update_txt.htmlText = str;
+			}
+		}
+		else
+		{
+			__update_txt.setNewTextFormat(tf);
+			__update_txt.setTextFormat(tf);
+			__update_txt.text = "The update server is not responding.\nPlease try again later.";
+		}
+			
+		
+		if(callback.failed == false)
+		{
+			if(callback.newerVersionAvailable == true)
+			{
+				if(__or_txt == null)
+				{
+					__or_txt = createLabel("__or_txt");
+					__or_txt.text = "or";
+					__or_txt._width = 20;
+					__or_txt._height = 20;
+					__or_txt._x = 20;
+					__or_txt._y = __update_txt._y + __update_txt._height;
+				}
+			}
+		}
+		
+		if(__settings_lb == null)
+		{
+			__settings_lb = LinkButton(createComponent(LinkButton, "__settings_lb"));
+			__settings_lb.setReleaseCallback(this, showSettings);
+			__settings_lb.textField.autoSize = "left";
+			__settings_lb.textField.textColor = 0x0033CC;
+			//__settings_lb.setSize(86, __settings_lb.height);
+			if(callback.failed == false && callback.newerVersionAvailable == true)
+			{
+				__settings_lb.label = "back to settings";
+				__settings_lb.move(__or_txt._x + __or_txt._width, __or_txt._y);
+			}
+			else
+			{
+				__settings_lb.label = "Return to settings";
+				__settings_lb.move((__width / 2) - (__settings_lb.width / 2), __update_txt._y + __update_txt._height);
+			}
+		}
+	}
+	
+	private function showActivity(p_msg:String):Void
+	{
+		if(__activity_mc == null)
+		{
+			__activity_mc = attachMovie(SYMBOL_ACTIVITY, "__activity_mc", getNextHighestDepth());
+			__activity_mc._x = __width - __activity_mc._width;
+			__activity_mc._y = 0;
+		}
+		
+		if(p_msg != null)
+		{
+			if(__loggingIn_lbl == null)
+			{
+				__loggingIn_lbl = createLabel("__loggingIn_lbl");
+				var fmt:TextFormat = __loggingIn_lbl.getTextFormat();
+				fmt.align = TextField.ALIGN_CENTER;
+				fmt.size = 16;
+				fmt.color = 0x339933;
+				fmt.font = "_sans";
+				__loggingIn_lbl.autoSize = "center";
+				__loggingIn_lbl.wordWrap = true;
+				__loggingIn_lbl.multiline = true;
+				__loggingIn_lbl.setTextFormat(fmt);
+				__loggingIn_lbl.setNewTextFormat(fmt);
+				__loggingIn_lbl._width = 176;
+			}
+			
+			__loggingIn_lbl.text = p_msg;
+			__loggingIn_lbl.move(0, (__height / 2) - (__loggingIn_lbl._height / 2));
+		}
+	}
+	
+	private function hideActivity(p_removeMsg:Boolean):Void
+	{
+		if(__activity_mc != null)
+		{
+			__activity_mc.removeMovieClip();
+			delete __activity_mc;
+		}
+		
+		if(p_removeMsg == true)
+		{
+			if(__loggingIn_lbl != null)
+			{
+				__loggingIn_lbl.removeTextField();
+				delete __loggingIn_lbl;
+			}
+		}
 	}
 	
 	private function destroyViews():Void
@@ -463,8 +738,9 @@ class GoogleCalendar extends UIComponent
 		}
 		if(__monthView != null)
 		{
-			__monthView.removeMovieClip();
-			delete __monthView;
+			//__monthView.removeMovieClip();
+			//delete __monthView;
+			__monthView.onIdle();
 		}
 		if(__entryView != null)
 		{
@@ -475,6 +751,30 @@ class GoogleCalendar extends UIComponent
 		{
 			__createEvent.removeMovieClip();
 			delete __createEvent;
+		}
+		
+		if(__settingsView != null)
+		{
+			__settingsView.removeMovieClip();
+			delete __settingsView;
+		}
+		
+		if(__update_txt != null)
+		{
+			__update_txt.removeTextField();
+			delete __update_txt;
+		}
+		
+		if(__or_txt != null)
+		{
+			__or_txt.removeTextField();
+			delete __or_txt;
+		}
+		
+		if(__settings_lb != null)
+		{
+			__settings_lb.removeMovieClip();
+			delete __settings_lb;
 		}
 	}
 	

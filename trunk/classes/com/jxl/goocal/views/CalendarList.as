@@ -4,8 +4,8 @@ import com.jxl.shuriken.core.UIComponent;
 import com.jxl.shuriken.events.ShurikenEvent;
 import com.jxl.shuriken.containers.List;
 import com.jxl.shuriken.containers.ButtonList;
+import com.jxl.shuriken.controls.LinkButton;
 import com.jxl.shuriken.core.Collection;
-import com.jxl.goocal.views.GCLinkButton;
 
 
 class com.jxl.goocal.views.CalendarList extends UIComponent
@@ -15,7 +15,7 @@ class com.jxl.goocal.views.CalendarList extends UIComponent
 	
 	private var __title_lbl:TextField;
 	private var __calendars_list:ButtonList;
-	private var __createNew_link:GCLinkButton;
+	private var __createNew_link:LinkButton;
 	
 	public function get calendarsCollection():Collection { return __calendars_list.dataProvider; }
 	public function set calendarsCollection(p_val:Collection):Void
@@ -49,7 +49,7 @@ class com.jxl.goocal.views.CalendarList extends UIComponent
 		if(__calendars_list == null)
 		{
 			__calendars_list = ButtonList(createComponent(ButtonList, "__calendars_list"));
-			__calendars_list.childClass				= GCLinkButton;
+			__calendars_list.childClass				= LinkButton;
 			__calendars_list.childSetValueFunction 	= refreshCalendarItem;
 			__calendars_list.childSetValueScope		= this;
 			
@@ -63,7 +63,11 @@ class com.jxl.goocal.views.CalendarList extends UIComponent
 		
 		if(__createNew_link == null)
 		{
-			__createNew_link = GCLinkButton(createComponent(GCLinkButton, "__createNew_link"));
+			__createNew_link = LinkButton(createComponent(LinkButton, "__createNew_link"));
+			var tf:TextFormat = __createNew_link.textField.getTextFormat();
+			tf.color = 0x0066CC;
+			tf.size = 10;
+			__createNew_link.textField.setNewTextFormat(tf);
 			__createNew_link.label = "Create New...";
 			__createNew_link.bold = true;
 		}
@@ -82,7 +86,13 @@ class com.jxl.goocal.views.CalendarList extends UIComponent
 	
 	private function refreshCalendarItem(p_child:UIComponent, p_index:Number, p_item:Object):Void
 	{
-		GCLinkButton(p_child).label = p_item.toString();
+		var lb:LinkButton = LinkButton(p_child);
+		var tf:TextFormat = lb.textField.getTextFormat();
+		tf.color = 0x0066CC;
+		tf.size = 14;
+		tf.bold = false;
+		lb.textField.setNewTextFormat(tf);
+		lb.label = p_item.toString();
 	}
 	
 	public function setItemClickCallback(scope:Object, func:Function):Void

@@ -84,12 +84,16 @@ class com.jxl.goocal.views.LoginForm extends UIComponent
 	{
 		super.createChildren();
 		
+		var boldTF:TextFormat = new TextFormat();
+		boldTF.bold = true;
+		
 		if(__username_lbl == null)
 		{
 			__username_lbl = createLabel("__username_lbl");
 			__username_lbl.wordWrap = false;
 			__username_lbl.multiline = false;
 			__username_lbl.selectable = false;
+			__username_lbl.setNewTextFormat(boldTF);
 			__username_lbl.text = "Username";
 		}
 		
@@ -100,7 +104,7 @@ class com.jxl.goocal.views.LoginForm extends UIComponent
 			__username_ti.multiline = false;
 			__username_ti.type = TextField.TYPE_INPUT;
 			__username_ti.border = true;
-			__username_ti.borderColor = 0x000000;
+			__username_ti.borderColor = 0xA5ACB2;
 			__username_ti.background = true;
 			__username_ti.backgroundColor = 0xFFFFFF;
 		}
@@ -111,6 +115,7 @@ class com.jxl.goocal.views.LoginForm extends UIComponent
 			__password_lbl.wordWrap = false;
 			__password_lbl.multiline = false;
 			__password_lbl.selectable = false;
+			__password_lbl.setNewTextFormat(boldTF);
 			__password_lbl.text = "Password";
 		}
 		
@@ -121,7 +126,7 @@ class com.jxl.goocal.views.LoginForm extends UIComponent
 			__password_ti.multiline = false;
 			__password_ti.type = TextField.TYPE_INPUT;
 			__password_ti.border = true;
-			__password_ti.borderColor = 0x000000;
+			__password_ti.borderColor = 0xA5ACB2;
 			__password_ti.background = true;
 			__password_ti.backgroundColor = 0xFFFFFF;
 			__password_ti.password = true;

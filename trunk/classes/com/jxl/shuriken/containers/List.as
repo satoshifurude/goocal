@@ -320,7 +320,7 @@ class com.jxl.shuriken.containers.List extends Container
 		size();
 		*/
 		
-		if(len > 1)
+		if(len > 0)
 		{
 			__currentDrawIndex = 0;
 			callLater(this, drawNext);
@@ -404,10 +404,14 @@ class com.jxl.shuriken.containers.List extends Container
 			}
 		}
 		
+		//trace("-----------------");
+		//trace("List::redraw, __currentDrawIndex: " + __currentDrawIndex);
 		if(__currentDrawIndex == null)
 		{
+			//trace("__currentDrawIndex is null");
 			if(__isBuilding == true)
 			{
+				//trace("__isBuilding is now false");
 				__isBuilding = false;
 				callLater(this, onDoneBuilding);
 			}

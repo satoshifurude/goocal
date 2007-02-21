@@ -22,9 +22,7 @@ class com.jxl.shuriken.controls.TextArea extends UIComponent
 		__txtLabel.html = false;
 		__txtLabel.text = val;
 		__txtLabel._visible = false;
-		//invalidate();
-		// KLUDGE: 2 frames..., not 1, but 2....
-		callLater(this, invalidate);
+		invalidate();
 	}
 	
 	public function set htmlText(val:String):Void
@@ -32,9 +30,7 @@ class com.jxl.shuriken.controls.TextArea extends UIComponent
 		__txtLabel.html = true;
 		__txtLabel.htmlText = val;
 		__txtLabel._visible = false;
-		//invalidate();
-		// KLUDGE: 2 frames..., not 1, but 2....
-		callLater(this, invalidate);
+		invalidate();
 	}
 	
 	private var __txtLabel:TextField;
@@ -82,8 +78,6 @@ class com.jxl.shuriken.controls.TextArea extends UIComponent
 		
 		__txtLabel._visible = true;
 		
-		trace("__txtLabel.maxscroll: " + __txtLabel.maxscroll);
-		
 		if(__txtLabel.maxscroll > 1)
 		{
 			__track_mc._x = __width - __track_mc._width;
@@ -98,8 +92,20 @@ class com.jxl.shuriken.controls.TextArea extends UIComponent
 			__downArrow_pb.move(0, __height - 4);
 			__downArrow_pb.setSize(__upArrow_pb.width, 4);
 			
-			__txtLabel.move(0, __upArrow_pb.y + __upArrow_pb.height);
+			var lastW:Number = __txtLabel._width;
+			var lastH:Number = __txtLabel._height;
 			__txtLabel.setSize(__width - biggerW, __height - __upArrow_pb.height - __downArrow_pb.height);
+			if(__txtLabel._width != lastW || __txtLabel._height != lastH)
+			{
+				// KLUDGE
+				// size has changed, thus, so has maxscroll potentially.
+				// abort redrawing, and do it again
+				// unfortunately, if we turn it invisible (__txtLabel._visible = false)
+				// to avoid flicker, it prevents the recalculating of the maxscroll...
+				invalidate();
+				return;
+			}
+			__txtLabel.move(0, __upArrow_pb.y + __upArrow_pb.height);
 			
 			var thumbHPer:Number = __txtLabel.scroll / __txtLabel.maxscroll;
 			// TODO: it'd be nice if this scaled so the scrollbar would have more variation in height

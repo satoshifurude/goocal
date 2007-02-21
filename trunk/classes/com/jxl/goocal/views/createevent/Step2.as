@@ -16,6 +16,7 @@ class com.jxl.goocal.views.createevent.Step2 extends UIComponent
 	{
 		__toDate = p_val;
 		__to_de.currentDate = __toDate;
+		__to_de.fieldType = DateEditor.FIELD_YEAR_MONTH_DAY_HOUR_MIN;
 	}
 	
 	public function Step2()

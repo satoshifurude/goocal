@@ -1,9 +1,13 @@
 <?php
 
+	set_include_path("/home/9936/domains/jessewarden.com/html/goocal/php/");
+	
 	require_once("com/philhord/GCalUtils.php");
 	require_once("com/jxl/utils/StringUtils.php");
 	require_once("com/jxl/goocal/factories/GDataFactory.php");
-	require_once("JXLDebug.php");
+	//require_once("JXLDebug.php");
+	
+	//require_once("com/jxl/utils/LogUtils.php");
 	
 	class Application
 	{
@@ -12,6 +16,7 @@
 		const COMMAND_GET_CALENDAR_ENTRIES			= "get_calendar_entries";
 		const COMMAND_GET_ENTRY						= "get_entry";
 		const COMMAND_CREATE_ENTRY					= "create_entry";
+		const COMMAND_CHECK_VERSION					= "check_version";
 		
 		protected $gcalutils;
 		protected $strutils;
@@ -67,6 +72,9 @@
 											  $params->title,
 											  $params->description,
 											  $params->where);
+				
+				case self::COMMAND_CHECK_VERSION:
+					return $this->checkVersion($params->currentVersion);
 			}
 		}
 		
@@ -79,6 +87,12 @@
 		
 		protected function getCalendars($p_auth, $p_email)
 		{
+			//$l = new LogUtils("test_log.txt");
+			//$l->log("------------");
+			//$l->log("Application::getCalendars");
+			//$l->log("p_auth: " . $p_auth);
+			//$l->log("p_email: " . $p_email);
+			
 			$headers = array('Authorization: GoogleLogin auth=' . $p_auth);
 			
 			// get the feed from Google
@@ -86,7 +100,10 @@
 							 	 		 			 'GET',
 								 					 $headers);
 			
+			//$l->log("baseFeed: " . $baseFeed);
+			
 			$calNames = GDataFactory::getCalendarNames($baseFeed);
+			//$l->log("calNames: " . $calNames);
 			return $calNames;
 		}
 		
@@ -112,7 +129,16 @@
 			$startDate 		= $this->getStartMinDateParameter($p_startYear, $p_startMonth, $p_startDay);
 			$endDate		= $this->getStartMaxDateParameter($p_endYear, $p_endMonth, $p_endDay);
 			
+			// HACK: for now, assuming eastern timezone (GMT is default)
+			$startDate .= "-06:00";
+			$endDate .= "-06:00";
+			
 			$calendarURL  	.= "?" . $startDate . "&" . $endDate;
+			
+			//JXLDebug::debugHeader();
+			//JXLDebug::debug("startDate: " . $startDate);
+			//JXLDebug::debug("endDate: " . $endDate);
+			//JXLDebug::debug("calendarURL: " . $calendarURL);
 			
 			// get the feed from Google
 			$feed = $this->gcalutils->curlToHost($calendarURL, 
@@ -209,6 +235,29 @@
 										$p_where)
 		{
 			
+			/*
+			$l = new LogUtils("test_log.txt");
+			$l->log("------------");
+			$l->log("Application::createEntry");
+			$l->log("p_auth: " . $p_auth);
+			$l->log("p_name: " . $p_name);
+			$l->log("p_email: " . $p_email);
+			$l->log("p_calendarName: " . $p_calendarName);
+			$l->log("p_startYear: " . $p_startYear);
+			$l->log("p_startMonth: " . $p_startMonth);
+			$l->log("p_startDay: " . $p_startDay);
+			$l->log("p_startHour: " . $p_startHour);
+			$l->log("p_startMinute: " . $p_startMinute);
+			$l->log("p_endYear: " . $p_endYear);
+			$l->log("p_endMonth: " . $p_endMonth);
+			$l->log("p_endDay: " . $p_endDay);
+			$l->log("p_endHour: " . $p_endHour);
+			$l->log("p_endMinute: " . $p_endMinute);
+			$l->log("p_title: " . $p_title);
+			$l->log("p_description: " . $p_description);
+			$l->log("p_where: " . $p_where);
+			*/
+			
 			$baseHeaders = array('Authorization: GoogleLogin auth=' . $p_auth);
 			// get the feed from Google
 			$baseFeed 		= $this->gcalutils->curlToHost('http://www.google.com/calendar/feeds/' . $p_email, 
@@ -218,9 +267,12 @@
 			$calendarURL 	= GDataFactory::getCalendarFeedURL($baseFeed, $p_calendarName);
 			$calendarURLChunk = substr($calendarURL, 21);
 			
-			JXLDebug::debugHeader();
-			JXLDebug::debug("calendarURL: " . $calendarURL);
-			JXLDebug::debug("calendarURLChunk: " . $calendarURLChunk);
+			//JXLDebug::debugHeader();
+			//JXLDebug::debug("calendarURL: " . $calendarURL);
+			//JXLDebug::debug("calendarURLChunk: " . $calendarURLChunk);
+			
+			//$l->log("calendarURL: " . $calendarURL);
+			//$l->log("calendarURLChunk: " . $calendarURLChunk);
 			
 			// get the GData XML
 			$createXML = GDataFactory::getCreateEntryXML($p_title,
@@ -262,11 +314,13 @@
 			//addResponse: HTTP/1.0 302 Moved Temporarily
 			//Location: http://www.google.com/calendar/feeds/default/private/full?gsessionid=2gQlCzXHguc
 			
-			JXLDebug::debugHeader();
-			JXLDebug::debug("createXML: " . $createXML);
+			//JXLDebug::debugHeader();
+			//JXLDebug::debug("createXML: " . $createXML);
 			
-			JXLDebug::debugHeader();
-			JXLDebug::debug("addResponse: " . $addResponse);
+			//$l->log("createXML: " . $createXML);
+			
+			//JXLDebug::debugHeader();
+			//JXLDebug::debug("addResponse: " . $addResponse);
 			
 			if($this->isHTTP412($addResponse) == true)
 			{
@@ -275,12 +329,15 @@
 				$theLocationURL = $this->getHTTPLocation($addResponse);
 				//JXLDebug::debugHeader();
 				//JXLDebug::debug("Location is: " . $theLocationURL);
+				//$l->log("it's a 302");
+				//$l->log("Location is: " . $theLocationURL);
 			}
 			else
 			{
 				//JXLDebug::debugHeader();
 				//JXLDebug::debug("it's not a 302...");
-				return NULL;
+				//$l->log("it's not a 302...");
+				return "ERROR: Not a pre-condition failed.";
 			}
 			
 			
@@ -298,16 +355,21 @@
 			
 			if($this->isHTTP201($goodResponse) == true)
 			{
+				//$l->log("it's a good response (201)");
 				return true;
 			}
 			else
 			{
-				return false;
+				//$l->log("it's not a good response...");
+				return "ERROR: Not a 201.  Response: " . $goodResponse . "  createXML: " . $createXML;
 			}
 		}
 		
 		private function isHTTP412($str)
 		{
+			//$l = new LogUtils("test_log.txt");
+			//$l->log("------------");
+			//$l->log("Application::isHTTP412");
 			//JXLDebug::debugHeader();
 			//JXLDebug::debug("Application::isHTTP412");
 			$responseSplit = explode("\n", $str);
@@ -317,12 +379,16 @@
 				$rStr = $responseSplit[$r];
 				//JXLDebug::debug(">>>>>>>>>>>>>>>");
 				//JXLDebug::debug("rStr: " . $rStr);
+				//$l->log(">>>>>>>>>>>>>>>");
+				//$l->log("rStr: " . $rStr);
 				$pair = explode(":", $rStr);
 				$pair[0] = trim($pair[0]);
 				$pair[1] = trim($pair[1]);
 				
-				JXLDebug::debug("pair[0]: " . $pair[0]);
-				JXLDebug::debug("pair[1]: " . $pair[1]);
+				//JXLDebug::debug("pair[0]: " . $pair[0]);
+				//JXLDebug::debug("pair[1]: " . $pair[1]);
+				//$l->log("pair[0]: " . $pair[0]);
+				//$l->log("pair[1]: " . $pair[1]);
 				if($pair[0] == "HTTP/1.0 412 Precondition Failed")
 				{
 					return true;
@@ -334,7 +400,10 @@
 		private function isHTTP201($str)
 		{
 			//JXLDebug::debugHeader();
-			//JXLDebug::debug("Application::isHTTP412");
+			//JXLDebug::debug("Application::isHTTP201");
+			//$l = new LogUtils("test_log.txt");
+			//$l->log("------------");
+			//$l->log("Application::isHTTP201");
 			$responseSplit = explode("\n", $str);
 			$rLen = count($responseSplit);
 			for($r = 0; $r < $rLen; $r++)
@@ -342,9 +411,16 @@
 				$rStr = $responseSplit[$r];
 				//JXLDebug::debug(">>>>>>>>>>>>>>>");
 				//JXLDebug::debug("rStr: " . $rStr);
+				
+				//$l->log(">>>>>>>>>>>>>>>");
+				//$l->log("rStr: " . $rStr);
+				
 				$pair = explode(":", $rStr);
 				$pair[0] = trim($pair[0]);
 				$pair[1] = trim($pair[1]);
+				
+				//$l->log("pair[0]: " . $pair[0]);
+				//$l->log("pair[1]: " . $pair[1]);
 				
 				if($pair[0] == "HTTP/1.0 201 Created")
 				{
@@ -356,6 +432,11 @@
 		
 		private function getHTTPLocation($str)
 		{
+			//$l = new LogUtils("test_log.txt");
+			//$l->log("------------");
+			//$l->log("Application::getHTTPLocation");
+			//$l->log("str: " . $str);
+			
 			$responseSplit = explode("\n", $str);
 			$rLen = count($responseSplit);
 			for($r = 0; $r < $rLen; $r++)
@@ -363,9 +444,15 @@
 				$rStr = $responseSplit[$r];
 			//	JXLDebug::debug(">>>>>>>>>>>>>>>");
 			//	JXLDebug::debug("rStr: " . $rStr);
+				//$l->log(">>>>>>>>>>>>>>>");
+				//$l->log("rStr: " . $rStr);
+				
 				$pair = explode(": ", $rStr);
 				$pair[0] = trim($pair[0]);
 				$pair[1] = trim($pair[1]);
+				
+				//$l->log("pair[0]: " . $pair[0]);
+				//$l->log("pair[1]: " . $pair[1]);
 				
 				if($pair[0] == "X-Redirect-Location")
 				{
@@ -373,6 +460,39 @@
 				}
 			}
 			return NULL;
+		}
+		
+		protected function checkVersion($currentVersion)
+		{
+			$major = 1;
+			$minor = 0;
+			$build = 0;
+			
+			$arr = explode(".", $currentVersion);
+			$clientMajor = $arr[0];
+			$clientMinor = $arr[1];
+			$clientBuild = $arr[2];
+			
+			if($major > $clientMajor)
+			{
+				return true;
+			}
+			else if($major == $clientMajor)
+			{
+				if($minor > $clientMinor)
+				{
+					return true;
+				}
+				else if($build == $clientBuild)
+				{
+					if($build > $clientBuild)
+					{
+						return true;
+					}
+				}
+			}
+			
+			return false;
 		}
 	}
 

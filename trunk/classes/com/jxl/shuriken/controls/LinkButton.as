@@ -16,6 +16,7 @@ class com.jxl.shuriken.controls.LinkButton extends Button
 		
 		if(__mcLabel != null)
 		{
+			__mcLabel.autoSize = "left";
 			var fmt:TextFormat = __mcLabel.getTextFormat();
 			fmt.align = TextField.ALIGN_LEFT;
 			fmt.color = 0x0000FF;
@@ -28,5 +29,13 @@ class com.jxl.shuriken.controls.LinkButton extends Button
 	// HACK: does not dispatch size event; if needed, fix here
 	// don't want SimpleButton's background, so overwriting here
 	private function drawButton():Void{}
+	
+	public function setColor(val:Number):Void
+	{
+		var fmt:TextFormat = __mcLabel.getTextFormat();
+		fmt.color = val;
+		__mcLabel.setTextFormat(fmt);
+		__mcLabel.setNewTextFormat(fmt);
+	}
 	
 }

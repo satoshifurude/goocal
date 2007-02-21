@@ -46,6 +46,7 @@ class com.jxl.goocal.views.createevent.Step1 extends UIComponent
 		{
 			__from_de = DateEditor(createComponent(DateEditor, "__from_de"));
 			__from_de.currentDate = __fromDate;
+			__from_de.fieldType = DateEditor.FIELD_YEAR_MONTH_DAY_HOUR_MIN;
 		}
 	}
 	

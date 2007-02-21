@@ -23,4 +23,5 @@ class com.jxl.goocal.model.ModelLocator
 	public var entries_array:Array;
 	public var currentEntry:EntryVO;
 	public var currentDate:Date;
+	public var currentVersion:String = "1.0.0";
 }

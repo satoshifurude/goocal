@@ -6,18 +6,21 @@ import com.jxl.shuriken.events.ShurikenEvent;
 import com.jxl.shuriken.events.Callback;
 import com.jxl.shuriken.events.Event;
 import com.jxl.shuriken.core.Collection;
+import com.jxl.shuriken.controls.LinkButton;
 
 import com.jxl.goocal.views.createevent.Step1;
 import com.jxl.goocal.views.createevent.Step2;
 import com.jxl.goocal.views.createevent.Step3;
 import com.jxl.goocal.views.createevent.Step4;
 import com.jxl.goocal.views.createevent.Step5;
+import com.jxl.goocal.views.createevent.Step6;
 
 class com.jxl.goocal.views.CreateEvent extends UIComponent
 {
 	public static var SYMBOL_NAME:String = "com.jxl.goocal.views.CreateEvent";
 	
 	public static var EVENT_CANCEL:String = "cancel";
+	public static var EVENT_SAVE:String = "save";
 	
 	private var __fromDate:Date;
 	private var __toDate:Date;
@@ -27,6 +30,7 @@ class com.jxl.goocal.views.CreateEvent extends UIComponent
 	private var __calendars:Collection;
 	private var __description:String;
 	private var __repeats:String;
+	private var __emails:String;
 	
 	public function get fromDate():Date { return __fromDate; }
 	public function set fromDate(val:Date):Void
@@ -84,9 +88,16 @@ class com.jxl.goocal.views.CreateEvent extends UIComponent
 		invalidate();
 	}
 	
+	public function get emails():String { return __emails; }
+	public function set emails(val:String):Void
+	{
+		__emails = val;
+		invalidate();
+	}
+	
 	// 1 based, not 0 based
 	private var __currentStep:Number = 1;
-	private var __maxSteps:Number = 5;
+	private var __maxSteps:Number = 6;
 	private var __cancelCallback:Callback;
 	private var __okCallback:Callback;
 	
@@ -96,9 +107,15 @@ class com.jxl.goocal.views.CreateEvent extends UIComponent
 	private var __step3:Step3;
 	private var __step4:Step4;
 	private var __step5:Step5;
+	private var __step6:Step6;
 	private var __cancel_pb:Button;
 	private var __back_pb:Button;
-	private var __next_pb:Button; // doubles as save button
+	private var __next_pb:Button;
+	private var __save_pb:Button;
+	private var __or_txt:TextField;
+	private var __reminder_lb:LinkButton;
+	private var __guests_lb:LinkButton;
+	
 	
 	public function CreateEvent()
 	{
@@ -117,6 +134,7 @@ class com.jxl.goocal.views.CreateEvent extends UIComponent
 		__calendars			= new Collection();
 		__description		= "";
 		__repeats			= "";
+		__emails			= "";
 		
 		if(__title_lbl == null)
 		{
@@ -163,10 +181,78 @@ class com.jxl.goocal.views.CreateEvent extends UIComponent
 			delete __step5;
 		}
 		
+		if(__step6 != null)
+		{
+			__step6.removeMovieClip();
+			delete __step6;
+		}
+		
+		if(__or_txt != null)
+		{
+			__or_txt.removeTextField();
+			delete __or_txt;
+		}
+		
+		if(__reminder_lb != null)
+		{
+			__reminder_lb.removeMovieClip();
+			delete __reminder_lb;
+		}
+		
+		if(__guests_lb != null)
+		{
+			__guests_lb.removeMovieClip();
+			delete __guests_lb;
+		}
+		
+		if(__currentStep < 4)
+		{
+			if(__save_pb != null)
+			{
+				__save_pb.removeMovieClip();
+				delete __save_pb;
+			}
+			
+			if(__next_pb == null)
+			{
+				__next_pb = Button(createComponent(Button, "__next_pb"));
+				__next_pb.setReleaseCallback(this, nextStep);
+				__next_pb.label = "Next";
+			}
+		}
+		else
+		{
+			if(__next_pb != null)
+			{
+				__next_pb.removeMovieClip();
+				delete __next_pb;
+			}
+			
+			if(__save_pb == null)
+			{
+				__save_pb = Button(createComponent(Button, "__save_pb"));
+				__save_pb.setReleaseCallback(this, onSave);
+				__save_pb.label = "SAVE";
+				var txt:TextField = __save_pb.textField;
+				var fmt:TextFormat = txt.getTextFormat();
+				fmt.bold = true;
+				fmt.color = 0x0066CC;
+				fmt.font = "Verdana";
+				fmt.size = 12;
+				txt.setTextFormat(fmt);
+				txt.setNewTextFormat(fmt);
+				
+			}
+		}
+		
 		switch(__currentStep)
 		{
 			case 1:
-				if(__back_pb != null) __back_pb.removeMovieClip(); delete __back_pb;
+				if(__back_pb != null)
+				{
+					__back_pb.removeMovieClip();
+					delete __back_pb;
+				}
 				
 				if(__step1 == null)
 				{
@@ -174,12 +260,6 @@ class com.jxl.goocal.views.CreateEvent extends UIComponent
 					__step1.fromDate = __fromDate;
 				}
 				
-				if(__next_pb == null)
-				{
-					__next_pb = Button(createComponent(Button, "__next_pb"));
-					__next_pb.setReleaseCallback(this, nextStep);
-					__next_pb.label = "Next";
-				}
 				break;
 				
 			case 2:
@@ -204,6 +284,7 @@ class com.jxl.goocal.views.CreateEvent extends UIComponent
 					__step3.where = __where;
 					__step3.setChangeCallback(this, onChanged);
 				}
+				
 				break;
 				
 			case 4:
@@ -215,6 +296,20 @@ class com.jxl.goocal.views.CreateEvent extends UIComponent
 					__step4.description = __description;
 					__step4.setChangeCallback(this, onChanged);
 				}
+				
+				if(__or_txt == null)
+				{
+					__or_txt = createLabel("__or_txt");
+					__or_txt.text = "or";
+				}
+				
+				if(__reminder_lb == null)
+				{
+					__reminder_lb = LinkButton(createComponent(LinkButton, "__reminder_lb"));
+					__reminder_lb.setReleaseCallback(this, nextStep);
+					__reminder_lb.label = "add a reminder";
+				}
+				
 				break;
 				
 			case 5:
@@ -224,6 +319,30 @@ class com.jxl.goocal.views.CreateEvent extends UIComponent
 					__step5.repeats = __repeats;
 					__step5.setChangeCallback(this, onChanged);
 				}
+				
+				if(__or_txt == null)
+				{
+					__or_txt = createLabel("__or_txt");
+					__or_txt.text = "or";
+				}
+				
+				if(__guests_lb == null)
+				{
+					__guests_lb = LinkButton(createComponent(LinkButton, "__guests_lb"));
+					__guests_lb.setReleaseCallback(this, nextStep);
+					__guests_lb.label = "add guests";
+				}
+				
+				break;
+			
+			case 6:
+				if(__step6 == null)
+				{
+					__step6 = Step6(createComponent(Step6, "__step6"));
+					__step6.emails = __emails;
+					__step6.setChangeCallback(this, onChanged);
+				}
+				
 				break;
 				
 			
@@ -261,8 +380,14 @@ class com.jxl.goocal.views.CreateEvent extends UIComponent
 			__step5.setSize(__width, __step5.height);
 		}
 		
+		if(__step6 != null)
+		{
+			__step6.move(0, __title_lbl._y + __title_lbl._height);
+			__step6.setSize(__width, __step6.height);
+		}
+		
 		__cancel_pb.setSize(50, 16);
-		__cancel_pb.move(0, __height - __cancel_pb.height);
+		__cancel_pb.move(0, __height - __cancel_pb.height - 20);
 		
 		if(__back_pb != null)
 		{
@@ -274,6 +399,32 @@ class com.jxl.goocal.views.CreateEvent extends UIComponent
 		{
 			__next_pb.setSize(50, 16);
 			__next_pb.move(__width - __next_pb.width, __cancel_pb.y);
+		}
+		
+		if(__save_pb != null)
+		{
+			__save_pb.setSize(50, 16);
+			__save_pb.move(__width - __save_pb.width, __cancel_pb.y);
+		}
+		
+		if(__or_txt != null)
+		{
+			__or_txt.setSize(16, 18);
+			__or_txt.move(0, __height - __or_txt._height);
+		}
+		
+		if(__reminder_lb != null)
+		{
+			__reminder_lb.setSize(77, 18);
+			__reminder_lb.move(__or_txt._x + __or_txt._width + 2, __or_txt._y);
+		}
+		
+		if(__guests_lb != null)
+		{
+			__guests_lb.setSize(77, 18);
+			trace("__guests_lb.y: " + __guests_lb.y);
+			__guests_lb.move(__or_txt._x + __or_txt._width + 2, __or_txt._y);
+			trace("__guests_lb.y: " + __guests_lb.y);
 		}
 	}
 	
@@ -300,13 +451,20 @@ class com.jxl.goocal.views.CreateEvent extends UIComponent
 		__cancelCallback.dispatch(new Event(EVENT_CANCEL, this));
 	}
 	
+	private function onSave(event:ShurikenEvent):Void
+	{
+		__okCallback.dispatch(new Event(EVENT_SAVE, this));
+	}
+	
 	public function setupEvent(fromDate:Date,
 							   toDate:Date,
 							   what:String,
 							   where:String,
 							   calendars:Collection,
+							   calendar:String,
 							   description:String,
-							   repeats:String):Void
+							   repeats:String,
+							   emails:String):Void
 	{
 		
 		__fromDate 			= fromDate;
@@ -314,8 +472,10 @@ class com.jxl.goocal.views.CreateEvent extends UIComponent
 		__what				= what;
 		__where				= where;
 		__calendars			= calendars;
+		if(calendar != null) __calendar = calendar;
 		__description 		= description;
 		__repeats			= repeats;
+		__emails			= emails;
 		
 		invalidate();
 	}
@@ -335,6 +495,10 @@ class com.jxl.goocal.views.CreateEvent extends UIComponent
 		else if(event.target == __step5)
 		{
 			__repeats = __step5.repeats;
+		}
+		else if(event.target == __step6)
+		{
+			__emails = __step6.emails;
 		}
 	}
 	

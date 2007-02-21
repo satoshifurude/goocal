@@ -1,6 +1,7 @@
 ﻿import mx.utils.Delegate;
 
 import com.jxl.shuriken.containers.List;
+import com.jxl.shuriken.events.Event;
 import com.jxl.shuriken.events.ShurikenEvent;
 import com.jxl.shuriken.controls.calendarclasses.CalendarDay;
 import com.jxl.shuriken.core.MDArray;
@@ -13,6 +14,8 @@ import com.jxl.shuriken.events.Callback;
 class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 {
 	public static var SYMBOL_NAME:String = "com.jxl.shuriken.controls.calendarclasses.CalendarBase";
+	
+	public static var EVENT_DATE_CHANGE:String = "dateChange";
 	
 	private var __currentDate:Date;
 	private var __selectedDate:Date;
@@ -27,6 +30,7 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 	private var __finishedDrawing:Boolean			= false;
 	private var __lastDaySelected:CalendarDay;
 	private var __itemClickCallback:Callback;
+	private var __dateCallback:Callback;
 	
 	private var __loop_mc:MovieClip;
 	private var __status_mc:MovieClip;
@@ -100,6 +104,7 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 									this,
 									onDateBuilderLoop,
 									onDateBuilderLoopDone);
+		__dateCallback.dispatch(new Event(EVENT_DATE_CHANGE, this));
 	}
 	
 	public function get selectedDate():Date { return __selectedDate; }
@@ -629,8 +634,8 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 	
 	private function onDaySelectionChanged(p_event:ShurikenEvent):Void
 	{
-		DebugWindow.debugHeader();
-		DebugWindow.debug("CalendarBase::onDaySelectionChanged");
+		//trace("---------------");
+		//trace("CalendarBase::onDaySelectionChanged");
 		
 		if(__dateBuilder_lu || __draw_lu || __size_lu || __refresh_lu || __colors_lu) return;
 		setCalendarDaySelected(CalendarDay(p_event.target));
@@ -666,7 +671,7 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 		var obj:Object = p_tar.data;
 		// HACK: casting hack
 		var theDate = __date_mdarray.getCell(obj.r, obj.c);
-		DebugWindow.debug("You selected " + theDate);
+		//trace("You selected " + theDate);
 		__selectedDate = theDate;
 		__lastDaySelected = p_tar;
 		
@@ -833,5 +838,10 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 	public function setItemClickCallback(scope:Object, func:Function):Void
 	{
 		__itemClickCallback = new Callback(scope, func);
+	}
+	
+	public function setDateChangeCallback(scope:Object, func:Function):Void
+	{
+		__dateCallback = new Callback(scope, func);
 	}
 }

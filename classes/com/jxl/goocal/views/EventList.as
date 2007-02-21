@@ -53,6 +53,7 @@ class com.jxl.goocal.views.EventList extends ScrollableList
 	{
 		__columnWidth = p_width;
 		__mcList.setColumnWidthNoRedraw(__columnWidth);
+		
 		super.setSize(p_width, p_height);
 	}
 	
@@ -63,18 +64,22 @@ class com.jxl.goocal.views.EventList extends ScrollableList
 		
 		__columnWidth = __width;
 		__mcList.setColumnWidthNoRedraw(__columnWidth);
+		
 		super.redraw();
 		
+		// forces a redraw to be blue
 		__mcScrollPrevious.setSize(__width, __mcScrollPrevious.height);
 		__mcScrollNext.setSize(__width, __mcScrollNext.height);
 		
-		trace("__mcScrollNext.x: " + __mcScrollNext.x + ", y: " + __mcScrollNext.y);
+		
+		//trace("__mcList.direction: " + __mcList.direction);
+		//trace("__mcScrollNext.x: " + __mcScrollNext.x + ", y: " + __mcScrollNext.y);
 	}
 	
 	private function refreshEventItem(p_child:UIComponent, p_index:Number, p_item:Object):Void
 	{
-		trace("---------------");
-		trace("EventList::refreshEventItem");
+		//trace("---------------");
+		//trace("EventList::refreshEventItem");
 		var vo:EntryVO = EntryVO(p_item);
 		EventItem(p_child).eventTime = vo.toHourString();
 		EventItem(p_child).eventName = vo.title;

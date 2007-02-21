@@ -87,15 +87,18 @@ class com.jxl.goocal.business.GetCalendarEventsDelegate
 		lv.endYear				= p_endDate.getFullYear();
 		lv.endMonth				= p_endDate.getMonth() + 1;
 		lv.endDay				= p_endDate.getDate();
-		var today:Date 			= new Date();
-		var theURL:String = "http://www.jessewarden.com/goocal/php/com/jxl/goocal/controller/Application.php";
-		lv.sendAndLoad(theURL, lv, "POST");
+		lv.sendAndLoad(_global.phpURL, lv, "POST");
 	}
 	
 	private function onGetCalendarEvents(p_success:Boolean):Void
 	{
-		//DebugWindow.debugHeader();
-		//DebugWindow.debug("GetCalendarEventsDelegate::onGetCalendarEvents");
+		//trace("-------------------");
+		//trace("GetCalendarEventsDelegate::onGetCalendarEvents");
+		for(var p in lv)
+		{
+			trace(p + ": " + lv[p]);
+		}
+		
 		if(p_success == true)
 		{
 			onProgress("Received.  Parsing...");
@@ -114,9 +117,10 @@ class com.jxl.goocal.business.GetCalendarEventsDelegate
 	
 	private function onDoneParsing(p_array:Array):Void
 	{
+		//trace("----------------------");
+		//trace("GetCalendarEventsDelegate::onDoneParsing, p_array.length: " + p_array.length);
+		
 		onProgress("Done!");
-		//DebugWindow.debugHeader();
-		//DebugWindow.debug("GetCalendarEventsDelegate::onDoneParsing, p_array.length: " + p_array.length);
 		responder.onResult(new ResultEvent(p_array));
 	}
 	
@@ -126,9 +130,11 @@ class com.jxl.goocal.business.GetCalendarEventsDelegate
 		__callbackFunction.call(__callbackScope, p_str);
 	}
 	
+	/*
 	public function toString():String
 	{
 		return "[class GetCalendarEventsDelegate]";
 	}
+	*/
 	
 }

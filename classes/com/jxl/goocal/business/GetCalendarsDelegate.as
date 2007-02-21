@@ -9,6 +9,8 @@ class com.jxl.goocal.business.GetCalendarsDelegate
 {
 	private var responder:Responder;
 	private var lv:LoadVars;
+	private var timeoutID:Number;
+	private var attempts:Number;
 	
 	function GetCalendarsDelegate(p_responder:Responder)
 	{
@@ -25,13 +27,16 @@ class com.jxl.goocal.business.GetCalendarsDelegate
 		//responder.onResult(new ResultEvent(list));
 		//return;
 		
+		attempts = 1;
+		clearInterval(timeoutID);
+		timeoutID = setInterval(this, "onTimeout", 20000);
+		
 		lv = new LoadVars();
 		lv.onLoad = Delegate.create(this, onGetCalendars);
 		lv.cmd = "get_calendars_names";
 		lv.auth = p_auth;
 		lv.email = p_email;
-		var theURL:String = "http://www.jessewarden.com/goocal/php/com/jxl/goocal/controller/Application.php";
-		lv.sendAndLoad(theURL, lv, "POST");
+		lv.sendAndLoad(_global.phpURL, lv, "POST");
 	}
 	
 	private function onGetCalendars(p_loaded:Boolean):Void
@@ -39,6 +44,8 @@ class com.jxl.goocal.business.GetCalendarsDelegate
 		//DebugWindow.debugHeader();
 		//DebugWindow.debug("GetCalendarsDelegate:::onGetCalendars");
 		//DebugWindow.debug("p_jsonStr: " + p_jsonStr);
+		clearInterval(timeoutID);
+		
 		if(p_loaded == true)
 		{
 			//var list:Array = CalendarFactory.getCalendars(p_jsonStr);
@@ -55,6 +62,23 @@ class com.jxl.goocal.business.GetCalendarsDelegate
 		else
 		{
 			var fault:Fault = new Fault("failure", "xml load failure", "The XML failed to load from the server.", "XML");
+			var fe:FaultEvent = new FaultEvent(fault);
+			responder.onFault(fe);
+		}
+	}
+	
+	private function onTimeout():Void
+	{
+		clearInterval(timeoutID);
+		if(attempts < 3)
+		{
+			attempts++;
+			timeoutID = setInterval(this, "onTimeout", 20000);
+			lv.sendAndLoad(_global.phpURL, lv, "POST");
+		}
+		else
+		{
+			var fault:Fault = new Fault("failure", "xml load failure", "Timed out.  Tried " + attempts + " times.", "XML");
 			var fe:FaultEvent = new FaultEvent(fault);
 			responder.onFault(fe);
 		}

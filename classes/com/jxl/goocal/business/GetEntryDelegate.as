@@ -31,8 +31,7 @@ class com.jxl.goocal.business.GetEntryDelegate
 		lv.cmd = "get_entry";
 		lv.auth = p_auth;
 		lv.entryURL = entryVO.id;
-		var theURL:String = "http://www.jessewarden.com/goocal/php/com/jxl/goocal/controller/Application.php";
-		lv.sendAndLoad(theURL, lv, "POST");
+		lv.sendAndLoad(_global.phpURL, lv, "POST");
 	}
 	
 	private function onGetEntry(p_success:Boolean):Void

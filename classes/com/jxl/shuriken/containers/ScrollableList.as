@@ -268,11 +268,14 @@ class com.jxl.shuriken.containers.ScrollableList extends UIComponent
 	// Exposed for a child class
 	private function setupList():Void
 	{
+		trace("----------------");
+		trace("ScrollableList::setupList");
 		__mcList = ButtonList(attachMovie(ButtonList.SYMBOL_NAME, "__mcList", getNextHighestDepth()));
 		__mcList.childClass = __childClass;
 		var f:Function = __mcList.onDoneBuilding;
 		__mcList.onDoneBuilding = function():Void
 		{
+			trace("__mcList::onDoneBuilding");
 			f.call(this);
 			this._parent.invalidate();
 		};
@@ -314,10 +317,10 @@ class com.jxl.shuriken.containers.ScrollableList extends UIComponent
 			}
 			else
 			{
-				
 				var listHeight:Number = Math.max(0, height - __mcScrollPrevious.height - __mcScrollNext.height);
 				__mcList.setSize(width, listHeight);
 				__mcList.move(0, __mcScrollPrevious.y + __mcScrollPrevious.height);
+				
 				__mcScrollNext.move(0, __mcList.y + __mcList.height);
 				__mcScrollNext.swapDepths(Math.max(__mcScrollNext.getDepth(), 9999));
 			}

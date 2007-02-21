@@ -1,8 +1,10 @@
 ﻿class com.jxl.shuriken.utils.DateUtils
 {
 	public static var FORMAT_TIME_MONTH_DAY_FULLYEAR:Number 	= 0;
-	public static var MONTH_DAY_YEAR:Number						= 1;
-	public static var HOUR_MIN_AM_PM:Number						= 2;
+	public static var FORMAT_MONTH_DAY_FULLYEAR:Number 			= 1;
+	public static var MONTH_DAY_YEAR:Number						= 2;
+	public static var HOUR_MIN_AM_PM:Number						= 3;
+	
 	
 	public static function clone(p_date:Date):Date
 	{
@@ -228,6 +230,15 @@
 				// Today Dec 18th 2006
 				var s:String = "";
 				s += "Today ";
+				var monthNames_array:Array = getMonthNames();
+				s += monthNames_array[p_date.getMonth()].substr(0, 3) + " ";
+				s += p_date.getDate().toString() + " ";
+				s += p_date.getFullYear().toString();
+				return s;
+				
+			case FORMAT_MONTH_DAY_FULLYEAR:
+				// Oct 9th 2006
+				var s:String = "";
 				var monthNames_array:Array = getMonthNames();
 				s += monthNames_array[p_date.getMonth()].substr(0, 3) + " ";
 				s += p_date.getDate().toString() + " ";

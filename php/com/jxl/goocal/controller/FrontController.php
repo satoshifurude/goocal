@@ -1,6 +1,6 @@
 <?php
 
-	set_include_path("/home/9936/domains/jessewarden.com/html/goocal/php_staging/");
+	set_include_path("/home/9936/domains/jessewarden.com/html/goocal/php/");
 	
 	require_once("com/jxl/goocal/controller/Application.php");
 	
@@ -64,10 +64,33 @@
 				$params->title				= $HTTP_POST_VARS['title'];
 				$params->description		= $HTTP_POST_VARS['description'];
 				$params->where				= $HTTP_POST_VARS['where'];
+				
 				$success = $fc->runCommand(Application::COMMAND_CREATE_ENTRY, $params);
 				echo($success);
+				/*
+				if($success == true)
+				{
+					echo("true");
+				}
+				else
+				{
+					echo("false");
+				}
+				*/
 				return;
-				
+			
+			case Application::COMMAND_CHECK_VERSION:
+				$params->currentVersion		= $HTTP_POST_VARS['currentVersion'];
+				$needToUpdate = $fc->runCommand(Application::COMMAND_CHECK_VERSION, $params);
+				if($needToUpdate == true)
+				{
+					echo("needUpdate=true&newVersion=1.0.0&updateURL=http://www.jessewarden.com/");
+				}
+				else
+				{
+					echo("needUpdate=false");
+				}
+				return;
 				
 				
 			

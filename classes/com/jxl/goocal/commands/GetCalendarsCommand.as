@@ -16,8 +16,32 @@ class com.jxl.goocal.commands.GetCalendarsCommand extends CommandTemplate implem
 {
 	private function executeOperation(p_event:GetCalendarsEvent):Void
 	{
-		var gcd:GetCalendarsDelegate = new GetCalendarsDelegate(this);
-		gcd.getCalendars(ModelLocator.getInstance().authCode, ModelLocator.getInstance().username);
+		var needToCallServer:Boolean = true;
+		if(ModelLocator.getInstance().calendars == null)
+		{
+			needToCallServer = true;
+		}
+		else
+		{
+			if(ModelLocator.getInstance().calendars.getLength() > 0)
+			{
+				needToCallServer = false;
+			}
+			else
+			{
+				needToCallServer = true;
+			}
+		}
+		
+		if(needToCallServer == true)
+		{
+			var gcd:GetCalendarsDelegate = new GetCalendarsDelegate(this);
+			gcd.getCalendars(ModelLocator.getInstance().authCode, ModelLocator.getInstance().username);
+		}
+		else
+		{
+			super.result(true);
+		}
 	}
 	
 	public function onResult(result:ResultEvent):Void

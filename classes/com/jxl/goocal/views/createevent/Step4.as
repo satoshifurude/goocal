@@ -115,7 +115,7 @@ class com.jxl.goocal.views.createevent.Step4 extends UIComponent
 		__description_lbl.setSize(__width, __description_lbl._height);
 		
 		__description_txt.move(__calendars_cb.x, __description_lbl._y + __description_lbl._height + margin);
-		__description_txt.setSize(__calendars_cb.width, __height - __description_txt._y);
+		__description_txt.setSize(__calendars_cb.width, 80);
 	}
 	
 	private function onDescChanged():Void

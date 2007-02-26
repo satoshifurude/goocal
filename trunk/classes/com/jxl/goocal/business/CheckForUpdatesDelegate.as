@@ -22,6 +22,8 @@ class com.jxl.goocal.business.CheckForUpdatesDelegate
 {
 	private var responder:Responder;
 	private var lv:LoadVars;
+	private var timeoutID:Number;
+	private var attempts:Number;
 	
 	public function CheckForUpdatesDelegate(p_responder:Responder)
 	{
@@ -30,6 +32,10 @@ class com.jxl.goocal.business.CheckForUpdatesDelegate
 	
 	public function checkForUpdates(currentVersion:String):Void
 	{
+		attempts = 1;
+		clearInterval(timeoutID);
+		timeoutID = setInterval(this, "onTimeout", 20000);
+		
 		lv						= new LoadVars();
 		lv.onLoad 				= Delegate.create(this, onUpdates);
 		lv.cmd 					= "check_version";
@@ -45,6 +51,7 @@ class com.jxl.goocal.business.CheckForUpdatesDelegate
 		{
 			trace(p + ": " + lv[p]);
 		}
+		clearInterval(timeoutID);
 		if(success == true)
 		{
 			if(lv.needUpdate == "true")
@@ -60,6 +67,24 @@ class com.jxl.goocal.business.CheckForUpdatesDelegate
 		else
 		{
 			var fault:Fault = new Fault("failure", "check update failure", "Failed to hit update server.", "LoadVars");
+			var fe:FaultEvent = new FaultEvent(fault);
+			responder.onFault(fe);
+		}
+	}
+	
+	private function onTimeout():Void
+	{
+		clearInterval(timeoutID);
+		
+		if(attempts < 3)
+		{
+			attempts++;
+			timeoutID = setInterval(this, "onTimeout", 20000);
+			lv.sendAndLoad(_global.phpURL, lv, "POST");
+		}
+		else
+		{
+			var fault:Fault = new Fault("failure", "check update failure", "Failed to hit update server after " + attempts + "tries.", "LoadVars");
 			var fe:FaultEvent = new FaultEvent(fault);
 			responder.onFault(fe);
 		}

@@ -48,7 +48,10 @@ class com.jxl.goocal.views.createevent.Step3 extends UIComponent
 		if(__what_lbl == null)
 		{
 			__what_lbl = createLabel("__what_lbl");
-			__what_lbl.text = "What";
+			var tf:TextFormat = __what_lbl.getTextFormat();
+			tf.bold = true;
+			__what_lbl.setNewTextFormat(tf);
+			__what_lbl.text = "What (required)";
 		}
 		
 		if(__what_ti == null)
@@ -56,7 +59,7 @@ class com.jxl.goocal.views.createevent.Step3 extends UIComponent
 			__what_ti = createLabel("__what_ti");
 			__what_ti.type = TextField.TYPE_INPUT;
 			__what_ti.border = true;
-			__what_ti.borderColor = 0x000000;
+			__what_ti.borderColor = 0xA5ACB2;
 			__what_ti.background = true;
 			__what_ti.backgroundColor = 0xFFFFFF;
 			__what_ti.onChanged = Delegate.create(this, onWhatChanged); 
@@ -65,6 +68,9 @@ class com.jxl.goocal.views.createevent.Step3 extends UIComponent
 		if(__where_lbl == null)
 		{
 			__where_lbl = createLabel("__where_lbl");
+			var tf:TextFormat = __where_lbl.getTextFormat();
+			tf.bold = true;
+			__where_lbl.setNewTextFormat(tf);
 			__where_lbl.text = "Where";
 		}
 		
@@ -73,7 +79,7 @@ class com.jxl.goocal.views.createevent.Step3 extends UIComponent
 			__where_ti = createLabel("__where_ti");
 			__where_ti.type = TextField.TYPE_INPUT;
 			__where_ti.border = true;
-			__where_ti.borderColor = 0x000000;
+			__where_ti.borderColor = 0xA5ACB2;
 			__where_ti.background = true;
 			__where_ti.backgroundColor = 0xFFFFFF;
 			__where_ti.onChanged = Delegate.create(this, onWhereChanged);
@@ -87,21 +93,38 @@ class com.jxl.goocal.views.createevent.Step3 extends UIComponent
 		var margin:Number = 2;
 		var m2:Number = margin * 2;
 		
-		__what_lbl.move(0, 0);
-		__what_lbl.setSize(__width, __what_lbl._height);
+		__what_lbl.move(margin, 0);
+		__what_lbl.setSize(__width - m2, __what_lbl._height);
 		
-		__what_ti.move(__what_lbl.x + margin, __what_lbl._y + __what_lbl._height + margin);
+		__what_ti.move(__what_lbl._x, __what_lbl._y + __what_lbl._height + margin);
 		__what_ti.setSize(__width - m2, __what_ti._height);
 		
 		__where_lbl.move(__what_lbl._x, __what_ti._y + __what_ti._height + margin);
-		__where_lbl.setSize(__width, __where_lbl._height);
+		__where_lbl.setSize(__width - m2, __where_lbl._height);
 		
-		__where_ti.move(__where_lbl.x + margin, __where_lbl._y + __where_lbl._height + margin);
+		__where_ti.move(__where_lbl._x, __where_lbl._y + __where_lbl._height + margin);
 		__where_ti.setSize(__width - m2, __where_ti._height);
+		
+		if(__what_ti.text == "")
+		{
+			__what_ti.borderColor = 0xCC0000;
+		}
+		else
+		{
+			__what_ti.borderColor = 0xA5ACB2;
+		}
 	}
 	
 	private function onWhatChanged():Void
 	{
+		if(__what_ti.text == "")
+		{
+			__what_ti.borderColor = 0xCC0000;
+		}
+		else
+		{
+			__what_ti.borderColor = 0xA5ACB2;
+		}
 		__changeCallback.dispatch(new Event(EVENT_WHAT_CHANGE, this));
 	}
 	

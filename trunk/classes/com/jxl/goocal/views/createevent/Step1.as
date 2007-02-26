@@ -39,6 +39,9 @@ class com.jxl.goocal.views.createevent.Step1 extends UIComponent
 		if(__from_lbl == null)
 		{
 			__from_lbl = createLabel("__from_lbl");
+			var tf:TextFormat = __from_lbl.getTextFormat();
+			tf.bold = true;
+			__from_lbl.setNewTextFormat(tf);
 			__from_lbl.text = "From";
 		}
 		

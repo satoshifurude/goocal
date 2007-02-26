@@ -35,7 +35,8 @@ class com.jxl.goocal.commands.CreateEventCommand extends CommandTemplate impleme
 						event.endDate,
 						event.title,
 						event.description,
-						event.where);
+						event.where,
+						ModelLocator.getInstance().timeZoneOffset);
 	}
 	
 	public function onResult(result:ResultEvent):Void

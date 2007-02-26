@@ -22,6 +22,7 @@ class com.jxl.goocal.views.LoginForm extends UIComponent
 	{
 		__username = p_val;
 		__username_ti.text = p_val;
+		callLater(this, onTXTChanged);
 	}
 	
 	public function get password():String { return __password_ti.text; }
@@ -29,6 +30,7 @@ class com.jxl.goocal.views.LoginForm extends UIComponent
 	{
 		__password = p_val;
 		__password_ti.text = p_val;
+		callLater(this, onTXTChanged);
 	}
 	
 	public function get remember():Boolean { return __remember; }
@@ -97,6 +99,8 @@ class com.jxl.goocal.views.LoginForm extends UIComponent
 			__username_lbl.text = "Username";
 		}
 		
+		var fChange:Function = Delegate.create(this, onTXTChanged);
+		
 		if(__username_ti == null)
 		{
 			__username_ti = createLabel("__username_ti");
@@ -107,6 +111,7 @@ class com.jxl.goocal.views.LoginForm extends UIComponent
 			__username_ti.borderColor = 0xA5ACB2;
 			__username_ti.background = true;
 			__username_ti.backgroundColor = 0xFFFFFF;
+			__username_ti.onChanged = fChange;
 		}
 		
 		if(__password_lbl == null)
@@ -130,6 +135,7 @@ class com.jxl.goocal.views.LoginForm extends UIComponent
 			__password_ti.background = true;
 			__password_ti.backgroundColor = 0xFFFFFF;
 			__password_ti.password = true;
+			__password_ti.onChanged = fChange;
 		}
 		
 		if(__remember_ch == null)
@@ -194,6 +200,8 @@ class com.jxl.goocal.views.LoginForm extends UIComponent
 		
 		__submit_pb.move(__remember_ch._x, __remember_ch._y + __remember_ch._height + m2);
 		__submit_pb.setSize(__remember_ch._width, __submit_pb._height);
+		
+		onTXTChanged();
 	}
 	
 	private function onSOReady(p_so:SharedObject):Void
@@ -300,6 +308,39 @@ class com.jxl.goocal.views.LoginForm extends UIComponent
 		SharedObject.removeListener(soName);
 		delete __closingList;
 		__submitCallback.dispatch(new Event(EVENT_SUBMIT, this));
+	}
+	
+	private function onTXTChanged():Void
+	{
+		var u:String = __username_ti.text;
+		var p:String = __password_ti.text;
+		
+		if(u == "")
+		{
+			__username_ti.borderColor = 0xCC0000;
+		}
+		else
+		{
+			__username_ti.borderColor = 0xA5ACB2;
+		}
+		
+		if(p == "")
+		{
+			__password_ti.borderColor = 0xCC0000;
+		}
+		else
+		{
+			__password_ti.borderColor = 0xA5ACB2;
+		}
+		
+		if(u != "" && p != "")
+		{
+			__submit_pb._visible = true;
+		}
+		else
+		{
+			__submit_pb._visible = false;
+		}
 	}
 	
 	public function setRememberCallback(scope:Object, func:Function):Void

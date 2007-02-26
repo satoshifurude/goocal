@@ -47,9 +47,12 @@ class com.jxl.goocal.views.createevent.Step6 extends UIComponent
 		{
 			__emails_txt = createLabel("__emails_txt");
 			__emails_txt.border 			= true;
-			__emails_txt.borderColor 		= 0x000000;
+			__emails_txt.borderColor 		= 0xA5ACB2;
 			__emails_txt.background 		= true;
 			__emails_txt.backgroundColor 	= 0xFFFFFF;
+			__emails_txt.multiline 			= true;
+			__emails_txt.wordWrap 			= true;
+			__emails_txt.type				= TextField.TYPE_INPUT;
 			__emails_txt.onChanged 			= Delegate.create(this, onEmailChange);
 		}
 		
@@ -65,8 +68,8 @@ class com.jxl.goocal.views.createevent.Step6 extends UIComponent
 		__instructions_txt.move(0, 0);
 		__instructions_txt.setSize(__width, 36);
 		
-		__emails_txt.move(0, __instructions_txt._height + 2);
-		__emails_txt.setSize(__width, __height - __emails_txt._y);
+		__emails_txt.move(2, __instructions_txt._height + 2);
+		__emails_txt.setSize(__width - 4, __height - __emails_txt._y - 6);
 	}
 	
 	private function onEmailChange():Void

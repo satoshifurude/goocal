@@ -1,5 +1,8 @@
 <?php
 
+	set_include_path("/home/9936/domains/jessewarden.com/html/goocal/php/");
+	
+	require_once("JXLDebug.php");
 	
 	class GDataFactory
 	{
@@ -115,7 +118,10 @@
 			return $entry;
 		}
 		
-		public static function getCreateEntryXML($title,
+		// NOTE: doubles as an edit entry XML creator as well
+		public static function getCreateEntryXML($mode,
+												  $id,
+												  $title,
 												  $description,
 												  $name,
 												  $email,
@@ -129,11 +135,30 @@
 												  $endMonth,
 												  $endDay,
 												  $endHour,
-												  $endMinute)
+												  $endMinute,
+												  $timeZoneOffset)
 		{
 		
 			$xml_str  = "<entry xmlns='http://www.w3.org/2005/Atom'";
 			$xml_str .=	" xmlns:gd='http://schemas.google.com/g/2005'>";
+			if(isset($id) == true)
+			{
+				$xml_str .=	"<id>" . $id . "</id>";
+			}
+			if(isset($mode) == true)
+			{
+				//JXLDebug::debugHeader();
+				//JXLDebug::debug("GDataFactory::getCreateEntryXML");
+				//JXLDebug::debug("mode: " . $mode);
+				if($mode == "edit")
+				{
+					$xml_str .=	"<link rel=\"edit\" href=\"" . $id . "\" />";
+				}
+				else if($mode == "delete")
+				{
+					$xml_str .=	"<link rel=\"delete\" />";
+				}
+			}
 			$xml_str .=	"<category scheme='http://schemas.google.com/g/2005#kind'";
 			$xml_str .=	" term='http://schemas.google.com/g/2005#event'></category>";
 			$xml_str .=	"<title type='text'>" . $title . "</title>";
@@ -155,7 +180,7 @@
 			$startTime .= self::getZeroString($startMonth) . "-";
 			$startTime .= self::getZeroString($startDay) . "T";
 			$startTime .= self::getZeroString($startHour) . ":";
-			$startTime .= self::getZeroString($startMinute) . ":00-05:00";
+			$startTime .= self::getZeroString($startMinute) . ":00" . self::getTimezoneOffsetString($timeZoneOffset);
 			
 			$xml_str .=	"<gd:when startTime='" . $startTime . "'";
 			
@@ -164,7 +189,7 @@
 			$endTime .= self::getZeroString($endMonth) . "-";
 			$endTime .= self::getZeroString($endDay) . "T";
 			$endTime .= self::getZeroString($endHour) . ":";
-			$endTime .= self::getZeroString($endMinute) . ":00-05:00";
+			$endTime .= self::getZeroString($endMinute) . ":00" . self::getTimezoneOffsetString($timeZoneOffset);
 			
 			$xml_str .=	" endTime='" . $endTime . "'>";
 			$xml_str .= "<gd:reminder minutes='10' />";
@@ -178,12 +203,42 @@
 		{
 			if($num > 9)
 			{
-				return "" . $num;
+				return "" . abs($num);
 			}
 			else
 			{
-				return "0" . $num;
+				return "0" . abs($num);
 			}
+		}
+		
+		public static function getTimezoneOffsetString($num)
+		{
+			// KLUDE: Google Calendar is based on Moutain Time (GMT).  Therefore,
+			// I need to offset the queries or you'll whack results for querying.
+			// More info: http://www.ietf.org/rfc/rfc3339.txt (section 4.2)
+			
+			$num = intval($num);
+			$offsetAmount = self::getZeroString($num);
+			//JXLDebug::debugHeader();
+			//JXLDebug::debug("GDataFactory::getTimezoneOffsetString, num: " . $num);
+			//JXLDebug::debug("offsetAmount: " . $offsetAmount);
+			
+			//-08:00 = %2D08%3A00
+			//+08:00 = %2B08%3A00
+
+
+			if($num >= 0)
+			{
+				$offsetAmount = '+' . $offsetAmount;
+			}
+			else
+			{
+				$offsetAmount = '-' . $offsetAmount;
+			}
+			$offsetAmount .= ":00";
+			//JXLDebug::debugHeader();
+			//JXLDebug::debug("offsetAmount: " . $offsetAmount);
+			return $offsetAmount;
 		}
 	}
 

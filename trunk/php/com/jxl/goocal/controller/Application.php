@@ -7,8 +7,6 @@
 	require_once("com/jxl/goocal/factories/GDataFactory.php");
 	//require_once("JXLDebug.php");
 	
-	//require_once("com/jxl/utils/LogUtils.php");
-	
 	class Application
 	{
 		const COMMAND_GET_AUTH						= "get_auth";
@@ -16,6 +14,8 @@
 		const COMMAND_GET_CALENDAR_ENTRIES			= "get_calendar_entries";
 		const COMMAND_GET_ENTRY						= "get_entry";
 		const COMMAND_CREATE_ENTRY					= "create_entry";
+		const COMMAND_EDIT_ENTRY					= "edit_entry";
+		const COMMAND_DELETE_ENTRY					= "delete_entry";
 		const COMMAND_CHECK_VERSION					= "check_version";
 		
 		protected $gcalutils;
@@ -48,16 +48,19 @@
 													 $params->startDay,
 													 $params->endYear,
 													 $params->endMonth,
-													 $params->endDay);
+													 $params->endDay,
+													 $params->timeZoneOffset);
 				
 				case self::COMMAND_GET_ENTRY:
 					return $this->getEntry($params->auth,
 										   $params->entryURL);
 				
 				case self::COMMAND_CREATE_ENTRY:
-					return $this->createEntry($params->auth,
+					return $this->modifyEntry(self::COMMAND_CREATE_ENTRY,
+											  $params->auth,
 											  $params->name,
 											  $params->email,
+											  NULL,
 											  $params->calendarName,
 											  $params->startYear,
 											  $params->startMonth,
@@ -71,7 +74,52 @@
 											  $params->endMinute,
 											  $params->title,
 											  $params->description,
-											  $params->where);
+											  $params->where,
+											  $params->timeZoneOffset);
+											  
+				case self::COMMAND_EDIT_ENTRY:
+					return $this->modifyEntry(self::COMMAND_EDIT_ENTRY,
+											  $params->auth,
+											  $params->name,
+											  $params->email,
+											  $params->id,
+											  $params->calendarName,
+											  $params->startYear,
+											  $params->startMonth,
+											  $params->startDay,
+											  $params->startHour,
+											  $params->startMinute,
+											  $params->endYear,
+											  $params->endMonth,
+											  $params->endDay,
+											  $params->endHour,
+											  $params->endMinute,
+											  $params->title,
+											  $params->description,
+											  $params->where,
+											  $params->timeZoneOffset);
+				
+				case self::COMMAND_DELETE_ENTRY:
+					return $this->modifyEntry(self::COMMAND_DELETE_ENTRY,
+											  $params->auth,
+											  $params->name,
+											  $params->email,
+											  $params->id,
+											  $params->calendarName,
+											  $params->startYear,
+											  $params->startMonth,
+											  $params->startDay,
+											  $params->startHour,
+											  $params->startMinute,
+											  $params->endYear,
+											  $params->endMonth,
+											  $params->endDay,
+											  $params->endHour,
+											  $params->endMinute,
+											  $params->title,
+											  $params->description,
+											  $params->where,
+											  $params->timeZoneOffset);
 				
 				case self::COMMAND_CHECK_VERSION:
 					return $this->checkVersion($params->currentVersion);
@@ -87,12 +135,6 @@
 		
 		protected function getCalendars($p_auth, $p_email)
 		{
-			//$l = new LogUtils("test_log.txt");
-			//$l->log("------------");
-			//$l->log("Application::getCalendars");
-			//$l->log("p_auth: " . $p_auth);
-			//$l->log("p_email: " . $p_email);
-			
 			$headers = array('Authorization: GoogleLogin auth=' . $p_auth);
 			
 			// get the feed from Google
@@ -115,35 +157,58 @@
 												$p_startDay,
 												$p_endYear,
 												$p_endMonth,
-												$p_endDay)
+												$p_endDay,
+												$p_timeZoneOffset)
 		{
+			//JXLDebug::debugHeader();
+			//JXLDebug::debug("Application::getCalendarEntries");
+			//JXLDebug::debug("p_auth: " . $p_auth);
+			//JXLDebug::debug("p_email: " . $p_email);
+			//JXLDebug::debug("p_calendarName: " . $p_calendarName);
+			//JXLDebug::debug("p_startYear: " . $p_startYear);
+			//JXLDebug::debug("p_startMonth: " . $p_startMonth);
+			//JXLDebug::debug("p_startDay: " . $p_startDay);
+			//JXLDebug::debug("p_endYear: " . $p_endYear);
+			//JXLDebug::debug("p_endMonth: " . $p_endMonth);
+			//JXLDebug::debug("p_endDay: " . $p_endDay);
+			//JXLDebug::debug("p_timeZoneOffset: " . $p_timeZoneOffset);
+			
 			$headers = array('Authorization: GoogleLogin auth=' . $p_auth);
 			
 			// get the feed from Google
 			$baseFeed 		= $this->gcalutils->curlToHost('http://www.google.com/calendar/feeds/' . $p_email, 
 							 	 		 			 'GET',
 								 					 $headers);
+			
+			//JXLDebug::debugHeader();
+			//JXLDebug::debug("baseFeed: " . $baseFeed);
 								  
 			$calendarURL 	= GDataFactory::getCalendarFeedURL($baseFeed, $p_calendarName);
 			
 			$startDate 		= $this->getStartMinDateParameter($p_startYear, $p_startMonth, $p_startDay);
 			$endDate		= $this->getStartMaxDateParameter($p_endYear, $p_endMonth, $p_endDay);
 			
-			// HACK: for now, assuming eastern timezone (GMT is default)
-			$startDate .= "-06:00";
-			$endDate .= "-06:00";
+		
+			$timeOffset = GDataFactory::getTimezoneOffsetString($p_timeZoneOffset);	
+			$startDate .= $timeOffset;
+			$endDate .= $timeOffset;
 			
 			$calendarURL  	.= "?" . $startDate . "&" . $endDate;
 			
 			//JXLDebug::debugHeader();
+			//JXLDebug::debug("p_startDay: " . $p_startDay);
 			//JXLDebug::debug("startDate: " . $startDate);
 			//JXLDebug::debug("endDate: " . $endDate);
+			//JXLDebug::debug("timeOffset: " . $timeOffset);
 			//JXLDebug::debug("calendarURL: " . $calendarURL);
 			
 			// get the feed from Google
 			$feed = $this->gcalutils->curlToHost($calendarURL, 
 												 'GET',
 												 $headers);
+												 
+			//JXLDebug::debugHeader();
+			//JXLDebug::debug("feed: " . $feed);
 												 
 			$result = GDataFactory::getEntries($feed);
 			return $result;
@@ -212,13 +277,20 @@
 													   'GET',
 													   $headers);
 													   
+			//JXLDebug::debugHeader();
+			//JXLDebug::debug("entryFeed: " . htmlentities($entryFeed));
+													   
 			$result = GDataFactory::getFullEntry($entryFeed);
 			return $result;
 		}
 		
-		protected function createEntry($p_auth,
+		// Note: modes = CREATE, UPDATE, DELETE
+		// we'll reuse the constants defined up top
+		protected function modifyEntry($p_mode,
+										$p_auth,
 										$p_name,
 										$p_email,
+										$p_id,
 										$p_calendarName,
 										$p_startYear,
 										$p_startMonth,
@@ -232,33 +304,36 @@
 										$p_endMinute,
 										$p_title,
 										$p_description,
-										$p_where)
+										$p_where,
+										$p_timeZoneOffset)
 		{
-			
 			/*
-			$l = new LogUtils("test_log.txt");
-			$l->log("------------");
-			$l->log("Application::createEntry");
-			$l->log("p_auth: " . $p_auth);
-			$l->log("p_name: " . $p_name);
-			$l->log("p_email: " . $p_email);
-			$l->log("p_calendarName: " . $p_calendarName);
-			$l->log("p_startYear: " . $p_startYear);
-			$l->log("p_startMonth: " . $p_startMonth);
-			$l->log("p_startDay: " . $p_startDay);
-			$l->log("p_startHour: " . $p_startHour);
-			$l->log("p_startMinute: " . $p_startMinute);
-			$l->log("p_endYear: " . $p_endYear);
-			$l->log("p_endMonth: " . $p_endMonth);
-			$l->log("p_endDay: " . $p_endDay);
-			$l->log("p_endHour: " . $p_endHour);
-			$l->log("p_endMinute: " . $p_endMinute);
-			$l->log("p_title: " . $p_title);
-			$l->log("p_description: " . $p_description);
-			$l->log("p_where: " . $p_where);
+			JXLDebug::debugHeader();
+			JXLDebug::debug("Application::modifyEntry");
+			JXLDebug::debug("p_mode: " . $p_mode);
+			JXLDebug::debug("p_auth: " . $p_auth);
+			JXLDebug::debug("p_email: " . $p_email);
+			JXLDebug::debug("p_id: " . $p_id);
+			JXLDebug::debug("p_calendarName: " . $p_calendarName);
+			JXLDebug::debug("p_startYear: " . $p_startYear);
+			JXLDebug::debug("p_startMonth: " . $p_startMonth);
+			JXLDebug::debug("p_startDay: " . $p_startDay);
+			JXLDebug::debug("p_startHour: " . $p_startHour);
+			JXLDebug::debug("p_startMinute: " . $p_startMinute);
+			JXLDebug::debug("p_endYear: " . $p_endYear);
+			JXLDebug::debug("p_endMonth: " . $p_endMonth);
+			JXLDebug::debug("p_endDay: " . $p_endDay);
+			JXLDebug::debug("p_endHour: " . $p_endHour);
+			JXLDebug::debug("p_endMinute: " . $p_endMinute);
+			JXLDebug::debug("p_title: " . $p_title);
+			JXLDebug::debug("p_description: " . $p_description);
+			JXLDebug::debug("p_where: " . $p_where);
+			JXLDebug::debug("p_timeZoneOffset: " . $p_timeZoneOffset);
 			*/
-			
+		
+		
 			$baseHeaders = array('Authorization: GoogleLogin auth=' . $p_auth);
+			
 			// get the feed from Google
 			$baseFeed 		= $this->gcalutils->curlToHost('http://www.google.com/calendar/feeds/' . $p_email, 
 							 	 		 			 'GET',
@@ -267,15 +342,30 @@
 			$calendarURL 	= GDataFactory::getCalendarFeedURL($baseFeed, $p_calendarName);
 			$calendarURLChunk = substr($calendarURL, 21);
 			
-			//JXLDebug::debugHeader();
-			//JXLDebug::debug("calendarURL: " . $calendarURL);
-			//JXLDebug::debug("calendarURLChunk: " . $calendarURLChunk);
+			if($p_mode == self::COMMAND_CREATE_ENTRY)
+			{
+				$theID = NULL;
+				$theMode = NULL;
+			}
+			else if($p_mode == self::COMMAND_EDIT_ENTRY)
+			{
+				$theID = $p_id;
+				$theMode = "edit";
+			}
+			else if($p_mode == self::COMMAND_DELETE_ENTRY)
+			{
+				$theID = $p_id;
+				$theMode = "delete";
+			}
 			
-			//$l->log("calendarURL: " . $calendarURL);
-			//$l->log("calendarURLChunk: " . $calendarURLChunk);
+			//JXLDebug::debugHeader();
+			//JXLDebug::debug("theID: " . $theID);
+			//JXLDebug::debug("theMode: " . $theMode);
 			
 			// get the GData XML
-			$createXML = GDataFactory::getCreateEntryXML($p_title,
+			$createXML = GDataFactory::getCreateEntryXML($theMode,
+														 $theID,
+														 $p_title,
 														 $p_description,
 														 $p_name,
 														 $p_email,
@@ -289,17 +379,21 @@
 														 $p_endMonth,
 														 $p_endDay,
 														 $p_endHour,
-														 $p_endMinute);
-			
-			
+														 $p_endMinute,
+														 $p_timeZoneOffset);
+															
 			$headers = array('Authorization: GoogleLogin auth=' . $p_auth,
 							 'Content-Type: application/atom+xml',
 							 'X-If-No-Redirect: 1');
-			
-			/*				 
-			$headers = array('Authorization: GoogleLogin auth=' . $p_auth,
-							 'Content-Type: application/atom+xml');
-			*/
+							 
+			if($p_mode == self::COMMAND_EDIT_ENTRY)
+			{
+				array_push($headers, 'X-HTTP-Method-Override: PUT');
+			}
+			else if($p_mode == self::COMMAND_DELETE_ENTRY)
+			{
+				array_push($headers, 'X-HTTP-Method-Override: DELETE');
+			}
 			
 			// post to Google
 			$addResponse = $this->gcalutils->sendToHost2("www.google.com", 
@@ -311,13 +405,11 @@
 			// this will be a 302 re-direct if good.  Grab the
 			// url to redirect to, and parse the calendar
 			
-			//addResponse: HTTP/1.0 302 Moved Temporarily
-			//Location: http://www.google.com/calendar/feeds/default/private/full?gsessionid=2gQlCzXHguc
+			//JXLDebug::debugHeader();
+			//JXLDebug::debug("calendarURLChunk: " . $calendarURLChunk);
 			
 			//JXLDebug::debugHeader();
-			//JXLDebug::debug("createXML: " . $createXML);
-			
-			//$l->log("createXML: " . $createXML);
+			//JXLDebug::debug("createXML: " . htmlentities($createXML));
 			
 			//JXLDebug::debugHeader();
 			//JXLDebug::debug("addResponse: " . $addResponse);
@@ -325,25 +417,20 @@
 			if($this->isHTTP412($addResponse) == true)
 			{
 				//JXLDebug::debugHeader();
-				//JXLDebug::debug("it's a 302");
+				//JXLDebug::debug("is 412");
 				$theLocationURL = $this->getHTTPLocation($addResponse);
-				//JXLDebug::debugHeader();
-				//JXLDebug::debug("Location is: " . $theLocationURL);
-				//$l->log("it's a 302");
-				//$l->log("Location is: " . $theLocationURL);
 			}
 			else
 			{
 				//JXLDebug::debugHeader();
-				//JXLDebug::debug("it's not a 302...");
-				//$l->log("it's not a 302...");
+				//JXLDebug::debug("ERROR: Not a pre-condition failed.");
 				return "ERROR: Not a pre-condition failed.";
 			}
 			
-			
-			//http://www.google.com/calendar/feeds/default/private/full?gsessionid=nVdBzNVwH-M
-			
 			$urlChunk = substr($theLocationURL, 21);
+			
+			//JXLDebug::debugHeader();
+			//JXLDebug::debug("urlChunk: " . $urlChunk);
 			
 			// Now, post again...
 			$goodResponse = $this->gcalutils->sendToHost2("www.google.com", 
@@ -355,12 +442,10 @@
 			
 			if($this->isHTTP201($goodResponse) == true)
 			{
-				//$l->log("it's a good response (201)");
 				return true;
 			}
 			else
 			{
-				//$l->log("it's not a good response...");
 				return "ERROR: Not a 201.  Response: " . $goodResponse . "  createXML: " . $createXML;
 			}
 		}

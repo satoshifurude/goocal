@@ -56,6 +56,9 @@ class com.jxl.goocal.views.createevent.Step5 extends UIComponent
 		if(__repeats_lbl == null)
 		{
 			__repeats_lbl = createLabel("__repeats_lbl");
+			var tf:TextFormat = __repeats_lbl.getTextFormat();
+			tf.bold = true;
+			__repeats_lbl.setNewTextFormat(tf);
 			__repeats_lbl.text = "Repeats";
 		}
 		
@@ -67,6 +70,7 @@ class com.jxl.goocal.views.createevent.Step5 extends UIComponent
 			__repeats_cb.setItemSelectionChangedCallback(this, onRepeatItemClicked);
 			//__repeats_cb.prompt = "Does not repeat (default)";
 			__repeats_cb.direction = ComboBox.DIRECTION_BELOW;
+			__repeats_cb.visibleRowCount = 3;
 		}
 	}
 	

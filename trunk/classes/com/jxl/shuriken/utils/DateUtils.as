@@ -229,7 +229,30 @@
 			case FORMAT_TIME_MONTH_DAY_FULLYEAR:
 				// Today Dec 18th 2006
 				var s:String = "";
-				s += "Today ";
+				var today:Date = new Date();
+				if(today.getFullYear() == p_date.getFullYear())
+				{
+					if(today.getMonth() == p_date.getMonth())
+					{
+						if(today.getDate() == p_date.getDate())
+						{
+							s += "Today ";
+						}
+						else if(today.getDate() - 1 == p_date.getDate())
+						{
+							s += "Yesterday ";
+						}
+						else if(today.getDate() + 1 == p_date.getDate())
+						{
+							s += "Tomorrow ";
+						}
+						else
+						{
+							s += DateUtils.getWeekDayName(p_date) + " ";
+						}
+					}
+				}
+				
 				var monthNames_array:Array = getMonthNames();
 				s += monthNames_array[p_date.getMonth()].substr(0, 3) + " ";
 				s += p_date.getDate().toString() + " ";
@@ -268,6 +291,35 @@
 				d.setFullYear(parseInt(strArray[2]));
 				return d;
 		}
+	}
+	
+	/*
+		If the day in local time is one day after the day in utc time, and
+		the hour in local time is larger than the hour in utc time, the offset
+		is negative
+	*/
+	public static function getLocalOffset():Number
+	{
+		// local time minus UTC
+		var d:Date = new Date();
+		var offset:Number = d.getTimezoneOffset() / 60;
+		var theDay:Number = d.getDate();
+		var utcDay:Number = d.getUTCDate();
+		offset = offset * -1;
+		if(theDay > utcDay)
+		{
+			var hour:Number = d.getHours();
+			var utcHour:Number = d.getUTCHours();
+			if(hour > utcHour)
+			{
+				offset = Math.abs(offset);
+			}
+		}
+		//trace("theDay: " + theDay);
+		//trace("utcDay: " + utcDay);
+		//trace("hour: " + hour);
+		//trace("utcHour: " + utcHour);
+		return offset;
 	}
 	
 }

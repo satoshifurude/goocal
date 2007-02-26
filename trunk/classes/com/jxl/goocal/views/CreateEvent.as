@@ -17,10 +17,13 @@ import com.jxl.goocal.views.createevent.Step6;
 
 class com.jxl.goocal.views.CreateEvent extends UIComponent
 {
-	public static var SYMBOL_NAME:String = "com.jxl.goocal.views.CreateEvent";
+	public static var SYMBOL_NAME:String 		= "com.jxl.goocal.views.CreateEvent";
 	
-	public static var EVENT_CANCEL:String = "cancel";
-	public static var EVENT_SAVE:String = "save";
+	public static var EVENT_CANCEL:String 		= "cancel";
+	public static var EVENT_SAVE:String 		= "save";
+	
+	public static var STATE_CREATE:Number 		= 0;
+	public static var STATE_EDIT:Number 		= 1;
 	
 	private var __fromDate:Date;
 	private var __toDate:Date;
@@ -31,6 +34,8 @@ class com.jxl.goocal.views.CreateEvent extends UIComponent
 	private var __description:String;
 	private var __repeats:String;
 	private var __emails:String;
+	
+	private var __state:Number 					= 0;
 	
 	public function get fromDate():Date { return __fromDate; }
 	public function set fromDate(val:Date):Void
@@ -139,6 +144,13 @@ class com.jxl.goocal.views.CreateEvent extends UIComponent
 		if(__title_lbl == null)
 		{
 			__title_lbl = createLabel("__title_lbl");
+			var tf:TextFormat = __title_lbl.getTextFormat();
+			tf.font = "Courier New";
+			tf.size = 14;
+			tf.bold = true;
+			tf.color = 0x333333;
+			__title_lbl.setNewTextFormat(tf);
+			__title_lbl.setTextFormat(tf);
 		}
 		
 		if(__cancel_pb == null)
@@ -241,7 +253,6 @@ class com.jxl.goocal.views.CreateEvent extends UIComponent
 				fmt.size = 12;
 				txt.setTextFormat(fmt);
 				txt.setNewTextFormat(fmt);
-				
 			}
 		}
 		
@@ -348,7 +359,7 @@ class com.jxl.goocal.views.CreateEvent extends UIComponent
 			
 		}
 		
-		__title_lbl.setSize(__width, 16);
+		__title_lbl.setSize(__width, 20);
 		
 		if(__step1 != null)
 		{
@@ -386,19 +397,34 @@ class com.jxl.goocal.views.CreateEvent extends UIComponent
 			__step6.setSize(__width, __step6.height);
 		}
 		
+		// button margin width
+		var bmW:Number = 4;
+		
 		__cancel_pb.setSize(50, 16);
 		__cancel_pb.move(0, __height - __cancel_pb.height - 20);
 		
 		if(__back_pb != null)
 		{
 			__back_pb.setSize(50, 16);
-			__back_pb.move(__cancel_pb.x + __cancel_pb.width, __cancel_pb.y);
+			__back_pb.move(__cancel_pb.x + __cancel_pb.width + bmW, __cancel_pb.y);
 		}
 		
 		if(__next_pb != null)
 		{
 			__next_pb.setSize(50, 16);
 			__next_pb.move(__width - __next_pb.width, __cancel_pb.y);
+		}
+		
+		if(__currentStep >= 3)
+		{
+			if(__what == null || __what == "")
+			{
+				__next_pb._visible = false;
+			}
+			else
+			{
+				__next_pb._visible = true;
+			}
 		}
 		
 		if(__save_pb != null)
@@ -422,9 +448,7 @@ class com.jxl.goocal.views.CreateEvent extends UIComponent
 		if(__guests_lb != null)
 		{
 			__guests_lb.setSize(77, 18);
-			trace("__guests_lb.y: " + __guests_lb.y);
 			__guests_lb.move(__or_txt._x + __or_txt._width + 2, __or_txt._y);
-			trace("__guests_lb.y: " + __guests_lb.y);
 		}
 	}
 	
@@ -464,7 +488,8 @@ class com.jxl.goocal.views.CreateEvent extends UIComponent
 							   calendar:String,
 							   description:String,
 							   repeats:String,
-							   emails:String):Void
+							   emails:String,
+							   state:Number):Void
 	{
 		
 		__fromDate 			= fromDate;
@@ -476,6 +501,15 @@ class com.jxl.goocal.views.CreateEvent extends UIComponent
 		__description 		= description;
 		__repeats			= repeats;
 		__emails			= emails;
+		__state				= state;
+		
+		if(__repeats == null && __emails == null)
+		{
+			if(__state == STATE_EDIT)
+			{
+				__maxSteps = 4;
+			}
+		}
 		
 		invalidate();
 	}
@@ -486,6 +520,18 @@ class com.jxl.goocal.views.CreateEvent extends UIComponent
 		{
 			__what = __step3.what;
 			__where = __step3.where;
+			
+			if(__currentStep >= 3)
+			{
+				if(__what == null || __what == "")
+				{
+					__next_pb._visible = false;
+				}
+				else
+				{
+					__next_pb._visible = true;
+				}
+			}
 		}
 		else if(event.target == __step4)
 		{

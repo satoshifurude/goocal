@@ -63,6 +63,8 @@ class com.jxl.shuriken.events.ShurikenEvent extends Event
 	public static var SETUP_CHILD:String							=  "com.jxl.shuriken.events.ShurikenEvent.setupChild";
 	
 	public var list:List;
+	// below already included in Container
+	// public var child:UIComponent;
 	
 	// TweenComponent
 	public static var EFFECT_MOVE_START:String						=  "com.jxl.shuriken.events.ShurikenEvent.effectMoveStart";

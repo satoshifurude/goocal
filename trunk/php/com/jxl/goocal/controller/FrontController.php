@@ -35,6 +35,7 @@
 				$params->endYear 			= $HTTP_POST_VARS['endYear'];
 				$params->endMonth 			= $HTTP_POST_VARS['endMonth'];
 				$params->endDay 			= $HTTP_POST_VARS['endDay'];
+				$params->timeZoneOffset		= $HTTP_POST_VARS['tzo'];
 				$entries = $fc->runCommand(Application::COMMAND_GET_CALENDAR_ENTRIES, $params);
 				echo($entries);
 				return;
@@ -64,19 +65,59 @@
 				$params->title				= $HTTP_POST_VARS['title'];
 				$params->description		= $HTTP_POST_VARS['description'];
 				$params->where				= $HTTP_POST_VARS['where'];
+				$params->timeZoneOffset		= $HTTP_POST_VARS['tzo'];
 				
 				$success = $fc->runCommand(Application::COMMAND_CREATE_ENTRY, $params);
 				echo($success);
-				/*
-				if($success == true)
-				{
-					echo("true");
-				}
-				else
-				{
-					echo("false");
-				}
-				*/
+				return;
+				
+			case Application::COMMAND_EDIT_ENTRY:
+				$params->auth				= $HTTP_POST_VARS['auth'];
+				$params->name				= $HTTP_POST_VARS['name'];
+				$params->email				= $HTTP_POST_VARS['email'];
+				$params->id					= $HTTP_POST_VARS['id'];
+				$params->calendarName		= $HTTP_POST_VARS['calendarName'];
+				$params->startYear			= $HTTP_POST_VARS['startYear'];
+				$params->startMonth			= $HTTP_POST_VARS['startMonth'];
+				$params->startDay			= $HTTP_POST_VARS['startDay'];
+				$params->startHour			= $HTTP_POST_VARS['startHour'];
+				$params->startMinute		= $HTTP_POST_VARS['startMinute'];
+				$params->endYear			= $HTTP_POST_VARS['endYear'];
+				$params->endMonth			= $HTTP_POST_VARS['endMonth'];
+				$params->endDay				= $HTTP_POST_VARS['endDay'];
+				$params->endHour			= $HTTP_POST_VARS['endHour'];
+				$params->endMinute			= $HTTP_POST_VARS['endMinute'];
+				$params->title				= $HTTP_POST_VARS['title'];
+				$params->description		= $HTTP_POST_VARS['description'];
+				$params->where				= $HTTP_POST_VARS['where'];
+				$params->timeZoneOffset		= $HTTP_POST_VARS['tzo'];
+				
+				$success = $fc->runCommand(Application::COMMAND_EDIT_ENTRY, $params);
+				echo($success);
+				return;
+			
+			case Application::COMMAND_DELETE_ENTRY:
+				$params->auth				= $HTTP_POST_VARS['auth'];
+				$params->name				= $HTTP_POST_VARS['name'];
+				$params->email				= $HTTP_POST_VARS['email'];
+				$params->id					= $HTTP_POST_VARS['id'];
+				$params->calendarName		= $HTTP_POST_VARS['calendarName'];
+				$params->startYear			= $HTTP_POST_VARS['startYear'];
+				$params->startMonth			= $HTTP_POST_VARS['startMonth'];
+				$params->startDay			= $HTTP_POST_VARS['startDay'];
+				$params->startHour			= $HTTP_POST_VARS['startHour'];
+				$params->startMinute		= $HTTP_POST_VARS['startMinute'];
+				$params->endYear			= $HTTP_POST_VARS['endYear'];
+				$params->endMonth			= $HTTP_POST_VARS['endMonth'];
+				$params->endDay				= $HTTP_POST_VARS['endDay'];
+				$params->endHour			= $HTTP_POST_VARS['endHour'];
+				$params->endMinute			= $HTTP_POST_VARS['endMinute'];
+				$params->title				= $HTTP_POST_VARS['title'];
+				$params->description		= $HTTP_POST_VARS['description'];
+				$params->where				= $HTTP_POST_VARS['where'];
+				$params->timeZoneOffset		= $HTTP_POST_VARS['tzo'];
+				$success = $fc->runCommand(Application::COMMAND_DELETE_ENTRY, $params);
+				echo($success);
 				return;
 			
 			case Application::COMMAND_CHECK_VERSION:

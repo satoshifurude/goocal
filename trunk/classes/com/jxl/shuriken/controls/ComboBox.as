@@ -243,7 +243,6 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 
 	private var openPosition:Number;
 	
-	private var __mcLabel:TextField;
 	private var __mcHitState:Button;
 	private var __mcList:ScrollableList;
 	private var __mcListMask:MovieClip;
@@ -262,7 +261,6 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 	{
 		super.createChildren();	
 		setupList();
-		setupLabel();
 		
 		__mcListMask = createEmptyMovieClip("__mcListMask", getNextHighestDepth());
 		com.jxl.shuriken.utils.DrawUtils.drawMask(__mcListMask, 0, 0, 100, 100);
@@ -278,6 +276,64 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 		__mcHitState = Button(attachMovie(Button.SYMBOL_NAME, "__mcHitState", getNextHighestDepth()));
 		__mcHitState.setPressCallback(this, onComboBoxClick);
 		__mcHitState.setMouseDownOutsideCallback(this, onComboBoxClickOutside);
+		__mcHitState.drawButton = ComboBox.prototype.drawButton;
+		var tf:TextFormat = __mcHitState.textField.getTextFormat();
+		tf.align = TextField.ALIGN_LEFT;
+		__mcHitState.textField.setNewTextFormat(tf);
+		__mcHitState.textField.setTextFormat(tf);
+	}
+	
+	// NOTE: Scoped to Hit State
+	private function drawButton():Void
+	{
+		clear();
+		
+		lineStyle(0, 0xA5ACB2);
+		beginFill(0xFFFFFF);
+		DrawUtils.drawBox(this, 0, 0, __width, __height);
+		
+		lineStyle(0, 0x5B6665);
+		var fil:String = "linear";
+		var clrs:Array = [0xFFFFFF, 0xCFD1E3];
+		var alph:Array = [100, 100];
+		var rati:Array = [90, 255];
+		var mat:Object = { matrixType:"box", x:0, y:0, w:__width, h:__height, r:(90/180)*Math.PI };
+		beginGradientFill(fil, clrs, alph, rati, mat);
+		DrawUtils.drawRoundRect(this, __width - 19, 2, 17, 18, 1);
+		endFill();
+		
+		var tarX:Number = (__width) - 18 + 4;
+		var tarY:Number = 10;
+		moveTo(tarX, tarY);
+		lineStyle(2, 0x202020);
+		lineTo(tarX + 4, tarY + 4);
+		lineTo(tarX + 8, tarY);
+		
+		endFill();
+	}
+	
+	// Note: Scoped to List Child Button
+	private function drawChild():Void
+	{
+		// KLUDGE: Compiler doesn't know our scope change here,
+		// so we just cast a local variable to make him happy
+		var o = this;
+		var btn:Button = o;
+		btn.clear();
+		if(btn.currentState == Button.DEFAULT_STATE)
+		{
+			
+			btn.beginFill(0xFFFFFF);
+		}
+		else
+		{
+			btn.beginFill(0xB2B4BF);
+		}
+		btn.lineTo(btn.width, 0);
+		btn.lineTo(btn.width, btn.height);
+		btn.lineTo(0, btn.height);
+		btn.lineTo(0, 0);
+		btn.endFill();
 	}
 	
 	private function setupList():Void
@@ -285,23 +341,27 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 		__mcList = ScrollableList(attachMovie(ScrollableList.SYMBOL_NAME, "__mcList", getNextHighestDepth()));
 		__mcList.setItemClickCallback(this, onListItemClicked);
 		__mcList.setItemSelectionChangedCallback(this, onListItemChanged);
+		__mcList.setSetupChildCallback(this, onSetupListChild);
 		__mcList.direction = List.DIRECTION_VERTICAL;
 		__mcList.childClass = __childClass;
 		__mcList.toggle = true;
 	}		
 	
-	private function setupLabel():Void
+	private function onSetupListChild(event:ShurikenEvent):Void
 	{
-		createTextField("__mcLabel", getNextHighestDepth(), 0, 0, 100, 100);
-		__mcLabel.multiline 	= false;
-		__mcLabel.wordWrap 	= false;
+		var btn:Button = Button(event.child);
+		btn.drawButton = ComboBox.prototype.drawChild;
+		btn.textField.align = TextField.ALIGN_LEFT;
+		var tf:TextFormat = btn.textField.getTextFormat();
+		tf.align = TextField.ALIGN_LEFT;
+		btn.textField.setNewTextFormat(tf);
+		btn.textField.setTextFormat(tf);
 	}
 	
 	private function redraw():Void
 	{
 		super.redraw();
-			
-		__mcLabel.setSize(width, height);						
+		
 		__mcHitState.setSize(width, height);
 		
 		if(__dataProvider != null && __dataProvider.getLength() > 0)
@@ -333,11 +393,6 @@ class com.jxl.shuriken.controls.ComboBox extends UIComponent
 			__mcListMask._x = __mcList.x;
 			__mcListMask._y = __mcHitState.y + __mcHitState.height;
 		}
-		
-		
-		//__mcHitState.swapDepths(getNextHighestDepth());
-		
-		
 	}
 	
 	private function onComboBoxClick(p_event:ShurikenEvent):Void

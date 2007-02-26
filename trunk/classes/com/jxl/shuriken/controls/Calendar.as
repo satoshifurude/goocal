@@ -123,6 +123,10 @@ class com.jxl.shuriken.controls.Calendar extends UIComponent
 		beginFill(0xC3D9FF);
 		DrawUtils.drawRoundRect(this, 0, 0, __width, __height, 3);
 		endFill();
+		
+		lineStyle(0, 0xA2BBDD);
+		DrawUtils.drawBox(this, __cal.x - 1, __cal.y - 1, __cal.width + 1, __cal.height + 1);
+		endFill();
 	}
 	
 	private function onDateChange(event:Event):Void

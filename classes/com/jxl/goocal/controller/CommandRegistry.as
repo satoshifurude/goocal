@@ -25,6 +25,9 @@ import com.jxl.goocal.commands.CreateEventCommand;
 import com.jxl.goocal.events.CheckForUpdatesEvent;
 import com.jxl.goocal.commands.CheckForUpdatesCommand;
 
+import com.jxl.goocal.events.EditEventEvent;
+import com.jxl.goocal.commands.EditEventCommand;
+
 class com.jxl.goocal.controller.CommandRegistry extends CommandRegistryTemplate
 {
 	private static var inst:CommandRegistry; 	// instance of self
@@ -45,5 +48,6 @@ class com.jxl.goocal.controller.CommandRegistry extends CommandRegistryTemplate
 		addCommand(GetEntryEvent.GET_ENTRY, 				GetEntryCommand);
 		addCommand(CreateEventEvent.CREATE_EVENT,			CreateEventCommand);
 		addCommand(CheckForUpdatesEvent.CHECK_FOR_UPDATES, 	CheckForUpdatesCommand);
+		addCommand(EditEventEvent.EDIT_EVENT, 				EditEventCommand);
 	}
 }

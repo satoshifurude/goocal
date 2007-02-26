@@ -16,8 +16,6 @@ import com.jxl.goocal.views.EntryView;
 import com.jxl.goocal.views.CreateEvent;
 import com.jxl.goocal.views.SettingsScreen;
 
-
-
 import com.jxl.goocal.controller.CommandRegistry;
 import com.jxl.goocal.events.LoginEvent;
 
@@ -35,6 +33,8 @@ import com.jxl.goocal.events.CreateEventEvent;
 
 import com.jxl.goocal.events.CheckForUpdatesEvent;
 import com.jxl.goocal.callbacks.CheckForUpdatesCallback;
+
+import com.jxl.goocal.events.EditEventEvent;
 
 import com.jxl.goocal.model.ModelLocator;
 
@@ -70,8 +70,8 @@ class GoogleCalendar extends UIComponent
 	private var __settings_lb:LinkButton;
 	
 	private var __eventDate:Date;
-	private var __soList:Object;
-	private var __upList:Object;
+	private var __soList:Function;
+	private var __upList:Function;
 	private var __lastView:Number;
 	
 	public var username:String;
@@ -139,8 +139,8 @@ class GoogleCalendar extends UIComponent
 	
 	private function onLogin(p_event:Event):Void
 	{
-		//DebugWindow.debugHeader();
-		//DebugWindow.debug("GoogleCalendar::onLogin");
+		//trace("---------------------------");
+		//trace("GoogleCalendar::onLogin");
 		
 		var event:LoginEvent = new LoginEvent(LoginEvent.LOGIN, this, onLoggedIn);
 		event.username = __login_mc.username;
@@ -155,9 +155,10 @@ class GoogleCalendar extends UIComponent
 	
 	private function onLoggedIn(p_callback:LoginCallback):Void
 	{
-		//DebugWindow.debugHeader();
-		//DebugWindow.debug("GoogleCalendar::onLoggedIn");
-		//DebugWindow.debug("p_callback.isLoggedIn: " + p_callback.isLoggedIn);
+		//trace("---------------------");
+		//trace("GoogleCalendar::onLoggedIn");
+		//trace("p_callback.isLoggedIn: " + p_callback.isLoggedIn);
+		//trace("p_callback.progress: " + p_callback.progress);
 		if(p_callback.isLoggedIn == LoginCallback.LOGGED_IN_SUCCESS)
 		{
 			getCalendars();
@@ -169,7 +170,10 @@ class GoogleCalendar extends UIComponent
 		}
 		else if(p_callback.isLoggedIn == LoginCallback.LOGGED_IN_FAILED)
 		{
-			showActivity("Login Failed.");
+			// FIXME: My Login Failure attempts to try again
+			// even if it's an error.  Therefore, this may be
+			// only temporary.
+			showActivity("Login Failed.  Trying again...");
 			__loggingIn_lbl.color = 0xCC0000;
 			
 			hideActivity();
@@ -203,7 +207,7 @@ class GoogleCalendar extends UIComponent
 			if(__calendarList == null)
 			{
 				__calendarList = CalendarList(createComponent(CalendarList, "__calendarList"));
-				__calendarList.move(0, 40);
+				__calendarList.move(8, 40);
 				__calendarList.setSize(width, __calendarList.height);
 				__calendarList.calendarsCollection = ModelLocator.getInstance().calendars;
 				__calendarList.setItemClickCallback(this, onCalendarSelected);
@@ -242,6 +246,7 @@ class GoogleCalendar extends UIComponent
 		//DebugWindow.debugHeader();
 		//DebugWindow.debug("GoogleCalendar::showDayView, p_boolOrMsg: " + p_boolOrMsg);
 		
+		gotoAndStop("logo");
 		if(p_boolOrMsg == true || p_boolOrMsg instanceof Date)
 		{
 			hideActivity(true);
@@ -260,9 +265,9 @@ class GoogleCalendar extends UIComponent
 				var currentEvents:Collection = new Collection();
 				var events:Array = ModelLocator.getInstance().entries_array;
 				var i:Number = events.length;
-				trace("--------------");
-				trace("GoogleCalendar::showDayView");
-				trace("len: " + i);
+				//trace("--------------");
+				//trace("GoogleCalendar::showDayView");
+				//trace("len: " + i);
 				while(i--)
 				{
 					var entryVO:EntryVO = events[i];
@@ -327,6 +332,7 @@ class GoogleCalendar extends UIComponent
 			__entryView.move(0, 40);
 			__entryView.setSize(__width, __height - 40);
 			__entryView.setMonthCallback(this, showMonthView);
+			__entryView.setEditCallback(this, editEntry);
 		}
 		
 		__entryView.entry = ModelLocator.getInstance().currentEntry;
@@ -404,14 +410,13 @@ class GoogleCalendar extends UIComponent
 	
 	private function showCreateEvent():Void
 	{
+		gotoAndStop("logo");
 		destroyViews();
-		
-		gotoAndStop("hide");
 		
 		if(__createEvent == null)
 		{
 			__createEvent = CreateEvent(createComponent(CreateEvent, "__createEvent"));
-			__createEvent.move(0, 0);
+			__createEvent.move(0, 40);
 			__createEvent.setCancelCallback(this, onCancelCreateEvent);
 			__createEvent.setSaveCallback(this, onSaveCreateEvent);
 			
@@ -437,7 +442,8 @@ class GoogleCalendar extends UIComponent
 									 ModelLocator.getInstance().selectedCalendar,
 									 "",
 									 "Does not repeat",
-									 "");
+									 "",
+									 CreateEvent.STATE_CREATE);
 		}
 	}
 	
@@ -498,26 +504,79 @@ class GoogleCalendar extends UIComponent
 		delete __eventDate;
 	}
 	
+	private function editEntry():Void
+	{
+		
+		gotoAndStop("logo");
+		destroyViews();
+		
+		if(__createEvent == null)
+		{
+			__createEvent = CreateEvent(createComponent(CreateEvent, "__createEvent"));
+			__createEvent.move(0, 40);
+			__createEvent.setCancelCallback(this, showEntryView);
+			__createEvent.setSaveCallback(this, onSaveEditEvent);
+			var entryVO:EntryVO = ModelLocator.getInstance().currentEntry;
+			// TODO: for now, I don't support getting the repeat status,
+			// nor getting the attendee's.  That's more work that I don't
+			// have time to do.
+			__createEvent.setupEvent(entryVO.whenVO.startTime,
+									 entryVO.whenVO.endTime,
+									 entryVO.title,
+									 entryVO.where,
+									 ModelLocator.getInstance().calendars,
+									 ModelLocator.getInstance().selectedCalendar,
+									 entryVO.description,
+									 null,
+									 null,
+									 CreateEvent.STATE_EDIT);
+		}
+	}
+	
+	private function onSaveEditEvent(event:Event):Void
+	{
+		var eee:EditEventEvent = new EditEventEvent(EditEventEvent.EDIT_EVENT,
+														  this,
+														  onEditedEvent);
+		eee.id				= ModelLocator.getInstance().currentEntry.id;
+		eee.startDate 		= __createEvent.fromDate;
+		eee.endDate			= __createEvent.toDate;
+		eee.title			= __createEvent.what;
+		eee.description		= __createEvent.description;
+		eee.where			= __createEvent.where;
+		eee.calendar		= __createEvent.calendar;
+		
+		__eventDate			= __createEvent.fromDate;
+		
+		destroyViews();
+		showActivity("Editing Event...");
+		
+		CommandRegistry.getInstance().dispatchEvent(eee);
+	}
+	
+	private function onEditedEvent(success:Boolean):Void
+	{
+		if(success == true)
+		{
+			hideActivity();
+			showDayView(__eventDate);
+		}
+		else
+		{
+			showActivity("Failed to edit event.");
+		}
+		
+		delete __eventDate;
+	}
+	
 	private function showSettings():Void
 	{
 		destroyViews();
 		
-		if(__settingsView == null)
-		{
-			__settingsView = SettingsScreen(createComponent(SettingsScreen, "__settingsView"));
-			__settingsView.setViewCalendarCallback(this, getCalendars);
-			__settingsView.setDeleteLoginCallback(this, onDeleteLogin);
-			__settingsView.setCheckUpdatesCallback(this, onCheckUpdates);
-			__settingsView.setBackToMonthViewCallback(this, showMonthView);
-			__settingsView.showSettingValues(ModelLocator.getInstance().selectedCalendar, 
-										 ModelLocator.getInstance().currentVersion,
-										 null);
-		}
-		
 		if(System.capabilities.isDebugger == false)
 		{
 			if(__upList == null) __upList = Delegate.create(this, onReadUpdateSO);
-			SharedObject.addEventListener(updateSOName, __upList);
+			SharedObject.addListener(updateSOName, __upList);
 			var so:SharedObject = SharedObject.getLocal(updateSOName);
 		}
 		else
@@ -531,9 +590,18 @@ class GoogleCalendar extends UIComponent
 	{
 		SharedObject.removeListener(updateSOName);
 		delete __upList;
-		__settingsView.showSettingValues(ModelLocator.getInstance().selectedCalendar, 
+		if(__settingsView == null)
+		{
+			__settingsView = SettingsScreen(createComponent(SettingsScreen, "__settingsView"));
+			__settingsView.setViewCalendarCallback(this, getCalendars);
+			__settingsView.setDeleteLoginCallback(this, onDeleteLogin);
+			__settingsView.setCheckUpdatesCallback(this, onCheckUpdates);
+			__settingsView.setBackToMonthViewCallback(this, showMonthView);
+			__settingsView.showSettingValues(ModelLocator.getInstance().selectedCalendar, 
 										 ModelLocator.getInstance().currentVersion,
 										 __upList.data.update);
+		}
+		
 	}
 	
 	private function onDeleteLogin(event:Event):Void
@@ -565,7 +633,7 @@ class GoogleCalendar extends UIComponent
 		if(System.capabilities.isDebugger == false)
 		{
 			if(__upList == null) __upList = Delegate.create(this, onUpdateSO);
-			SharedObject.addEventListener(updateSOName, __upList);
+			SharedObject.addListener(updateSOName, __upList);
 			var so:SharedObject = SharedObject.getLocal(updateSOName);
 		}
 		else
@@ -674,8 +742,6 @@ class GoogleCalendar extends UIComponent
 		if(__activity_mc == null)
 		{
 			__activity_mc = attachMovie(SYMBOL_ACTIVITY, "__activity_mc", getNextHighestDepth());
-			__activity_mc._x = __width - __activity_mc._width;
-			__activity_mc._y = 0;
 		}
 		
 		if(p_msg != null)
@@ -697,7 +763,10 @@ class GoogleCalendar extends UIComponent
 			}
 			
 			__loggingIn_lbl.text = p_msg;
-			__loggingIn_lbl.move(0, (__height / 2) - (__loggingIn_lbl._height / 2));
+			__loggingIn_lbl.move((__width / 2) - (__loggingIn_lbl._width / 2), (__height / 2) - (__loggingIn_lbl._height / 2));
+			
+			__activity_mc._x = (__width / 2) - (__activity_mc._width / 2);
+			__activity_mc._y = __loggingIn_lbl._y - __activity_mc._height;
 		}
 	}
 	

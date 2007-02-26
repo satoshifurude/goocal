@@ -86,7 +86,6 @@ class com.jxl.shuriken.containers.ScrollableList extends UIComponent
 		}
 	}
 	
-	[Inspectable(type="List", enumeration="left,center", defaultValue="left")]
 	public function get align():String
 	{
 		return __align;
@@ -97,20 +96,18 @@ class com.jxl.shuriken.containers.ScrollableList extends UIComponent
 		__align = pAlign;
 	}
 	
-	[Inspectable(type="Number", defaultValue=0, name="Horizontal Margin")]
-	public function get childHorizontalMargin():Number { return __childHorizontalMargin; }
+	public function get childHorizontalMargin():Number { return __mcList.childHorizontalMargin; }
 	
-	public function set childHorizontalMargin(pVal:Number):Void
+	public function set childHorizontalMargin(val:Number):Void
 	{
-		__childHorizontalMargin = pVal;
+		__mcList.childHorizontalMargin = val;
 	}
 	
-	[Inspectable(type="Number", defaultValue=0, name="Vertical Margin")]
-	public function get childVerticalMargin():Number { return __childVerticalMargin; }
+	public function get childVerticalMargin():Number { return __mcList.childVerticalMargin; }
 	
-	public function set childVerticalMargin(pVal:Number):Void
-	{	
-		__childVerticalMargin = pVal;
+	public function set childVerticalMargin(val:Number):Void
+	{
+		__mcList.childVerticalMargin = val;
 	}
 	
 	public function get autoSizeToChildren():Boolean { return __autoSizeToChildren; }
@@ -300,7 +297,6 @@ class com.jxl.shuriken.containers.ScrollableList extends UIComponent
 		//DebugWindow.debug("ScrollableList::size, __width: " + __width + ", __columnWidth: " + __columnWidth);
 		
 		super.redraw();
-		
 		if (__showButtons == true)
 		{	
 			__mcScrollPrevious.move(0, 0);
@@ -310,7 +306,7 @@ class com.jxl.shuriken.containers.ScrollableList extends UIComponent
 				var listWidth:Number = width - __mcScrollPrevious.width - __mcScrollNext.width;
 				listWidth = Math.max(0, listWidth);
 				
-				__mcList.setSize(listWidth, height);
+				__mcList.setSize(listWidth, __height);
 				
 				__mcList.move(__mcScrollPrevious.x + __mcScrollPrevious.width, 0);
 				__mcScrollNext.move(__mcList.x + __mcList.width, 0);
@@ -374,17 +370,11 @@ class com.jxl.shuriken.containers.ScrollableList extends UIComponent
 
 		com.jxl.shuriken.utils.DrawUtils.drawMask(__mcListMask, 0, 0, __mcList.width, __mcList.height);	
 		
-		/*
-		clear();
-		lineStyle(0, 0x666666);
-		DrawUtils.drawDashLineBox(this, 0, 0, width, height, 3, 3);
-		endFill();
-		*/
 		
-		//trace("---------------");
-		//trace("ScrollableList::redraw");
-		//trace("__mcScrollNext.x: " + __mcScrollNext.x + ", y: " + __mcScrollNext.y);
-		//trace("__mcScrollNext.width: " + __mcScrollNext.width + ", height: " + __mcScrollNext.height);
+		//clear();
+		//lineStyle(0, 0x666666);
+		//DrawUtils.drawDashLineBox(this, 0, 0, width, height, 3, 3);
+		//endFill();
 	}
 	
 	public function onScrollPrevious(event:Object):Void

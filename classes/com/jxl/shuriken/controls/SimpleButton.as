@@ -37,12 +37,25 @@ class com.jxl.shuriken.controls.SimpleButton extends UIComponent
 		drawButton();
 	}
 	
-	private function drawButton():Void
+	public function drawButton():Void
 	{
+		/*
 		clear();
-		lineStyle(0, 0x999999); // uncomment if debugging, draw's an outline for you
-		beginFill(0xCCCCCC); // change alpha to 90 when debugging
+		lineStyle(0, 0x999999);
+		beginFill(0xCCCCCC);
 		DrawUtils.drawRoundRect(this, 0, 0, width, height, 6);
+		endFill();
+		*/
+		
+		clear();
+		lineStyle(2, 0x003C74);
+		var fil:String = "linear";
+		var clrs:Array = [0xFFFFFF, 0xC6C5D7];
+		var alph:Array = [100, 100];
+		var rati:Array = [90, 255];
+		var mat:Object = { matrixType:"box", x:0, y:0, w:__width, h:__height, r:(90/180)*Math.PI };
+		beginGradientFill(fil, clrs, alph, rati, mat);
+		DrawUtils.drawRoundRect(this, 0, 0, __width, __height, 3);
 		endFill();
 	}
 	

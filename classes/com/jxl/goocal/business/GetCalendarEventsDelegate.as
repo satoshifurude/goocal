@@ -33,7 +33,8 @@ class com.jxl.goocal.business.GetCalendarEventsDelegate
 									  p_email:String, 
 									  p_calendarName:String,
 									  p_startDate:Date,
-									  p_endDate:Date):Void
+									  p_endDate:Date,
+									  p_timezone:Number):Void
 	{
 		/*
 		var author:AuthorVO = new AuthorVO("Jesse Warden", "jesse.warden@gmail.com");
@@ -87,6 +88,14 @@ class com.jxl.goocal.business.GetCalendarEventsDelegate
 		lv.endYear				= p_endDate.getFullYear();
 		lv.endMonth				= p_endDate.getMonth() + 1;
 		lv.endDay				= p_endDate.getDate();
+		lv.tzo					= p_timezone;
+		
+		trace("-----------------");
+		trace("GetCalendarEventsDelegate::getCalendarEvents");
+		for(var p in lv)
+		{
+			trace(p + ": " + lv[p]);
+		}
 		lv.sendAndLoad(_global.phpURL, lv, "POST");
 	}
 	

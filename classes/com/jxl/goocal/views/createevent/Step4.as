@@ -68,6 +68,9 @@ class com.jxl.goocal.views.createevent.Step4 extends UIComponent
 		if(__description_lbl == null)
 		{
 			__description_lbl = createLabel("__description_lbl");
+			var tf:TextFormat = __description_lbl.getTextFormat();
+			tf.bold = true;
+			__description_lbl.setNewTextFormat(tf);
 			__description_lbl.text = "Description";
 		}
 		
@@ -76,15 +79,20 @@ class com.jxl.goocal.views.createevent.Step4 extends UIComponent
 			__description_txt = createLabel("__description_txt");
 			__description_txt.type = TextField.TYPE_INPUT;
 			__description_txt.border = true;
-			__description_txt.borderColor = 0x000000;
+			__description_txt.borderColor = 0xA5ACB2;
 			__description_txt.background = true;
 			__description_txt.backgroundColor = 0xFFFFFF;
+			__description_txt.multiline = true;
+			__description_txt.wordWrap = true;
 			__description_txt.onChanged = Delegate.create(this, onDescChanged);
 		}
 		
 		if(__calendar_lbl == null)
 		{
 			__calendar_lbl = createLabel("__calendar_lbl");
+			var tf:TextFormat = __calendar_lbl.getTextFormat();
+			tf.bold = true;
+			__calendar_lbl.setNewTextFormat(tf);
 			__calendar_lbl.text = "Calendar";
 		}
 		
@@ -115,7 +123,7 @@ class com.jxl.goocal.views.createevent.Step4 extends UIComponent
 		__description_lbl.setSize(__width, __description_lbl._height);
 		
 		__description_txt.move(__calendars_cb.x, __description_lbl._y + __description_lbl._height + margin);
-		__description_txt.setSize(__calendars_cb.width, 80);
+		__description_txt.setSize(__calendars_cb.width, 32);
 	}
 	
 	private function onDescChanged():Void

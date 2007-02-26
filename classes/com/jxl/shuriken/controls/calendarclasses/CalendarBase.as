@@ -524,13 +524,14 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 		delete __refresh_lu;
 		//callLater(this, refreshColors);
 		//if(enabled == false) enabled = true;
-		if(__finishedDrawing == true)
-		{
-			var ct:Number = getTimer();
-			var et:Number = (ct - startTime) / 1000;
-			_root.debug("elapsed time: " + et);
-			_root.doneBuilding();
-		}
+		hideStatus();
+		//if(__finishedDrawing == true)
+		//{
+			//var ct:Number = getTimer();
+			//var et:Number = (ct - startTime) / 1000;
+			//_root.debug("elapsed time: " + et);
+			//_root.doneBuilding();
+		//}
 	}
 	
 	public function refreshSetValue(p_child:UIComponent, p_index:Number, p_item:Object):Void
@@ -785,7 +786,7 @@ class com.jxl.shuriken.controls.calendarclasses.CalendarBase extends List
 			//DebugWindow("__width: " + __width);
 			//DebugWindow("__height: " + __height);
 			//DebugWindow("__status_mc._width: " + __status_mc._width);
-			__status_mc = attachMovie("CalendarLoading", "__status_mc", getNextNonChildDepth());
+			__status_mc = attachMovie("CalendarLoading", "__status_mc", getNextHighestDepth());
 			// KLUDGE: hardcoded values
 			__status_mc._x = Math.round((175 / 2) - (__status_mc._width / 2));
 			__status_mc._y = Math.round((114 / 2) - (__status_mc._height / 2));

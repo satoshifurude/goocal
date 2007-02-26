@@ -37,11 +37,12 @@ class com.jxl.goocal.vo.EntryVO
 		whenVO						= p_whenVO;
 		comments_array				= p_comments_array;
 	}
-	
+	/*
 	public function toString():String
 	{
 		return "[class EntryVO]";
 	}
+	*/
 	
 	public function toVerboseString():String
 	{

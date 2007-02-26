@@ -19,7 +19,8 @@ class com.jxl.goocal.commands.GetCalendarEventsCommand extends CommandTemplate i
 							   ModelLocator.getInstance().username,
 							   p_event.calendarName,
 							   p_event.startDate,
-							   p_event.endDate);
+							   p_event.endDate,
+							   ModelLocator.getInstance().timeZoneOffset);
 	}
 	
 	private function onProgress(p_str:String):Void

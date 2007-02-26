@@ -12,9 +12,4 @@
 		endTime				= p_endTime;
 		reminder			= p_reminder;
 	}
-	
-	public function toString():String
-	{
-		return "[class WhenVO]";
-	}
 }

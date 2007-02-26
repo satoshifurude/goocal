@@ -40,6 +40,11 @@ class com.jxl.goocal.views.EventItem extends UIComponent
 		if(__time_lbl == null)
 		{
 			__time_lbl = createLabel("__time_lbl");
+			var tf:TextFormat = __time_lbl.getTextFormat();
+			tf.bold = true;
+			tf.size = 14;
+			tf.color = 0x62AE62;
+			__time_lbl.setNewTextFormat(tf);
 		}
 		
 		if(__name_link == null)
@@ -55,12 +60,11 @@ class com.jxl.goocal.views.EventItem extends UIComponent
 	
 	private function redraw():Void
 	{
-		//DebugWindow.debugHeader();
-		//DebugWindow.debug("EventItem::size, __width: " + __width);
 		super.redraw();
 		
+		__time_lbl.move(0, 2);
 		__time_lbl.setSize(__width, 20);
-		__name_link.move(0, __time_lbl._y + __time_lbl._height);
+		__name_link.move(0, __time_lbl._y + __time_lbl._height - 2);
 		__name_link.setSize(__width, 20);
 	}
 	

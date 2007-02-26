@@ -15,7 +15,6 @@ class com.jxl.goocal.views.CalendarList extends UIComponent
 	
 	private var __title_lbl:TextField;
 	private var __calendars_list:ButtonList;
-	private var __createNew_link:LinkButton;
 	
 	public function get calendarsCollection():Collection { return __calendars_list.dataProvider; }
 	public function set calendarsCollection(p_val:Collection):Void
@@ -61,17 +60,6 @@ class com.jxl.goocal.views.CalendarList extends UIComponent
 		
 		//DebugWindow.debug("__calendars_list: " + __calendars_list);
 		
-		if(__createNew_link == null)
-		{
-			__createNew_link = LinkButton(createComponent(LinkButton, "__createNew_link"));
-			var tf:TextFormat = __createNew_link.textField.getTextFormat();
-			tf.color = 0x0066CC;
-			tf.size = 10;
-			__createNew_link.textField.setNewTextFormat(tf);
-			__createNew_link.label = "Create New...";
-			__createNew_link.bold = true;
-		}
-		
 		//DebugWindow.debug("__createNew_link: " + __createNew_link);
 	}
 	
@@ -81,7 +69,6 @@ class com.jxl.goocal.views.CalendarList extends UIComponent
 		
 		__title_lbl.setSize(__width, __title_lbl._height);
 		__calendars_list.move(0, __title_lbl._y + __title_lbl._height + 4);
-		__createNew_link.move(0, __calendars_list.y + __calendars_list.height);
 	}
 	
 	private function refreshCalendarItem(p_child:UIComponent, p_index:Number, p_item:Object):Void

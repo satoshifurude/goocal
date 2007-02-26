@@ -38,6 +38,7 @@ class com.jxl.goocal.views.EventList extends ScrollableList
 	{
 		super.setupList();
 		__mcList.rowHeight = 40;
+		__mcList.childVerticalMargin = 2;
 	}
 	
 	private function setupButtons():Void

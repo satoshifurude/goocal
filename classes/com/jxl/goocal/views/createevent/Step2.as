@@ -35,6 +35,9 @@ class com.jxl.goocal.views.createevent.Step2 extends UIComponent
 		if(__to_lbl == null)
 		{
 			__to_lbl = createLabel("__to_lbl");
+			var tf:TextFormat = __to_lbl.getTextFormat();
+			tf.bold = true;
+			__to_lbl.setNewTextFormat(tf);
 			__to_lbl.text = "To";
 		}
 		

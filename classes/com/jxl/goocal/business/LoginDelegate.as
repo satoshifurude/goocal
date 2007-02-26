@@ -10,7 +10,6 @@ class com.jxl.goocal.business.LoginDelegate
 	private var responder:Responder;
 	private var lv:LoadVars;
 	private var attempts:Number;
-	private var maxAttempts:Number = 3;
 	private var retryID:Number;
 	private var username:String;
 	private var password:String;
@@ -44,16 +43,21 @@ class com.jxl.goocal.business.LoginDelegate
 		//DebugWindow.debug("LoginDelegate::onGetAuthCode");
 		//DebugWindow.debug("p_auth: " + p_auth);
 		
+		// NOTE: PHP will sometimes throw an SSL error after numerous logins.  I know why
+		// this happens on IIS, but not Apache.  It even gets an auth ID from Google
+		// despite the error.  Regardless, to be safe, I merely send a login again,
+		// and it normally immediately responds nicely.  So, most common
+		// scenario is the first response is fubarred, and 2nd always goes through.
+		clearInterval(retryID);
 		if(p_auth != undefined && p_auth.indexOf("Warning") == -1 && p_auth.indexOf("Error") == -1)
 		{
 			responder.onResult(new ResultEvent(p_auth));
 		}
 		else
 		{
-			if(attempts < maxAttempts)
+			if(attempts < 3)
 			{
-				__progressFunction.call(__progressScope, "Failed attempt " + attempts + ".  Trying again...");
-				clearInterval(retryID);
+				__progressFunction.call(__progressScope, "Failed attempt " + attempts + ".");
 				retryID = setInterval(this, "loginAgain", 1000);
 				
 			}
@@ -68,7 +72,9 @@ class com.jxl.goocal.business.LoginDelegate
 	
 	private function loginAgain():Void
 	{
+		
 		clearInterval(retryID);
+		__progressFunction.call(__progressScope, "Trying again...");
 		login(username, password);
 	}
 	

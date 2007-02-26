@@ -18,18 +18,19 @@ import mx.rpc.Fault;
 import mx.rpc.FaultEvent;
 import mx.rpc.Responder;
 
-class com.jxl.goocal.business.CreateEventDelegate
+class com.jxl.goocal.business.EditEventDelegate
 {
 	private var responder:Responder;
 	
-	public function CreateEventDelegate(p_responder:Responder)
+	public function EditEventDelegate(p_responder:Responder)
 	{
 		responder = p_responder;
 	}
 	
-	public function createEvent(auth:String,
+	public function editEvent(auth:String,
 								name:String,
 								email:String,
+								id:String,
 								calendarName:String,
 								startDate:Date,
 								endDate:Date,
@@ -39,11 +40,12 @@ class com.jxl.goocal.business.CreateEventDelegate
 								timezone:Number):Void
 	{
 		var lv:LoadVars			= new LoadVars();
-		lv.onData 				= Delegate.create(this, onCreateEvent);
-		lv.cmd 					= "create_entry";
+		lv.onData 				= Delegate.create(this, onEditEvent);
+		lv.cmd 					= "edit_entry";
 		lv.auth					= auth;
 		lv.name					= name;
 		lv.email				= email;
+		lv.id					= id;
 		lv.calendarName			= calendarName;
 		lv.startYear			= startDate.getFullYear();
 		lv.startMonth			= startDate.getMonth() + 1;
@@ -62,15 +64,15 @@ class com.jxl.goocal.business.CreateEventDelegate
 		lv.sendAndLoad(_global.phpURL, lv, "POST");
 	}
 	
-	private function onCreateEvent(o):Void
+	private function onEditEvent(o):Void
 	{
 		trace("------------------");
-		trace("CreateEventDelegate::onCreateEvent, o: " + o);
-		/*for(var p in o)
+		trace("CreateEventDelegate::onEditEvent, o: " + o);
+		for(var p in o)
 		{
 			trace(p + ": " + o[p]);
 		}
-		*/
+		
 		
 		if(o == "true" || o == 1 || o == "1")
 		{
@@ -78,25 +80,9 @@ class com.jxl.goocal.business.CreateEventDelegate
 		}
 		else
 		{
-			var fault:Fault = new Fault("failure", "create event failure", "Failed to create event.", "LoadVars");
+			var fault:Fault = new Fault("failure", "edit event failure", "Failed to edit event.", "LoadVars");
 			var fe:FaultEvent = new FaultEvent(fault);
 			responder.onFault(fe);
 		}
 	}
-	
-	/*
-	private function onCreateEvent(p_success:Boolean):Void
-	{
-		if(p_success == true)
-		{
-			responder.onResult(new ResultEvent(true));
-		}
-		else
-		{
-			var fault:Fault = new Fault("failure", "create event failure", "Failed to create event.", "LoadVars");
-			var fe:FaultEvent = new FaultEvent(fault);
-			responder.onFault(fe);
-		}
-	}
-	*/
 }

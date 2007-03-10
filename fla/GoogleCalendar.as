@@ -68,6 +68,7 @@ class GoogleCalendar extends UIComponent
 	private var __update_txt:TextField;
 	private var __or_txt:TextField;
 	private var __settings_lb:LinkButton;
+	private var __ok_lb:LinkButton;
 	
 	private var __eventDate:Date;
 	private var __soList:Function;
@@ -86,7 +87,7 @@ class GoogleCalendar extends UIComponent
 		__height = 208;
 		
 		_global.phpURL = "http://www.jessewarden.com/goocal/php/com/jxl/goocal/controller/FrontController.php";
-		
+		/*
 		var lv:LoadVars = new LoadVars();
 		lv.owner = this;
 		lv.onLoad = function(success)
@@ -106,6 +107,7 @@ class GoogleCalendar extends UIComponent
 			}
 		};
 		lv.load("config.txt");
+		*/
 	}
 	
 	public function createChildren():Void
@@ -332,7 +334,7 @@ class GoogleCalendar extends UIComponent
 			__entryView.move(0, 40);
 			__entryView.setSize(__width, __height - 40);
 			__entryView.setMonthCallback(this, showMonthView);
-			__entryView.setEditCallback(this, editEntry);
+			//__entryView.setEditCallback(this, editEntry);
 		}
 		
 		__entryView.entry = ModelLocator.getInstance().currentEntry;
@@ -393,9 +395,9 @@ class GoogleCalendar extends UIComponent
 	// TODO: need callback for result vs. boolean & status
 	private function onGotEventsForDateSelected(p_boolOrMsg):Void
 	{
-		//trace("-----------------");
-		//trace("GoogleCalendar::onGotEventsForDateSelected");
-		//trace("p_boolOrMsg: " + p_boolOrMsg);
+		trace("-----------------");
+		trace("GoogleCalendar::onGotEventsForDateSelected");
+		trace("p_boolOrMsg: " + p_boolOrMsg);
 		if(p_boolOrMsg == true)
 		{
 			// third, show the date selected entries in in the DayView
@@ -491,17 +493,34 @@ class GoogleCalendar extends UIComponent
 	
 	private function onCreatedEvent(success:Boolean):Void
 	{
+		trace("----------------------");
+		trace("GoogleCalendar::onCreatedEvent, success: " + success);
 		if(success == true)
 		{
 			hideActivity();
-			showDayView(__eventDate);
+			showDateSelectedEntries(__eventDate);
 		}
 		else
 		{
-			showActivity("Failed to create event.");
+			showActivity("Failed to create event.", true, showMonthView);
 		}
 		
 		delete __eventDate;
+	}
+	
+	private function showDateSelectedEntries(p_date:Date):Void
+	{
+		trace("----------------------");
+		trace("GoogleCalendar::showDateSelectedEntries, p_date: " + p_date);
+		
+		var event:SetCurrentDateEvent = new SetCurrentDateEvent(SetCurrentDateEvent.SET_CURRENT_DATE,
+																this,
+																onSetCurrentDate);
+		event.currentDate = p_date;
+		
+		destroyViews();
+		
+		CommandRegistry.getInstance().dispatchEvent(event);
 	}
 	
 	private function editEntry():Void
@@ -737,7 +756,7 @@ class GoogleCalendar extends UIComponent
 		}
 	}
 	
-	private function showActivity(p_msg:String):Void
+	private function showActivity(p_msg:String, p_error:Boolean, p_func:Function):Void
 	{
 		if(__activity_mc == null)
 		{
@@ -768,6 +787,21 @@ class GoogleCalendar extends UIComponent
 			__activity_mc._x = (__width / 2) - (__activity_mc._width / 2);
 			__activity_mc._y = __loggingIn_lbl._y - __activity_mc._height;
 		}
+		
+		if(p_error == true)
+		{
+			if(__ok_lb == null)
+			{
+				__ok_lb = LinkButton(createComponent(LinkButton, "__settings_lb"));
+				__ok_lb.setReleaseCallback(this, p_func);
+				__ok_lb.textField.autoSize = "left";
+				__ok_lb.textField.textColor = 0x0033CC;
+				__ok_lb.label = "OK";
+				__ok_lb.setSize(__ok_lb.textField.textWidth + 4, __ok_lb.height);
+			}
+			
+			__ok_lb.move((__width / 2) - (__ok_lb.width / 2), __activity_mc._y + __activity_mc._height + 4);
+		}
 	}
 	
 	private function hideActivity(p_removeMsg:Boolean):Void
@@ -784,6 +818,12 @@ class GoogleCalendar extends UIComponent
 			{
 				__loggingIn_lbl.removeTextField();
 				delete __loggingIn_lbl;
+			}
+			
+			if(__ok_lb != null)
+			{
+				__ok_lb.removeMovieClip();
+				delete __ok_lb;
 			}
 		}
 	}

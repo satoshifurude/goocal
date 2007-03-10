@@ -14,8 +14,8 @@
 		const COMMAND_GET_CALENDAR_ENTRIES			= "get_calendar_entries";
 		const COMMAND_GET_ENTRY						= "get_entry";
 		const COMMAND_CREATE_ENTRY					= "create_entry";
-		const COMMAND_EDIT_ENTRY					= "edit_entry";
-		const COMMAND_DELETE_ENTRY					= "delete_entry";
+		//const COMMAND_EDIT_ENTRY					= "edit_entry";
+		//const COMMAND_DELETE_ENTRY					= "delete_entry";
 		const COMMAND_CHECK_VERSION					= "check_version";
 		
 		protected $gcalutils;
@@ -76,7 +76,7 @@
 											  $params->description,
 											  $params->where,
 											  $params->timeZoneOffset);
-											  
+				/*					  
 				case self::COMMAND_EDIT_ENTRY:
 					return $this->modifyEntry(self::COMMAND_EDIT_ENTRY,
 											  $params->auth,
@@ -100,26 +100,8 @@
 											  $params->timeZoneOffset);
 				
 				case self::COMMAND_DELETE_ENTRY:
-					return $this->modifyEntry(self::COMMAND_DELETE_ENTRY,
-											  $params->auth,
-											  $params->name,
-											  $params->email,
-											  $params->id,
-											  $params->calendarName,
-											  $params->startYear,
-											  $params->startMonth,
-											  $params->startDay,
-											  $params->startHour,
-											  $params->startMinute,
-											  $params->endYear,
-											  $params->endMonth,
-											  $params->endDay,
-											  $params->endHour,
-											  $params->endMinute,
-											  $params->title,
-											  $params->description,
-											  $params->where,
-											  $params->timeZoneOffset);
+					return $this->deleteEntry($params->auth, $params->id);
+				*/
 				
 				case self::COMMAND_CHECK_VERSION:
 					return $this->checkVersion($params->currentVersion);
@@ -342,6 +324,10 @@
 			$calendarURL 	= GDataFactory::getCalendarFeedURL($baseFeed, $p_calendarName);
 			$calendarURLChunk = substr($calendarURL, 21);
 			
+			
+			$theID = NULL;
+			$theMode = NULL;
+			/*	
 			if($p_mode == self::COMMAND_CREATE_ENTRY)
 			{
 				$theID = NULL;
@@ -357,6 +343,8 @@
 				$theID = $p_id;
 				$theMode = "delete";
 			}
+			*/
+			
 			
 			//JXLDebug::debugHeader();
 			//JXLDebug::debug("theID: " . $theID);
@@ -385,7 +373,8 @@
 			$headers = array('Authorization: GoogleLogin auth=' . $p_auth,
 							 'Content-Type: application/atom+xml',
 							 'X-If-No-Redirect: 1');
-							 
+			
+			/*
 			if($p_mode == self::COMMAND_EDIT_ENTRY)
 			{
 				array_push($headers, 'X-HTTP-Method-Override: PUT');
@@ -394,13 +383,43 @@
 			{
 				array_push($headers, 'X-HTTP-Method-Override: DELETE');
 			}
+			*/
 			
-			// post to Google
 			$addResponse = $this->gcalutils->sendToHost2("www.google.com", 
 													   'POST',
 													   $calendarURLChunk,
 													   $headers,
 													   $createXML);
+			/*
+			if($p_mode == self::COMMAND_CREATE_ENTRY)
+			{
+				$addResponse = $this->gcalutils->sendToHost2("www.google.com", 
+													   'POST',
+													   $calendarURLChunk,
+													   $headers,
+													   $createXML);
+			}
+			else if($p_mode == self::COMMAND_EDIT_ENTRY)
+			{
+				$addResponse = $this->gcalutils->sendToHost2("www.google.com", 
+													   'PUT',
+													   $calendarURLChunk,
+													   $headers,
+													   $createXML);
+			}
+			else if($p_mode == self::COMMAND_DELETE_ENTRY)
+			{
+				//JXLDebug::debugHeader();
+				//JXLDebug::debug("p_id: " . $p_id);
+				$addResponse = $this->gcalutils->sendToHost2("www.google.com", 
+															   'POST',
+															   $calendarURLChunk,
+															   $headers,
+															   $createXML);
+			}
+			*/
+			
+			
 													   
 			// this will be a 302 re-direct if good.  Grab the
 			// url to redirect to, and parse the calendar
@@ -442,14 +461,31 @@
 			
 			if($this->isHTTP201($goodResponse) == true)
 			{
+				//JXLDebug::debugHeader();
+				//JXLDebug::debug("it's a 201");
 				return true;
 			}
 			else
 			{
+				//JXLDebug::debugHeader();
+				//JXLDebug::debug("ERROR: Not a 201.  Response: " . $goodResponse . "  createXML: " . $createXML);
 				return "ERROR: Not a 201.  Response: " . $goodResponse . "  createXML: " . $createXML;
 			}
 		}
-		
+		/*
+		protected function deleteEntry($p_auth, $p_idURL)
+		{
+			$headers = array('Authorization: GoogleLogin auth=' . $p_auth,
+							 'Content-Type: application/atom+xml',
+							 'X-If-No-Redirect: 1',
+							 'X-HTTP-Method-Override: DELETE');
+			
+			$deleteResponse = $this->gcalutils->curlToHost($p_idURL, "DELETE", $headers);
+															   
+			JXLDebug::debugHeader();
+			JXLDebug::debug("deleteResponse: " . htmlentities($deleteResponse));
+		}
+		*/
 		private function isHTTP412($str)
 		{
 			//$l = new LogUtils("test_log.txt");

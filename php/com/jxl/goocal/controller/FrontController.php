@@ -1,8 +1,8 @@
 <?php
 
-	set_include_path("/home/9936/domains/jessewarden.com/html/goocal/php/");
+	set_include_path("/home/9936/domains/jessewarden.com/html/360Flex/php/");
 	
-	require_once("com/jxl/goocal/controller/Application.php");
+	require_once("Application.php");
 	
 	if(isset($HTTP_POST_VARS['cmd']))
 	{
@@ -70,7 +70,7 @@
 				$success = $fc->runCommand(Application::COMMAND_CREATE_ENTRY, $params);
 				echo($success);
 				return;
-				
+			/*
 			case Application::COMMAND_EDIT_ENTRY:
 				$params->auth				= $HTTP_POST_VARS['auth'];
 				$params->name				= $HTTP_POST_VARS['name'];
@@ -119,7 +119,7 @@
 				$success = $fc->runCommand(Application::COMMAND_DELETE_ENTRY, $params);
 				echo($success);
 				return;
-			
+			*/
 			case Application::COMMAND_CHECK_VERSION:
 				$params->currentVersion		= $HTTP_POST_VARS['currentVersion'];
 				$needToUpdate = $fc->runCommand(Application::COMMAND_CHECK_VERSION, $params);

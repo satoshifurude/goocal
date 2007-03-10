@@ -77,8 +77,17 @@ class com.jxl.goocal.factories.CalendarFactory extends FactoryTemplate
 		__currentEntryVO.whenVO = new WhenVO();
 		__currentEntryVO.id = __lv["id" + p_currentIndex];
 		__currentEntryVO.title = String(__lv["title" + p_currentIndex]);
-		__currentEntryVO.whenVO.startTime = parseDateTime(__lv["startTime" + p_currentIndex]);
-		__currentEntryVO.whenVO.endTime = parseDateTime(__lv["endTime" + p_currentIndex]);
+		
+		var startTimeValue:String = __lv["startTime" + p_currentIndex];
+		__currentEntryVO.whenVO.startTime = parseDateTime(startTimeValue);
+		if(isAllDayEvent(startTimeValue) == true)
+		{
+			__currentEntryVO.whenVO.isAllDay = true;
+		}
+		
+		var endTimeValue:String = __lv["endTime" + p_currentIndex];
+		__currentEntryVO.whenVO.endTime = parseDateTime(endTimeValue);
+		
 		var reminderMins:Number = parseInt(__lv["minutes" + p_currentIndex]);
 		var theEntryReminder:Date = DateUtils.clone(__currentEntryVO.whenVO.endTime);
 		theEntryReminder.setMinutes(__currentEntryVO.whenVO.endTime.getMinutes() - reminderMins);
@@ -407,15 +416,37 @@ class com.jxl.goocal.factories.CalendarFactory extends FactoryTemplate
 		var theMonth:Number = parseInt(splitDateInfo[1]) - 1;
 		var theDay:Number = parseInt(splitDateInfo[2]);
 		
-		var splitTimeInfo:Array = timeInfo.split(".");
-		var hmsPart:Array = splitTimeInfo[0].split(":");
-		var theHours:Number = parseInt(hmsPart[0]);
-		var theMins:Number = parseInt(hmsPart[1]);
-		var theSeconds:Number = parseInt(hmsPart[2]);
-		
-		var theDate:Date = new Date(theFullYear, theMonth, theDay, theHours, theMins, theSeconds);
+		var theDate:Date;
+		if(splitDateString.length > 1)
+		{
+			var splitTimeInfo:Array = timeInfo.split(".");
+			var hmsPart:Array = splitTimeInfo[0].split(":");
+			var theHours:Number = parseInt(hmsPart[0]);
+			var theMins:Number = parseInt(hmsPart[1]);
+			var theSeconds:Number = parseInt(hmsPart[2]);
+			
+			theDate = new Date(theFullYear, theMonth, theDay, theHours, theMins, theSeconds);
+		}
+		else
+		{
+			theDate = new Date(theFullYear, theMonth, theDay);
+		}
 		return theDate;
 	}
+	
+	public static function isAllDayEvent(str:String):Boolean
+	{
+		var splitDateString:Array = str.split("T");
+		if(splitDateString.length > 1)
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	}
+	
 	
 	public static function getDateTimeString(p_date:Date):String
 	{

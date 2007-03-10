@@ -60,8 +60,11 @@ class com.jxl.goocal.business.GetEntryDelegate
 			newEntryVO.whenVO = new WhenVO();
 			//newEntryVO.whenVO.startTime = CalendarFactory.parseDateTime(lv.startTime);
 			//newEntryVO.whenVO.endTime = CalendarFactory.parseDateTime(lv.endTime);
+			// KLUDGE: this broke because I didn't use a proper clone for whenVO....... FIXME slacker!!!!
 			newEntryVO.whenVO.startTime = entryVO.whenVO.startTime;
 			newEntryVO.whenVO.endTime = entryVO.whenVO.endTime;
+			newEntryVO.whenVO.isAllDay = entryVO.whenVO.isAllDay;
+			
 			var reminderMins:Number = parseInt(lv.minutes);
 			var theEntryReminder:Date = DateUtils.clone(newEntryVO.whenVO.endTime);
 			theEntryReminder.setMinutes(newEntryVO.whenVO.endTime.getMinutes() - reminderMins);

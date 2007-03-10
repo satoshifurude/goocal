@@ -72,47 +72,61 @@ class com.jxl.goocal.vo.EntryVO
 	{
 		var hrStr:String = "";
 		var d:Date = whenVO.startTime;
-		var hour:Number = d.getHours();
-		if(hour > 11)
+		if(whenVO.isAllDay == false)
 		{
-			if(hour > 12) hour -= 12;
-			hrStr += hour + "pm";
+			var hour:Number = d.getHours();
+			if(hour > 11)
+			{
+				if(hour > 12) hour -= 12;
+				hrStr += hour + "pm";
+			}
+			else
+			{
+				hrStr += hour + "am";
+			}
+			return hrStr;
 		}
 		else
 		{
-			hrStr += hour + "am";
+			return "All Day";
 		}
-		return hrStr;
 	}
 	
 	public function toHourRangeString():String
 	{
-		var hrStr:String = "";
-		var startDate:Date = whenVO.startTime;
-		var endDate:Date = whenVO.endTime;
-		var startHour:Number = startDate.getHours();
-		var endHour:Number = endDate.getHours();
-		if(startHour > 11)
+		if(whenVO.isAllDay == false)
 		{
-			if(startHour > 12) startHour -= 12;
-			hrStr += startHour + "pm";
+			var hrStr:String = "";
+			var startDate:Date = whenVO.startTime;
+			var endDate:Date = whenVO.endTime;
+			var startHour:Number = startDate.getHours();
+			var endHour:Number = endDate.getHours();
+			if(startHour > 11)
+			{
+				if(startHour > 12) startHour -= 12;
+				hrStr += startHour + "pm";
+			}
+			else
+			{
+				hrStr += startHour + "am";
+			}
+			
+			hrStr += " - ";
+			
+			if(endHour > 11)
+			{
+				if(endHour > 12) endHour -= 12;
+				hrStr += endHour + "pm";
+			}
+			else
+			{
+				hrStr += endHour + "am";
+			}
+			return hrStr;
 		}
 		else
 		{
-			hrStr += startHour + "am";
+			return "All Day";
 		}
-		
-		hrStr += " - ";
-		
-		if(endHour > 11)
-		{
-			if(endHour > 12) endHour -= 12;
-			hrStr += endHour + "pm";
-		}
-		else
-		{
-			hrStr += endHour + "am";
-		}
-		return hrStr;
 	}
 }

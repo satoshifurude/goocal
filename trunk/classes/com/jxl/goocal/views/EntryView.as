@@ -23,15 +23,15 @@ class com.jxl.goocal.views.EntryView extends UIComponent
 	private var __title_lbl:TextField;
 	private var __time_lbl:TextField;
 	private var __description_ta:TextArea;
-	private var __editDetails_link:LinkButton;
+	//private var __editDetails_link:LinkButton;
 	//private var __deleteDetails_link:LinkButton;
-	private var __or_txt:TextField;
-	private var __view_txt:TextField;
+	//private var __or_txt:TextField;
+	//private var __view_txt:TextField;
 	private var __month_link:LinkButton;
 	
 	private var __entry:EntryVO;
 	private var __monthCallback:Callback;
-	private var __editCallback:Callback;
+	//private var __editCallback:Callback;
 	//private var __deleteCallback:Callback;
 	
 	public function get entry():EntryVO { return __entry; }
@@ -39,6 +39,7 @@ class com.jxl.goocal.views.EntryView extends UIComponent
 	{
 		__entry = p_val;
 		__title_lbl.text = __entry.title;
+		trace("__entry.toHourRangeString(): " + __entry.toHourRangeString());
 		__time_lbl.text = __entry.toHourRangeString();
 		
 		var descStr:String = "<font size='11' face='Verdana, Arial, Helvetica, sans-serif'>";
@@ -88,15 +89,15 @@ class com.jxl.goocal.views.EntryView extends UIComponent
 			__description_ta.textField.html = true;
 		}
 		
-		if(__editDetails_link == null)
-		{
-			__editDetails_link = LinkButton(createComponent(LinkButton, "__editDetails_link"));
+		//if(__editDetails_link == null)
+		//{
+			//__editDetails_link = LinkButton(createComponent(LinkButton, "__editDetails_link"));
 			
-			__editDetails_link.label = "Edit";
+			//__editDetails_link.label = "Edit";
 			//__editDetails_link.label = "Edit,";
-			__editDetails_link.textField.autoSize = "left";
-			__editDetails_link.setReleaseCallback(this, onEditDetails);
-		}
+			//__editDetails_link.textField.autoSize = "left";
+			//__editDetails_link.setReleaseCallback(this, onEditDetails);
+		//}
 		/*
 		if(__deleteDetails_link == null)
 		{
@@ -106,21 +107,22 @@ class com.jxl.goocal.views.EntryView extends UIComponent
 			__deleteDetails_link.setReleaseCallback(this, onDelete);
 		}
 		*/
-		if(__or_txt == null)
-		{
-			__or_txt = createLabel("__or_txt");
-			__or_txt.multiline = false;
-			__or_txt.wordWrap = false;
-			__or_txt.text = "or";
-		}
+		//if(__or_txt == null)
+		//{
+			//__or_txt = createLabel("__or_txt");
+			//__or_txt.multiline = false;
+			//__or_txt.wordWrap = false;
+			//__or_txt.text = "or";
+		//}
 		
 		if(__month_link == null)
 		{
 			__month_link = LinkButton(createComponent(LinkButton, "__month_link"));
-			__month_link.label = "month";
+			//__month_link.label = "month";
+			__month_link.label = "Back to Month View";
 			__month_link.setReleaseCallback(this, onMonthClick);
 		}
-		
+/*		
 		if(__view_txt == null)
 		{
 			__view_txt = createLabel("__view_txt");
@@ -128,7 +130,7 @@ class com.jxl.goocal.views.EntryView extends UIComponent
 			__view_txt.wordWrap = false;
 			__view_txt.text = "view";
 		}
-	}
+*/	}
 	
 	private function redraw():Void
 	{
@@ -137,38 +139,46 @@ class com.jxl.goocal.views.EntryView extends UIComponent
 		__title_lbl.move(4, 0);
 		__title_lbl.setSize(__width, 20);
 		
-		__editDetails_link.setSize(__editDetails_link.textField.textWidth + 4, __editDetails_link.height);
-		__editDetails_link.move(0, __height - __editDetails_link.height);
+		//__editDetails_link.setSize(__editDetails_link.textField.textWidth + 4, __editDetails_link.height);
+		//__editDetails_link.move(0, __height - __editDetails_link.height);
 		//__editDetails_link.setSize(57, __editDetails_link.height);
 		
 		//__deleteDetails_link.setSize(__deleteDetails_link.textField.textWidth + 4, __deleteDetails_link.height);
 		//__deleteDetails_link.move(__editDetails_link.x + __editDetails_link.width, __editDetails_link.y);
 		
-		__or_txt.move(__editDetails_link.x + __editDetails_link.width + 2, __editDetails_link.y);
+		//__or_txt.move(__editDetails_link.x + __editDetails_link.width + 2, __editDetails_link.y);
 		//__or_txt.move(__deleteDetails_link.x + __deleteDetails_link.width + 2, __deleteDetails_link.y);
-		__or_txt.setSize(14, __or_txt._height);
+		//__or_txt.setSize(14, __or_txt._height);
 		
-		__month_link.move(__or_txt._x + __or_txt._width, __or_txt._y);
-		__month_link.setSize(34, __month_link.height);
+		//__month_link.move(__or_txt._x + __or_txt._width, __or_txt._y);
+		__month_link.move(0, __height - __month_link.height);
+		__month_link.setSize(__month_link.textField.textWidth + 4, __month_link.height);
 		
-		__view_txt.move(__month_link.x + __month_link.width, __month_link.y);
-		__view_txt.setSize(30, __view_txt._height);
+		//__view_txt.move(__month_link.x + __month_link.width, __month_link.y);
+		//__view_txt.setSize(30, __view_txt._height);
 		
 		__time_lbl.move(4, __title_lbl._y + __title_lbl._height + 3);
 		__time_lbl.setSize(__width - __time_lbl._x, 22);
 		
 		__description_ta.move(__time_lbl._x, __time_lbl._y + __time_lbl._height);
-		__description_ta.setSize(__width - __description_ta.x, __height - __description_ta.y - __editDetails_link.height);
+		//__description_ta.setSize(__width - __description_ta.x, __height - __description_ta.y - __editDetails_link.height);
+		__description_ta.setSize(__width - __description_ta.x, __height - __description_ta.y - __month_link.height);
 		
 		beginFill(0xD2D2D2);
 		var lineSize:Number = 2;
 		DrawUtils.drawBox(this, 0, __title_lbl._y + __title_lbl._height, __width, lineSize);
-		DrawUtils.drawBox(this, 0, __height - __editDetails_link.height - lineSize, __width, lineSize);
+		//DrawUtils.drawBox(this, 0, __height - __editDetails_link.height - lineSize, __width, lineSize);
+		DrawUtils.drawBox(this, 0, __height - __month_link.height - lineSize, __width, lineSize);
 		beginFill(0xF0F0F0);
 		var targetDarkY:Number = __title_lbl._y + __title_lbl._height + lineSize;
+		/*
 		DrawUtils.drawBox(this, 
 						  0, targetDarkY, 
 						  __width, __height - __editDetails_link.height - targetDarkY - lineSize);
+		*/
+		DrawUtils.drawBox(this, 
+						  0, targetDarkY, 
+						  __width, __height - __month_link.height - targetDarkY - lineSize);
 		endFill();
 	}
 	
@@ -186,16 +196,18 @@ class com.jxl.goocal.views.EntryView extends UIComponent
 	{
 		__monthCallback = new Callback(scope, func);
 	}
-	
+	/*
 	private function onEditDetails(event:ShurikenEvent):Void
 	{
 		__editCallback.dispatch(new Event(EVENT_EDIT), this);
 	}
-	
+	*/
+	/*
 	public function setEditCallback(scope:Object, func:Function):Void
 	{
 		__editCallback = new Callback(scope, func);
 	}
+	*/
 	/*
 	public function setDeleteCallback(scope:Object, func:Function):Void
 	{

@@ -38,6 +38,7 @@ class com.jxl.goocal.business.CreateEventDelegate
 								where:String,
 								timezone:Number):Void
 	{
+		
 		var lv:LoadVars			= new LoadVars();
 		lv.onData 				= Delegate.create(this, onCreateEvent);
 		lv.cmd 					= "create_entry";

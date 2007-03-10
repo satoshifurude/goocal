@@ -3,6 +3,7 @@
 	public var startTime:Date;
 	public var endTime:Date;
 	public var reminder:Date;
+	public var isAllDay:Boolean = false;
 	
 	public function WhenVO(p_startTime:Date,
 						   p_endTime:Date,

@@ -301,24 +301,44 @@
 	public static function getLocalOffset():Number
 	{
 		// local time minus UTC
+		trace("---------------------------");
+		trace("DateUtils::getLocalOffset");
 		var d:Date = new Date();
 		var offset:Number = d.getTimezoneOffset() / 60;
 		var theDay:Number = d.getDate();
 		var utcDay:Number = d.getUTCDate();
+		var theMonth:Number = d.getMonth();
+		var utcMonth:Number = d.getUTCMonth();
+		var theYear:Number = d.getFullYear();
+		var utcYear:Number = d.getUTCFullYear();
+		trace("offset: " + offset);
 		offset = offset * -1;
 		if(theDay > utcDay)
 		{
-			var hour:Number = d.getHours();
-			var utcHour:Number = d.getUTCHours();
-			if(hour > utcHour)
+			if(theMonth == utcMonth)
 			{
-				offset = Math.abs(offset);
+				if(theYear == utcYear)
+				{
+					var hour:Number = d.getHours();
+					var utcHour:Number = d.getUTCHours();
+					if(hour > utcHour)
+					{
+						offset = Math.abs(offset);
+					}
+				}
 			}
 		}
-		//trace("theDay: " + theDay);
-		//trace("utcDay: " + utcDay);
-		//trace("hour: " + hour);
-		//trace("utcHour: " + utcHour);
+		//offset: 5
+		//theDay: 28
+		//utcDay: 1
+		//hour: 21
+		//utcHour: 2
+		//returning: 5
+		trace("theDay: " + theDay);
+		trace("utcDay: " + utcDay);
+		trace("hour: " + hour);
+		trace("utcHour: " + utcHour);
+		trace("returning: " + offset);
 		return offset;
 	}
 	

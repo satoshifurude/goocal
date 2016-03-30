@@ -1,0 +1,1 @@
+Google Calendar Lite is a Flash Lite 2 application for using Google Calendar on your phone or other device.  It is also an example application showing what you can build in Flash Lite 2 using Shuriken, a Flash Lite 2 component framework written in `ActionScript` 2.
